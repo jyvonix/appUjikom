@@ -29,12 +29,21 @@
                             <label for="name" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Nama Lengkap Siswa</label>
                             <input type="text" name="name" id="name" value="{{ old('name', $siswa->name) }}" required
                                 class="w-full px-8 py-6 bg-slate-50 border-none rounded-[24px] focus:ring-4 focus:ring-indigo-500/10 transition-all font-bold text-slate-700">
+                            @error('name') <p class="text-[10px] text-rose-500 font-bold mt-2 ml-2">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="group">
-                            <label for="email" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Email Siswa</label>
-                            <input type="email" name="email" id="email" value="{{ old('email', $siswa->email) }}" required
+                            <label for="username" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Username</label>
+                            <input type="text" name="username" id="username" value="{{ old('username', $siswa->username) }}" required
                                 class="w-full px-8 py-6 bg-slate-50 border-none rounded-[24px] focus:ring-4 focus:ring-indigo-500/10 transition-all font-bold text-slate-700">
+                            @error('username') <p class="text-[10px] text-rose-500 font-bold mt-2 ml-2">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="group">
+                            <label for="email" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Email Siswa (Opsional)</label>
+                            <input type="email" name="email" id="email" value="{{ old('email', $siswa->email) }}"
+                                class="w-full px-8 py-6 bg-slate-50 border-none rounded-[24px] focus:ring-4 focus:ring-indigo-500/10 transition-all font-bold text-slate-700">
+                            @error('email') <p class="text-[10px] text-rose-500 font-bold mt-2 ml-2">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="p-6 bg-indigo-50 rounded-[32px] border border-indigo-100 flex gap-4 italic text-xs font-medium text-indigo-700">

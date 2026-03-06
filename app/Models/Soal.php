@@ -9,6 +9,7 @@ class Soal extends Model
 {
     protected $fillable = [
         'pertanyaan',
+        'gambar',
         'opsi_a',
         'opsi_b',
         'opsi_c',

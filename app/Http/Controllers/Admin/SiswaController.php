@@ -18,6 +18,7 @@ class SiswaController extends Controller
             $search = $request->get('search');
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%");
             });
         }
@@ -36,12 +37,14 @@ class SiswaController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+            'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         User::create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'siswa',
@@ -66,11 +69,13 @@ class SiswaController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$siswa->id],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,'.$siswa->id],
+            'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$siswa->id],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $siswa->name = $request->name;
+        $siswa->username = $request->username;
         $siswa->email = $request->email;
         
         if ($request->filled('password')) {

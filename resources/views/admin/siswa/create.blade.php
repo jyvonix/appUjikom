@@ -22,14 +22,25 @@
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                                 </div>
                             </div>
+                            @error('name') <p class="text-[10px] text-rose-500 font-bold mt-2 ml-2">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="group">
-                            <label for="email" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Email Siswa</label>
+                            <label for="username" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Username</label>
                             <div class="relative">
-                                <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="siswa@sekolah.id" required
+                                <input type="text" name="username" id="username" value="{{ old('username') }}" placeholder="username_siswa" required
                                     class="w-full px-8 py-6 bg-slate-50 border-none rounded-[24px] focus:ring-4 focus:ring-indigo-500/10 transition-all font-bold text-slate-700 placeholder-slate-300">
                             </div>
+                            @error('username') <p class="text-[10px] text-rose-500 font-bold mt-2 ml-2">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="group">
+                            <label for="email" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Email Siswa (Opsional)</label>
+                            <div class="relative">
+                                <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="siswa@sekolah.id"
+                                    class="w-full px-8 py-6 bg-slate-50 border-none rounded-[24px] focus:ring-4 focus:ring-indigo-500/10 transition-all font-bold text-slate-700 placeholder-slate-300">
+                            </div>
+                            @error('email') <p class="text-[10px] text-rose-500 font-bold mt-2 ml-2">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="grid md:grid-cols-2 gap-8">

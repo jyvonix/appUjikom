@@ -8,4 +8,10 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        host: true, // Mengizinkan akses Vite melalui IP Jaringan
+        hmr: {
+            host: 'localhost', // Tetap gunakan localhost untuk koneksi internal
+        },
+    },
 });

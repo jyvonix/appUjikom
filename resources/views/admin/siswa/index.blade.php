@@ -29,11 +29,12 @@
                 <thead class="bg-slate-50/50 hidden sm:table-header-group">
                     <tr>
                         <th class="px-10 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Siswa</th>
+                        <th class="px-10 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Username</th>
                         <th class="px-10 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Email</th>
                         <th class="px-10 py-6 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">Opsi</th>
                     </tr>
                 </thead>
-                <body class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100">
                     @forelse($siswas as $siswa)
                     <tr class="group hover:bg-slate-50 transition-colors flex flex-col sm:table-row p-6 sm:p-0">
                         <td class="px-0 sm:px-10 py-4 sm:py-6 sm:table-cell">
@@ -45,7 +46,10 @@
                             </div>
                         </td>
                         <td class="px-0 sm:px-10 py-2 sm:py-6 sm:table-cell">
-                            <div class="text-sm font-bold text-slate-500 truncate">{{ $siswa->email }}</div>
+                            <div class="text-sm font-bold text-indigo-600 truncate">{{ $siswa->username }}</div>
+                        </td>
+                        <td class="px-0 sm:px-10 py-2 sm:py-6 sm:table-cell">
+                            <div class="text-sm font-bold text-slate-500 truncate">{{ $siswa->email ?? '-' }}</div>
                         </td>
                         <td class="px-0 sm:px-10 py-4 sm:py-6 sm:table-cell sm:text-right">
                             <div class="flex items-center sm:justify-end gap-3">
@@ -69,7 +73,7 @@
                         </td>
                     </tr>
                     @endforelse
-                </body>
+                </tbody>
             </table>
         </div>
 

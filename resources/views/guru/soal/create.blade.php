@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <form action="{{ route('guru.soal.store') }}" method="POST" class="px-4 sm:px-8">
+        <form action="{{ route('guru.soal.store') }}" method="POST" enctype="multipart/form-data" class="px-4 sm:px-8">
             @csrf
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14">
                 
@@ -52,11 +52,28 @@
                                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                             </div>
                             <div>
-                                <h3 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight italic">Pertanyaan Utama</h3>
+                                <h3 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight italic">Konten Soal</h3>
                                 <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1.5 flex items-center gap-2">
-                                    <span class="w-3 h-0.5 bg-blue-600"></span> CORE CONTENT LOGIC
+                                    <span class="w-3 h-0.5 bg-blue-600"></span> IMAGE & TEXT ASSETS
                                 </p>
                             </div>
+                        </div>
+
+                        <!-- Image Upload Area -->
+                        <div class="mb-10">
+                            <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-4 ml-2">Lampiran Gambar (Opsional)</label>
+                            <div class="relative group/img">
+                                <input type="file" name="gambar" id="gambar" class="hidden" accept="image/*" onchange="previewImage(event)">
+                                <label for="gambar" class="flex flex-col items-center justify-center w-full h-64 bg-slate-50 border-4 border-dashed border-slate-200 rounded-[30px] cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all overflow-hidden group">
+                                    <div id="image-placeholder" class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg class="w-12 h-12 text-slate-300 mb-4 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <p class="text-sm text-slate-400 font-bold uppercase tracking-widest">Klik untuk unggah gambar</p>
+                                        <p class="text-[10px] text-slate-300 font-medium mt-2">PNG, JPG, JPEG (Maks. 2MB)</p>
+                                    </div>
+                                    <img id="image-preview" class="hidden w-full h-full object-contain p-4 shadow-inner">
+                                </label>
+                            </div>
+                            @error('gambar') <p class="mt-4 ml-2 text-rose-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2"><span class="w-2 h-2 bg-rose-500 rounded-full"></span> {{ $message }}</p> @enderror
                         </div>
 
                         <div class="relative">
@@ -158,4 +175,20 @@
             </div>
         </form>
     </div>
+
+    @push('scripts')
+    <script>
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const preview = document.getElementById('image-preview');
+                const placeholder = document.getElementById('image-placeholder');
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+    @endpush
 </x-guru-layout>

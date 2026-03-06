@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('guru.soal.update', $soal) }}" method="POST" class="space-y-8">
+            <form action="{{ route('guru.soal.update', $soal) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
                 @csrf
                 @method('PUT')
                 
@@ -43,6 +43,30 @@
                                 </svg>
                             </div>
                             <h2 class="text-xl font-bold text-slate-800">Konten Pertanyaan</h2>
+                        </div>
+
+                        <!-- Image Upload Area -->
+                        <div class="mb-8 space-y-3">
+                            <label class="block text-sm font-bold text-slate-700 ml-1 uppercase tracking-widest">Lampiran Gambar (Opsional)</label>
+                            <div class="relative group">
+                                <input type="file" name="gambar" id="gambar" class="hidden" accept="image/*" onchange="previewImage(event)">
+                                <label for="gambar" class="flex flex-col items-center justify-center w-full min-h-[14rem] bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all overflow-hidden">
+                                    @if($soal->gambar)
+                                        <div id="image-placeholder" class="hidden flex flex-col items-center justify-center py-6">
+                                            <svg class="w-10 h-10 text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Klik untuk ganti gambar</p>
+                                        </div>
+                                        <img id="image-preview" src="{{ asset('storage/' . $soal->gambar) }}" class="w-full h-full object-contain p-4 shadow-inner">
+                                    @else
+                                        <div id="image-placeholder" class="flex flex-col items-center justify-center py-6">
+                                            <svg class="w-10 h-10 text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Klik untuk unggah gambar</p>
+                                        </div>
+                                        <img id="image-preview" class="hidden w-full h-full object-contain p-4 shadow-inner">
+                                    @endif
+                                </label>
+                            </div>
+                            @error('gambar') <p class="mt-1 text-xs text-red-500 font-bold italic">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="space-y-3">
@@ -177,4 +201,20 @@
             </form>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const preview = document.getElementById('image-preview');
+                const placeholder = document.getElementById('image-placeholder');
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+    @endpush
 </x-guru-layout>

@@ -32,6 +32,7 @@ class SoalController extends Controller
     {
         $request->validate([
             'pertanyaan' => ['required', 'string'],
+            'gambar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'opsi_a' => ['required', 'string'],
             'opsi_b' => ['required', 'string'],
             'opsi_c' => ['required', 'string'],
@@ -40,16 +41,14 @@ class SoalController extends Controller
             'jawaban_benar' => ['required', 'in:A,B,C,D,E'],
         ]);
 
-        Soal::create([
-            'pertanyaan' => $request->pertanyaan,
-            'opsi_a' => $request->opsi_a,
-            'opsi_b' => $request->opsi_b,
-            'opsi_c' => $request->opsi_c,
-            'opsi_d' => $request->opsi_d,
-            'opsi_e' => $request->opsi_e,
-            'jawaban_benar' => $request->jawaban_benar,
-            'user_id' => Auth::id(),
-        ]);
+        $data = $request->all();
+        $data['user_id'] = Auth::id();
+
+        if ($request->hasFile('gambar')) {
+            $data['gambar'] = $request->file('gambar')->store('soal', 'public');
+        }
+
+        Soal::create($data);
 
         return redirect()->route('guru.soal.index')->with('success', 'Soal berhasil ditambahkan.');
     }
@@ -71,6 +70,7 @@ class SoalController extends Controller
 
         $request->validate([
             'pertanyaan' => ['required', 'string'],
+            'gambar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'opsi_a' => ['required', 'string'],
             'opsi_b' => ['required', 'string'],
             'opsi_c' => ['required', 'string'],
@@ -79,7 +79,16 @@ class SoalController extends Controller
             'jawaban_benar' => ['required', 'in:A,B,C,D,E'],
         ]);
 
-        $soal->update($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('gambar')) {
+            if ($soal->gambar) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($soal->gambar);
+            }
+            $data['gambar'] = $request->file('gambar')->store('soal', 'public');
+        }
+
+        $soal->update($data);
 
         return redirect()->route('guru.soal.index')->with('success', 'Soal berhasil diperbarui.');
     }
@@ -88,6 +97,9 @@ class SoalController extends Controller
     {
         if ($soal->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
+        }
+        if ($soal->gambar) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($soal->gambar);
         }
         $soal->delete();
         return redirect()->route('guru.soal.index')->with('success', 'Soal berhasil dihapus.');

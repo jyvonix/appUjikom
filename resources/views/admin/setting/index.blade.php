@@ -62,6 +62,19 @@
                     @enderror
                 </div>
 
+                <div>
+                    <label for="exam_duration" class="block text-sm font-extrabold text-slate-700 uppercase tracking-wider mb-3 ml-1">Durasi Waktu Ujian</label>
+                    <div class="relative group">
+                        <input type="number" name="exam_duration" id="exam_duration" value="{{ $settings['exam_duration'] }}" 
+                            class="block w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-slate-800 font-bold focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all group-hover:bg-white"
+                            placeholder="Contoh: 60">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-6 pointer-events-none text-slate-400 font-black">MENIT</div>
+                    </div>
+                    @error('exam_duration')
+                        <p class="mt-2 text-sm text-red-600 font-bold ml-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <div class="pt-4">
                     <button type="submit" class="w-full py-5 bg-slate-900 hover:bg-blue-600 text-white rounded-3xl font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-100 transition-all transform hover:-translate-y-1 active:scale-95">
                         Simpan Perubahan
@@ -86,6 +99,12 @@
                                 <span class="font-black text-sm">2</span>
                             </div>
                             <p class="font-bold text-blue-50 leading-relaxed">Maksimal Mengulangi menentukan berapa kali siswa diizinkan mencoba kembali ujian yang sama.</p>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="font-black text-sm">3</span>
+                            </div>
+                            <p class="font-bold text-blue-50 leading-relaxed">Durasi Waktu Ujian akan membatasi waktu pengerjaan siswa dengan sistem penyerahan otomatis.</p>
                         </li>
                     </ul>
                 </div>

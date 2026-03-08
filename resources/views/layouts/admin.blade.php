@@ -126,8 +126,8 @@
 
     <div class="flex">
         <aside class="sidebar-container flex flex-col">
-            <div class="p-8 text-center">
-                <div class="flex flex-col items-center gap-4 mb-12">
+            <div class="sidebar-content">
+                <div class="flex flex-col items-center gap-4 mb-12 text-center">
                     <div class="w-20 h-20 rounded-2xl bg-white p-2 shadow-xl shadow-blue-100 flex items-center justify-center">
                         <img src="{{ asset('storage/image/images.png') }}" alt="Logo SMK" class="w-full h-full object-contain">
                     </div>

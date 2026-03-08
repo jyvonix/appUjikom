@@ -15,12 +15,17 @@ class NilaiController extends Controller
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->whereHas('user', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%");
             });
         }
 
         $nilais = $query->latest()->paginate(10)->withQueryString();
         $kkm = \App\Models\Setting::get('kkm', 75);
+
+        if ($request->ajax()) {
+            return view('admin.nilai.table', compact('nilais', 'kkm'))->render();
+        }
 
         return view('admin.nilai.index', compact('nilais', 'kkm'));
     }

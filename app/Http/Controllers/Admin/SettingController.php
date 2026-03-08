@@ -14,6 +14,7 @@ class SettingController extends Controller
             'kkm' => Setting::get('kkm', 75),
             'max_retakes' => Setting::get('max_retakes', 1),
             'point_per_question' => Setting::get('point_per_question', 10),
+            'exam_duration' => Setting::get('exam_duration', 60), // default 60 menit
         ];
 
         return view('admin.setting.index', compact('settings'));
@@ -25,11 +26,13 @@ class SettingController extends Controller
             'kkm' => ['required', 'numeric', 'min:0', 'max:100'],
             'max_retakes' => ['required', 'numeric', 'min:1'],
             'point_per_question' => ['required', 'numeric', 'min:1'],
+            'exam_duration' => ['required', 'numeric', 'min:1'],
         ]);
 
         Setting::set('kkm', $request->kkm);
         Setting::set('max_retakes', $request->max_retakes);
         Setting::set('point_per_question', $request->point_per_question);
+        Setting::set('exam_duration', $request->exam_duration);
 
         return redirect()->back()->with('success', 'Pengaturan berhasil diperbarui.');
     }

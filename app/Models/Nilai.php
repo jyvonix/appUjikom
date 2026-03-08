@@ -11,6 +11,11 @@ class Nilai extends Model
         'user_id',
         'jumlah_benar',
         'skor',
+        'list_jawaban',
+    ];
+
+    protected $casts = [
+        'list_jawaban' => 'array',
     ];
 
     public function user(): BelongsTo

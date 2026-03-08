@@ -91,6 +91,13 @@ class SoalController extends Controller
             \Illuminate\Support\Facades\Storage::disk('public')->delete($soal->gambar);
         }
         $soal->delete();
+
         return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil dihapus.');
+    }
+
+    public function kunciJawaban()
+    {
+        $soals = Soal::all();
+        return view('admin.soal.kunci_jawaban', compact('soals'));
     }
 }

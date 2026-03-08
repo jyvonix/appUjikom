@@ -104,4 +104,10 @@ class SoalController extends Controller
         $soal->delete();
         return redirect()->route('guru.soal.index')->with('success', 'Soal berhasil dihapus.');
     }
+
+    public function kunciJawaban()
+    {
+        $soals = Soal::where('user_id', Auth::id())->get();
+        return view('guru.soal.kunci_jawaban', compact('soals'));
+    }
 }

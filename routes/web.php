@@ -69,6 +69,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'update' => 'admin.soal.update',
         'destroy' => 'admin.soal.destroy',
     ]);
+    Route::get('/admin/kunci-jawaban', [SoalController::class, 'kunciJawaban'])->name('admin.soal.kunci');
 
     Route::get('/admin/nilai', [NilaiController::class, 'index'])->name('admin.nilai.index');
     Route::delete('/admin/nilai/{nilai}', [NilaiController::class, 'destroy'])->name('admin.nilai.destroy');
@@ -98,6 +99,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         'update' => 'guru.soal.update',
         'destroy' => 'guru.soal.destroy',
     ]);
+    Route::get('/guru/kunci-jawaban', [GuruSoalController::class, 'kunciJawaban'])->name('guru.soal.kunci');
 
     Route::get('/guru/nilai', [GuruNilaiController::class, 'index'])->name('guru.nilai.index');
 });
@@ -110,6 +112,7 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/ujian', [StudentSiswaController::class, 'kerjakanUjian'])->name('siswa.soal.kerjakan');
     Route::post('/siswa/ujian', [StudentSiswaController::class, 'simpanUjian'])->name('siswa.soal.simpan');
     Route::get('/siswa/nilai', [StudentSiswaController::class, 'indexNilai'])->name('siswa.nilai.index');
+    Route::get('/siswa/nilai/{id}/preview', [StudentSiswaController::class, 'previewNilai'])->name('siswa.nilai.preview');
 });
 
 Route::middleware('auth')->group(function () {

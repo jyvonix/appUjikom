@@ -21,6 +21,17 @@
             </div>
             
             <div class="flex items-center gap-4">
+                {{-- Countdown Timer --}}
+                <div class="hidden md:flex items-center gap-3 bg-rose-50 border border-rose-100 px-4 py-2 rounded-2xl mr-2 shadow-sm">
+                    <div class="w-8 h-8 rounded-xl bg-rose-500 flex items-center justify-center text-white animate-pulse">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[8px] font-black text-rose-400 uppercase tracking-widest leading-none mb-1">Sisa Waktu</span>
+                        <span id="timer-display" class="text-sm font-black text-rose-600 leading-none tabular-nums tracking-tight">00:00:00</span>
+                    </div>
+                </div>
+
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100" id="question-counter">Soal 1 / {{ $soals->count() }}</span>
                 <button type="button" onclick="toggleNav()" class="w-10 h-10 flex items-center justify-center bg-slate-900 text-white rounded-xl hover:bg-indigo-600 transition-all shadow-xl active:scale-90 transform">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7" /></svg>
@@ -109,7 +120,7 @@
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
                                 </button>
                             @else
-                                <button type="submit" onclick="return confirm('Selesaikan ujian sekarang?')" class="h-16 flex-1 md:flex-none md:px-16 bg-emerald-600 text-white rounded-full font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all flex items-center justify-center gap-3 active:scale-95 transform">
+                                <button type="button" onclick="confirmFinish()" class="h-16 flex-1 md:flex-none md:px-16 bg-emerald-600 text-white rounded-full font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all flex items-center justify-center gap-3 active:scale-95 transform">
                                     Selesai
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
                                 </button>
@@ -173,9 +184,124 @@
     </div>
 
     @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let currentQuestionIndex = 0;
         const totalSoals = {{ $soals->count() }};
+        
+        // Timer Logic
+        let durationMinutes = {{ $duration }};
+        let totalSeconds = durationMinutes * 60;
+        const timerDisplay = document.getElementById('timer-display');
+        const examForm = document.getElementById('exam-form');
+
+        function startTimer() {
+            const timer = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(timer);
+                    timeIsUp();
+                    return;
+                }
+
+                totalSeconds--;
+                updateTimerDisplay();
+
+                // Alert when 1 minute left
+                if (totalSeconds === 60) {
+                    Swal.fire({
+                        title: 'Waktu Hampir Habis!',
+                        text: 'Sisa waktu Anda tinggal 1 menit lagi.',
+                        icon: 'warning',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            const display = [
+                hours.toString().padStart(2, '0'),
+                minutes.toString().padStart(2, '0'),
+                seconds.toString().padStart(2, '0')
+            ].join(':');
+
+            timerDisplay.innerText = display;
+
+            // Change color to red if less than 5 minutes
+            if (totalSeconds < 300) {
+                timerDisplay.parentElement.parentElement.classList.remove('bg-rose-50', 'border-rose-100');
+                timerDisplay.parentElement.parentElement.classList.add('bg-rose-600', 'text-white', 'border-rose-700');
+                timerDisplay.classList.remove('text-rose-600');
+                timerDisplay.classList.add('text-white');
+                timerDisplay.previousElementSibling.classList.remove('text-rose-400');
+                timerDisplay.previousElementSibling.classList.add('text-white/80');
+            }
+        }
+
+        function timeIsUp() {
+            Swal.fire({
+                title: 'Waktu Habis!',
+                text: 'Jawaban Anda akan dikirimkan secara otomatis.',
+                icon: 'info',
+                showConfirmButton: false,
+                timer: 2000,
+                didClose: () => {
+                    // Remove required attributes to prevent validation issues on auto-submit
+                    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                        radio.removeAttribute('required');
+                    });
+                    examForm.submit();
+                }
+            });
+        }
+
+        function confirmFinish() {
+            const totalQuestions = totalSoals;
+            const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+            const unanswered = totalQuestions - answeredQuestions;
+
+            if (unanswered > 0) {
+                Swal.fire({
+                    title: 'Belum Selesai!',
+                    html: `Masih ada <b class="text-rose-600">${unanswered} soal</b> yang belum Anda jawab. Silakan lengkapi semua jawaban sebelum mengakhiri ujian.`,
+                    icon: 'warning',
+                    confirmButtonText: 'LENGKAPI SEKARANG',
+                    confirmButtonColor: '#4f46e5',
+                    customClass: {
+                        popup: 'rounded-[2.5rem]',
+                        confirmButton: 'px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest'
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Selesaikan Ujian?',
+                    text: "Apakah Anda yakin ingin mengakhiri ujian sekarang? Jawaban tidak dapat diubah kembali setelah dikirim.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'YA, SELESAIKAN',
+                    cancelButtonText: 'TIDAK, KEMBALI',
+                    confirmButtonColor: '#10b981',
+                    cancelButtonColor: '#64748b',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-[2.5rem]',
+                        confirmButton: 'px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest mr-2',
+                        cancelButton: 'px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        examForm.submit();
+                    }
+                });
+            }
+        }
 
         function showQuestion(index) {
             document.querySelectorAll('.question-wrapper').forEach(wrapper => {
@@ -227,6 +353,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             showQuestion(0);
+            startTimer();
+            updateTimerDisplay();
         });
     </script>
     @endpush

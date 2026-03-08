@@ -36,6 +36,7 @@ class SiswaController extends Controller
         $soals = Soal::all();
         $total_ujian = Nilai::where('user_id', Auth::id())->count();
         $max_retakes = \App\Models\Setting::get('max_retakes', 1);
+        $duration = \App\Models\Setting::get('exam_duration', 60);
 
         if ($total_ujian >= $max_retakes) {
             return redirect()->route('siswa.soal.index')->with('error', 'Anda telah mencapai batas maksimal pengulangan ujian.');
@@ -45,7 +46,7 @@ class SiswaController extends Controller
             return redirect()->route('siswa.soal.index')->with('error', 'Belum ada soal yang tersedia.');
         }
 
-        return view('siswa.soal.kerjakan', compact('soals'));
+        return view('siswa.soal.kerjakan', compact('soals', 'duration'));
     }
 
     public function simpanUjian(Request $request)
@@ -53,10 +54,12 @@ class SiswaController extends Controller
         $soals = Soal::all();
         $jumlah_benar = 0;
         $point_per_question = \App\Models\Setting::get('point_per_question', 10);
+        $list_jawaban = [];
 
         foreach ($soals as $soal) {
             $jawaban_siswa = $request->input('jawaban_' . $soal->id);
-            // Case-insensitive comparison or ensure both are uppercase
+            $list_jawaban[$soal->id] = $jawaban_siswa;
+            
             if (strtoupper($jawaban_siswa) == strtoupper($soal->jawaban_benar)) {
                 $jumlah_benar++;
             }
@@ -68,6 +71,7 @@ class SiswaController extends Controller
             'user_id' => Auth::id(),
             'jumlah_benar' => $jumlah_benar,
             'skor' => round($skor, 2),
+            'list_jawaban' => $list_jawaban,
         ]);
 
         return redirect()->route('siswa.nilai.index')->with('success', 'Ujian telah selesai! Skor Anda: ' . round($skor, 2));
@@ -75,7 +79,29 @@ class SiswaController extends Controller
 
     public function indexNilai()
     {
-        $nilais = Nilai::where('user_id', Auth::id())->latest()->get();
-        return view('siswa.nilai.index', compact('nilais'));
+        $user = Auth::user();
+        $nilais = Nilai::where('user_id', $user->id)->latest()->get();
+        $kkm = \App\Models\Setting::get('kkm', 75);
+        $total_ujian = Nilai::where('user_id', $user->id)->count();
+        $max_retakes = \App\Models\Setting::get('max_retakes', 1);
+
+        return view('siswa.nilai.index', compact('nilais', 'kkm', 'total_ujian', 'max_retakes'));
+    }
+
+    public function previewNilai($id)
+    {
+        $user = Auth::user();
+        $total_ujian = Nilai::where('user_id', $user->id)->count();
+        $max_retakes = \App\Models\Setting::get('max_retakes', 1);
+
+        // Hanya boleh preview jika sudah mencapai batas maksimal percobaan
+        if ($total_ujian < $max_retakes) {
+            return redirect()->route('siswa.nilai.index')->with('error', 'Fitur review hanya tersedia setelah Anda menyelesaikan seluruh kesempatan ujian.');
+        }
+
+        $nilai = Nilai::where('id', $id)->where('user_id', $user->id)->firstOrFail();
+        $soals = Soal::all();
+
+        return view('siswa.nilai.preview', compact('nilai', 'soals'));
     }
 }

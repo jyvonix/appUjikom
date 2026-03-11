@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\SoalController;
 use App\Http\Controllers\Admin\NilaiController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/', function () {
     return view('auth.login');
 });

@@ -52,9 +52,9 @@
                 <div>
                     <label for="point_per_question" class="block text-sm font-extrabold text-slate-700 uppercase tracking-wider mb-3 ml-1">Poin Per 1 Soal Benar</label>
                     <div class="relative group">
-                        <input type="number" name="point_per_question" id="point_per_question" value="{{ $settings['point_per_question'] }}" 
+                        <input type="number" step="any" name="point_per_question" id="point_per_question" value="{{ $settings['point_per_question'] }}" 
                             class="block w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-slate-800 font-bold focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all group-hover:bg-white"
-                            placeholder="Contoh: 10">
+                            placeholder="Contoh: 3.4">
                         <div class="absolute inset-y-0 right-0 flex items-center pr-6 pointer-events-none text-slate-400 font-black">POIN</div>
                     </div>
                     @error('point_per_question')

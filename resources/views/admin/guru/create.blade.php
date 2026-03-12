@@ -1,100 +1,105 @@
 <x-admin-layout>
-    <div class="mb-12">
-        <a href="{{ route('admin.guru.index') }}" class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-all mb-6 group">
-            <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
-            Kembali ke Daftar
-        </a>
-        <h1 class="text-5xl font-black text-slate-900 tracking-tight leading-tight">Registrasi <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-blue-500">Guru Baru</span></h1>
-    </div>
+    <div class="relative min-h-screen pb-20 overflow-hidden">
+        {{-- Background Accents --}}
+        <div class="fixed top-0 left-0 -z-10 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[120px]"></div>
+        <div class="absolute inset-0 -z-10 opacity-[0.02]" style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');"></div>
 
-    <div class="grid lg:grid-cols-12 gap-12">
-        <div class="lg:col-span-7">
-            <div class="bg-white rounded-[40px] p-10 lg:p-14 shadow-2xl shadow-blue-100/50 border border-slate-50 relative overflow-hidden">
-                <form action="{{ route('admin.guru.store') }}" method="POST" class="space-y-10 relative z-10">
-                    @csrf
-                    <div class="space-y-8">
-                        <div class="group">
-                            <label for="name" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Nama Lengkap & Gelar</label>
-                            <div class="relative">
-                                <input type="text" name="name" id="name" value="{{ old('name') }}" placeholder="Contoh: Budi Santoso, S.Pd" required
-                                    class="w-full px-8 py-6 bg-slate-50 border-none rounded-[24px] focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-slate-700 placeholder-slate-300">
-                                <div class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-200 group-focus-within:text-blue-500 transition-colors">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="group">
-                            <label for="email" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Email Institusi</label>
-                            <div class="relative">
-                                <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="guru@sekolah.id" required
-                                    class="w-full px-8 py-6 bg-slate-50 border-none rounded-[24px] focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-slate-700 placeholder-slate-300">
-                            </div>
-                        </div>
-
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <div class="group">
-                                <label for="password" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Password</label>
-                                <div class="relative">
-                                    <input type="password" name="password" id="password" placeholder="••••••••" required
-                                        class="w-full px-8 py-6 bg-slate-50 border-none rounded-[24px] focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-slate-700 placeholder-slate-300">
-                                    <button type="button" onclick="togglePassword('password', this)" class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 hover:text-blue-600 transition-colors">
-                                        <svg class="w-6 h-6 eye-open" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                        <svg class="w-6 h-6 eye-closed hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 1.274 4.057 5.064 7 9.542 7 .847 2.702 2.532 5.02 4.675 6.675M9.88 9.88l4.24 4.24M3 3l18 18"></path></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="group">
-                                <label for="password_confirmation" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Konfirmasi</label>
-                                <div class="relative">
-                                    <input type="password" name="password_confirmation" id="password_confirmation" placeholder="••••••••" required
-                                        class="w-full px-8 py-6 bg-slate-50 border-none rounded-[24px] focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-slate-700 placeholder-slate-300">
-                                    <button type="button" onclick="togglePassword('password_confirmation', this)" class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 hover:text-blue-600 transition-colors">
-                                        <svg class="w-6 h-6 eye-open" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                        <svg class="w-6 h-6 eye-closed hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 1.274 4.057 5.064 7 9.542 7 .847 2.702 2.532 5.02 4.675 6.675M9.88 9.88l4.24 4.24M3 3l18 18"></path></svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+        <div class="max-w-5xl mx-auto px-6 pt-10">
+            {{-- Back Button & Header --}}
+            <div class="mb-12 flex flex-col md:flex-row md:items-center gap-8">
+                <a href="{{ route('admin.guru.index') }}" 
+                    class="group w-14 h-14 bg-white rounded-[1.5rem] flex items-center justify-center shadow-sm border border-slate-200 hover:bg-blue-600 hover:border-blue-600 transition-all duration-500">
+                    <svg class="w-6 h-6 text-blue-600 group-hover:text-white transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </a>
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">
+                        <span class="text-blue-600">Faculty Enrollment</span>
+                        <span class="text-slate-200">/</span>
+                        <span>Instructor Registration</span>
                     </div>
-
-                    <div class="pt-6">
-                        <button type="submit" class="w-full py-6 bg-blue-600 text-white rounded-[24px] font-black text-lg shadow-2xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all duration-500">
-                            Simpan Data Guru
-                        </button>
-                    </div>
-                </form>
+                    <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Tambah <span class="text-blue-600">Guru Baru</span></h1>
+                </div>
             </div>
-        </div>
 
-        <div class="lg:col-span-5 space-y-8">
-            <div class="bg-blue-600 rounded-[40px] p-10 text-white shadow-2xl shadow-blue-200">
-                <h3 class="text-2xl font-black mb-6">Panduan Registrasi</h3>
-                <p class="text-blue-100 text-sm font-medium leading-relaxed mb-6">Pastikan data yang dimasukkan valid dan sesuai dengan dokumen resmi kepegawaian sekolah.</p>
-                <div class="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                {{-- Left: The Main Form --}}
+                <div class="lg:col-span-7">
+                    <form action="{{ route('admin.guru.store') }}" method="POST" class="space-y-6">
+                        @csrf
+                        
+                        <div class="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-8 relative">
+                            {{-- Decorative Pattern --}}
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50/30 rounded-bl-[4rem] -mr-4 -mt-4 -z-10"></div>
+
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Nama Lengkap Pendidik</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-slate-300 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                    </div>
+                                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Contoh: Dra. Siti Aminah" required
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 pl-12 pr-4 text-slate-700 placeholder:text-slate-300 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
+                                </div>
+                                @error('name') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Alamat Email Guru</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-slate-300 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                    </div>
+                                    <input type="email" name="email" value="{{ old('email') }}" placeholder="guru@smarexam.com" required
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 pl-12 pr-4 text-slate-700 placeholder:text-slate-300 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
+                                </div>
+                                @error('email') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Password</label>
+                                    <input type="password" name="password" placeholder="••••••••" required
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Konfirmasi</label>
+                                    <input type="password" name="password_confirmation" placeholder="••••••••" required
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-bold text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-900/20 hover:bg-blue-600 transition-all active:scale-95 flex items-center justify-center gap-3 transform">
+                                <span>Simpan Data Pendidik</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {{-- Right: Visual Info --}}
+                <div class="lg:col-span-5 space-y-8">
+                    <div class="bg-blue-600 rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-blue-200">
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                        <div class="relative z-10 space-y-8">
+                            <div class="w-16 h-16 bg-white/20 rounded-[1.5rem] flex items-center justify-center border border-white/30 backdrop-blur-sm">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            </div>
+                            <div class="space-y-4">
+                                <h3 class="text-2xl font-bold tracking-tight">Otoritas Pengajar</h3>
+                                <p class="text-blue-100 text-sm font-medium leading-relaxed">Guru memiliki wewenang untuk mengelola bank soal, memantau hasil ujian siswa, dan melakukan analisis performa kelas secara real-time.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-blue-100 transition-colors"></div>
+                        <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Informasi Akun</h4>
+                        <p class="text-xs font-medium text-slate-500 leading-relaxed italic">"Pastikan alamat email yang didaftarkan benar karena akan digunakan sebagai identitas utama untuk manajemen konten akademik."</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    @push('scripts')
-    <script>
-        function togglePassword(inputId, btn) {
-            const input = document.getElementById(inputId);
-            const eyeOpen = btn.querySelector('.eye-open');
-            const eyeClosed = btn.querySelector('.eye-closed');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                eyeOpen.classList.add('hidden');
-                eyeClosed.classList.remove('hidden');
-            } else {
-                input.type = 'password';
-                eyeOpen.classList.remove('hidden');
-                eyeClosed.classList.add('hidden');
-            }
-        }
-    </script>
-    @endpush
 </x-admin-layout>

@@ -1,95 +1,97 @@
 <x-siswa-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-indigo-900 leading-tight">
-            Persiapan Ujian 📝
-        </h2>
-    </x-slot>
-
-    <div class="max-w-3xl mx-auto">
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-indigo-50">
-            <div class="bg-indigo-900 p-8 text-white text-center">
-                <div class="inline-block p-4 bg-indigo-800 rounded-full mb-4">
-                    <svg class="w-12 h-12 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-2xl font-bold">Informasi Ujian</h3>
-                <p class="mt-2 text-indigo-200 opacity-90 text-sm tracking-wide uppercase">Tahun Ajaran 2025/2026</p>
+    <div class="max-w-4xl mx-auto">
+        {{-- Refined Minimalist Header --}}
+        <div class="mb-10 space-y-3">
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em] px-3 py-1 bg-blue-50 rounded-md border border-blue-100">Config</span>
+                <div class="h-px flex-1 bg-slate-100"></div>
             </div>
-            
-            <div class="p-8">
-                <div class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                            <div class="p-3 bg-white shadow-sm rounded-xl text-indigo-600">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Jumlah Soal</p>
-                                <p class="text-lg font-black text-gray-800">{{ $soals->count() }} Butir</p>
-                            </div>
-                        </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+                Persiapan <span class="text-blue-600">Sesi Ujian</span>
+            </h2>
+            <p class="text-slate-500 font-medium text-sm md:text-base max-w-xl">
+                Tinjau parameter instrumen di bawah ini sebelum menginisialisasi sesi pengerjaan Anda.
+            </p>
+        </div>
 
-                        <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                            <div class="p-3 bg-white shadow-sm rounded-xl text-emerald-600">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Standar KKM</p>
-                                <p class="text-lg font-black text-gray-800">{{ $kkm }} Poin</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 md:col-span-2">
-                            <div class="p-3 bg-white shadow-sm rounded-xl text-amber-600">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Kesempatan Mengerjakan</p>
-                                <p class="text-lg font-black text-gray-800">{{ $total_ujian }} / {{ $max_retakes }} Kali</p>
-                            </div>
+        {{-- Main Config Card --}}
+        <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden relative">
+            <div class="p-6 md:p-12">
+                {{-- Stats Grid - Fully Responsive --}}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-12">
+                    <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col justify-center transition-all hover:bg-white hover:border-blue-200 group">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 group-hover:text-blue-600 transition-colors">Total Soal</span>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-3xl font-bold text-slate-800">{{ $soals->count() }}</span>
+                            <span class="text-xs font-semibold text-slate-400">Items</span>
                         </div>
                     </div>
 
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-2xl">
-                        <h4 class="text-blue-800 font-bold mb-2 flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                            </svg>
-                            Petunjuk Pengerjaan:
-                        </h4>
-                        <ul class="text-blue-700 text-sm space-y-2 list-disc list-inside opacity-90">
-                            <li>Baca setiap soal dengan teliti sebelum menjawab.</li>
-                            <li>Pilih salah satu jawaban yang menurut Anda paling benar.</li>
-                            <li>Pastikan semua soal sudah terjawab sebelum klik selesai.</li>
-                            <li>Skor akan langsung muncul setelah Anda menyelesaikan ujian.</li>
-                        </ul>
+                    <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col justify-center transition-all hover:bg-white hover:border-blue-200 group">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 group-hover:text-blue-600 transition-colors">Ambang Batas</span>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-3xl font-bold text-slate-800">{{ $kkm }}</span>
+                            <span class="text-xs font-semibold text-slate-400">Pts</span>
+                        </div>
                     </div>
 
+                    <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col justify-center transition-all hover:bg-white hover:border-blue-200 group">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 group-hover:text-blue-600 transition-colors">Kesempatan</span>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-3xl font-bold text-slate-800">{{ $max_retakes - $total_ujian }}</span>
+                            <span class="text-xs font-semibold text-slate-400">Left</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Protocol Section --}}
+                <div class="space-y-8">
+                    <div class="flex items-center gap-4">
+                        <span class="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Aturan Pengerjaan</span>
+                        <div class="h-px flex-1 bg-slate-100"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        @php
+                            $protocols = [
+                                'Analisis pertanyaan secara mendalam sebelum melakukan input jawaban.',
+                                'Pilihlah opsi yang memiliki tingkat akurasi paling tinggi.',
+                                'Pastikan kestabilan jaringan internet tetap terjaga secara optimal.',
+                                'Skor akan diakumulasi secara otomatis setelah sesi berakhir.'
+                            ];
+                        @endphp
+                        @foreach($protocols as $i => $text)
+                            <div class="flex gap-4 p-4 rounded-xl border border-transparent hover:border-slate-50 hover:bg-slate-50/50 transition-all">
+                                <span class="w-6 h-6 rounded-md bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">{{ $i + 1 }}</span>
+                                <p class="text-[13px] font-medium text-slate-500 leading-relaxed">{{ $text }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Action Area --}}
+                <div class="mt-12 pt-10 border-t border-slate-50">
                     @if($soals->isEmpty())
-                        <div class="text-center p-4 bg-yellow-50 text-yellow-700 rounded-xl border border-yellow-200 font-medium">
-                            Maaf, saat ini belum ada soal yang tersedia untuk Anda kerjakan.
+                        <div class="text-center p-6 bg-amber-50 border border-amber-100 rounded-2xl">
+                            <p class="text-[13px] font-bold text-amber-700">Instrumen penilaian belum tersedia.</p>
                         </div>
                     @elseif($sudah_mencapai_batas)
-                        <div class="text-center p-6 bg-red-50 text-red-700 rounded-2xl border border-red-100">
-                            <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0H10m12-3V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2h11l5 5V12z"></path>
-                            </svg>
-                            <p class="font-black uppercase tracking-wider mb-1">Batas Maksimal Tercapai</p>
-                            <p class="text-sm font-bold opacity-80 leading-relaxed">Anda sudah tidak memiliki kesempatan lagi untuk mengulangi ujian ini. Silakan hubungi admin atau guru jika ada kendala.</p>
+                        <div class="flex flex-col items-center text-center space-y-3 p-8 bg-rose-50 border border-rose-100 rounded-[2rem]">
+                            <div class="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center text-rose-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                            </div>
+                            <h4 class="text-lg font-bold text-slate-900">Batas Maksimal Tercapai</h4>
+                            <p class="text-[13px] font-medium text-slate-500 max-w-xs">Anda telah menyelesaikan seluruh kesempatan ujian yang diizinkan sistem.</p>
                         </div>
                     @else
-                        <div class="pt-4">
-                            <a href="{{ route('siswa.soal.kerjakan') }}" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl shadow-xl hover:shadow-indigo-200 transition duration-300 transform hover:-translate-y-1">
-                                Mulai Kerjakan Sekarang 🚀
+                        <div class="flex flex-col items-center gap-6">
+                            <a href="{{ route('siswa.soal.kerjakan') }}" class="w-full sm:w-auto px-16 py-5 bg-blue-600 text-white rounded-2xl font-bold text-[13px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 active:scale-95 transform text-center">
+                                Inisialisasi Sesi Ujian
                             </a>
-                            <p class="text-center mt-4 text-xs text-gray-400">Pastikan koneksi internet Anda stabil.</p>
+                            <div class="flex items-center gap-2 opacity-40">
+                                <svg class="w-3 h-3 text-slate-900" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.9L10 1.55l7.834 3.35a1 1 0 01.666.945V14a5 5 0 01-5 5H6.5a5 5 0 01-5-5V5.845a1 1 0 01.666-.945zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>
+                                <span class="text-[9px] font-bold text-slate-900 uppercase tracking-widest">Secure Assessment Protocol</span>
+                            </div>
                         </div>
                     @endif
                 </div>

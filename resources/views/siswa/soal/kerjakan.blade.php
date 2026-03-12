@@ -1,182 +1,196 @@
 <x-siswa-layout :hideNav="true">
-    {{-- Force Hide Topbar --}}
+    {{-- Super Pro Refined Styles --}}
     <style>
-        nav.header-blur { display: none !important; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .perfect-circle { aspect-ratio: 1/1; }
+        body { 
+            background-color: #fcfcfd !important; 
+            -webkit-tap-highlight-color: transparent;
+            letter-spacing: -0.01em;
+        }
+        
+        .exam-shell { display: flex; flex-direction: column; min-height: 100vh; }
+
+        .workspace-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(241, 245, 249, 1);
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        .option-item {
+            transition: all 0.2s ease;
+            border: 1px solid #f1f5f9;
+            border-radius: 1rem;
+        }
+
+        .option-selected { border-color: #2563eb !important; background-color: #eff6ff !important; }
+
+        .option-badge {
+            width: 2.25rem; height: 2.25rem; border-radius: 0.75rem;
+            background-color: #f8fafc; color: #64748b;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem; border: 1px solid #f1f5f9;
+        }
+
+        .option-selected .option-badge { background-color: #2563eb !important; color: #ffffff !important; }
+
+        .progress-track { height: 4px; background: #f1f5f9; border-radius: 100px; overflow: hidden; }
+        .progress-thumb { background: #2563eb; transition: width 0.6s ease; }
+
+        /* Navigator Specific Styles */
+        .nav-dot-pro {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1.5px solid #f1f5f9;
+            background: #ffffff;
+            position: relative;
+        }
+        .nav-dot-pro:hover { border-color: #2563eb; color: #2563eb; transform: translateY(-2px); }
+        .nav-dot-current { border-color: #2563eb !important; color: #2563eb !important; background: #eff6ff !important; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .nav-dot-answered { background: #2563eb !important; border-color: #2563eb !important; color: #ffffff !important; }
+        
+        .status-indicator { width: 8px; height: 8px; border-radius: 2px; }
+
+        @keyframes slideInUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .animate-drawer { animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     </style>
 
-    {{-- Header Ujian - Ultra Minimalist --}}
-    <div class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 h-16 flex items-center shadow-sm">
-        <div class="max-w-5xl mx-auto w-full px-6 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-100">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+    <div class="exam-shell">
+        <header class="fixed top-0 left-0 right-0 z-50 workspace-header">
+            <div class="max-w-5xl mx-auto px-6 h-14 md:h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <span class="text-sm font-bold text-slate-900 tracking-tight uppercase">SmartExam</span>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-sm font-black text-slate-900 leading-none uppercase tracking-tight">Smart Exam</span>
-                    <span class="text-[9px] font-bold text-indigo-500 uppercase tracking-widest mt-1">Ujian Aktif</span>
+
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                        <span id="timer-display" class="font-bold text-slate-700 tabular-nums text-xs md:text-sm">00:00:00</span>
+                    </div>
+                    <button type="button" onclick="toggleNav()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 group">
+                        <svg class="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+                    </button>
                 </div>
             </div>
-            
-            <div class="flex items-center gap-4">
-                {{-- Countdown Timer --}}
-                <div class="hidden md:flex items-center gap-3 bg-rose-50 border border-rose-100 px-4 py-2 rounded-2xl mr-2 shadow-sm">
-                    <div class="w-8 h-8 rounded-xl bg-rose-500 flex items-center justify-center text-white animate-pulse">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-[8px] font-black text-rose-400 uppercase tracking-widest leading-none mb-1">Sisa Waktu</span>
-                        <span id="timer-display" class="text-sm font-black text-rose-600 leading-none tabular-nums tracking-tight">00:00:00</span>
-                    </div>
-                </div>
+        </header>
 
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100" id="question-counter">Soal 1 / {{ $soals->count() }}</span>
-                <button type="button" onclick="toggleNav()" class="w-10 h-10 flex items-center justify-center bg-slate-900 text-white rounded-xl hover:bg-indigo-600 transition-all shadow-xl active:scale-90 transform">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7" /></svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    {{-- Progress Line --}}
-    <div class="fixed top-16 left-0 right-0 h-[2px] bg-slate-50 z-50">
-        <div id="progress-bar" class="h-full bg-indigo-600 transition-all duration-700" style="width: 0%"></div>
-    </div>
-
-    <div class="max-w-3xl mx-auto pt-28 pb-32 px-4 md:px-0">
-        <form action="{{ route('siswa.soal.simpan') }}" method="POST" id="exam-form">
-            @csrf
-            
-            <div class="relative min-h-[450px]">
+        <main class="flex-1 max-w-3xl mx-auto w-full pt-20 md:pt-28 pb-20 px-6">
+            <form action="{{ route('siswa.soal.simpan') }}" method="POST" id="exam-form">
+                @csrf
                 @foreach($soals as $index => $soal)
-                    <div id="question-wrapper-{{ $index }}" class="question-wrapper {{ $index === 0 ? '' : 'hidden' }} animate-in fade-in duration-300">
-                        
-                        {{-- Question Header --}}
-                        <div class="mb-8 flex items-center gap-4">
-                            <span class="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em]">Pertanyaan</span>
-                            <div class="h-px flex-1 bg-slate-100"></div>
-                            <span class="text-2xl font-black text-slate-200">#{{ $index + 1 }}</span>
-                        </div>
-
-                        {{-- Question Content --}}
-                        <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.05)] overflow-hidden mb-10">
-                            <div class="p-8 md:p-14">
-                                <div class="space-y-10">
-                                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 leading-[1.6] tracking-tight">
-                                        {{ $soal->pertanyaan }}
-                                    </h3>
-
-                                    @if($soal->gambar)
-                                        <div class="rounded-3xl overflow-hidden border-2 border-slate-50 shadow-inner bg-slate-50 flex justify-center p-2">
-                                            <img src="{{ asset('storage/' . $soal->gambar) }}" class="max-w-full h-auto rounded-2xl shadow-sm">
-                                        </div>
-                                    @endif
-
-                                    {{-- Options - HIGH FEEDBACK --}}
-                                    <div class="grid grid-cols-1 gap-4 pt-4">
-                                        @foreach(['A', 'B', 'C', 'D', 'E'] as $opsi)
-                                            @php $opsiKey = 'opsi_' . strtolower($opsi); @endphp
-                                            @if($soal->$opsiKey)
-                                            <label class="group relative flex items-center p-6 border-2 border-slate-100 rounded-3xl cursor-pointer transition-all duration-300 active:scale-[0.98] transform bg-white overflow-hidden">
-                                                <input type="radio" name="jawaban_{{ $soal->id }}" value="{{ $opsi }}" 
-                                                    onchange="markAnswered({{ $index }})" class="hidden peer" required>
-                                                
-                                                {{-- Background fill on check --}}
-                                                <div class="absolute inset-0 bg-indigo-600 opacity-0 peer-checked:opacity-100 transition-all duration-300"></div>
-
-                                                {{-- Perfect Circle Icon --}}
-                                                <div class="relative z-10 w-12 h-12 flex-shrink-0 perfect-circle border-2 border-slate-100 bg-slate-50 rounded-full flex items-center justify-center font-black text-slate-400 transition-all duration-300 peer-checked:border-white/30 peer-checked:bg-white/20 peer-checked:text-white group-hover:border-indigo-200">
-                                                    <span class="peer-checked:hidden">{{ $opsi }}</span>
-                                                    <svg class="hidden peer-checked:block w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
-                                                </div>
-                                                
-                                                <span class="relative z-10 ml-6 text-base md:text-lg font-bold text-slate-600 peer-checked:text-white transition-colors duration-300 flex-1 leading-snug">
-                                                    {{ $soal->$opsiKey }}
-                                                </span>
-                                            </label>
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                </div>
+                    <div id="question-wrapper-{{ $index }}" class="question-wrapper {{ $index === 0 ? '' : 'hidden' }}">
+                        <div class="mb-8">
+                            <div class="flex items-center justify-between text-[9px] font-bold uppercase tracking-widest mb-3">
+                                <span class="text-blue-600">Pertanyaan {{ $index + 1 }} / {{ $soals->count() }}</span>
+                                <span class="text-slate-400" id="global-progress-text">{{ round((($index + 1) / $soals->count()) * 100) }}%</span>
                             </div>
+                            <div class="progress-track"><div class="progress-thumb h-full" style="width: {{ (($index + 1) / $soals->count()) * 100 }}%"></div></div>
                         </div>
 
-                        {{-- Nav Buttons - Pill Style --}}
-                        <div class="flex items-center justify-between gap-4 mt-12">
-                            @if($index > 0)
-                                <button type="button" onclick="showQuestion({{ $index - 1 }})" class="h-16 flex-1 md:flex-none md:px-12 bg-white border-2 border-slate-100 text-slate-500 rounded-full font-black text-xs uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-3">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" /></svg>
-                                    Kembali
-                                </button>
-                            @else
-                                <div class="flex-1 md:w-40"></div>
-                            @endif
-
-                            @if($index < $soals->count() - 1)
-                                <button type="button" onclick="showQuestion({{ $index + 1 }})" class="h-16 flex-1 md:flex-none md:px-16 bg-indigo-600 text-white rounded-full font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-3 active:scale-95 transform">
-                                    Lanjut
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
-                                </button>
-                            @else
-                                <button type="button" onclick="confirmFinish()" class="h-16 flex-1 md:flex-none md:px-16 bg-emerald-600 text-white rounded-full font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all flex items-center justify-center gap-3 active:scale-95 transform">
-                                    Selesai
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-                                </button>
-                            @endif
+                        <div class="question-card p-6 md:p-10 mb-8">
+                            <h2 class="text-lg md:text-xl font-semibold text-slate-800 leading-relaxed mb-8">{{ $soal->pertanyaan }}</h2>
+                            @if($soal->gambar)<div class="mb-8 rounded-xl overflow-hidden border border-slate-100 p-1 bg-slate-50"><img src="{{ asset('storage/' . $soal->gambar) }}" class="w-full h-auto rounded-lg"></div>@endif
+                            <div class="grid grid-cols-1 gap-3">
+                                @foreach(['A', 'B', 'C', 'D', 'E'] as $opsi)
+                                    @php $opsiKey = 'opsi_' . strtolower($opsi); @endphp
+                                    @if($soal->$opsiKey)
+                                    <label class="option-item flex items-center p-4 cursor-pointer group">
+                                        <input type="radio" name="jawaban_{{ $soal->id }}" value="{{ $opsi }}" onchange="handleSelection(this, {{ $index }})" class="hidden peer" required>
+                                        <div class="option-badge group-hover:bg-blue-50 group-hover:text-blue-600">{{ $opsi }}</div>
+                                        <span class="ml-4 text-sm md:text-[15px] font-medium text-slate-600 group-hover:text-slate-900 flex-1">{{ $soal->$opsiKey }}</span>
+                                        <div class="ml-3 opacity-0 scale-50 transition-all peer-checked:opacity-100 peer-checked:scale-100 text-blue-600"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg></div>
+                                    </label>
+                                    @endif
+                                @endforeach
+                            </div>
+                            <div class="mt-12 flex items-center justify-between gap-4 pt-8 border-t border-slate-50">
+                                <button type="button" onclick="navigateQuestion('prev')" class="flex-1 sm:flex-none h-11 px-6 bg-slate-50 text-slate-500 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-100 flex items-center justify-center gap-2">Sebelumnya</button>
+                                @if($index < $soals->count() - 1)
+                                    <button type="button" onclick="navigateQuestion('next')" class="flex-1 sm:flex-none h-11 px-10 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-100">Lanjut</button>
+                                @else
+                                    <button type="button" onclick="confirmFinish()" class="flex-1 sm:flex-none h-11 px-10 bg-emerald-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-100">Selesai</button>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 @endforeach
-            </div>
-        </form>
+            </form>
+        </main>
     </div>
 
-    {{-- MODAL NAVIGASI - RE-DESIGNED FOR SCROLLING & STYLE --}}
+    {{-- The Masterpiece Navigator --}}
     <div id="nav-modal" class="fixed inset-0 z-[100] hidden">
-        {{-- Backdrop --}}
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="toggleNav()"></div>
-        
-        {{-- Modal Content - Center Scrollable --}}
-        <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
-            <div class="relative w-full max-w-sm bg-white rounded-[3rem] shadow-2xl overflow-hidden pointer-events-auto flex flex-col max-h-[90vh] animate-in zoom-in duration-300 border border-white">
-                <div class="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
-                    <div class="flex flex-col">
-                        <h3 class="text-xl font-black text-slate-900 tracking-tight uppercase leading-none mb-1">Navigasi</h3>
-                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Progress Pengerjaan</span>
+        <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-0 sm:p-6 pointer-events-none">
+            <div class="relative w-full max-w-lg bg-white rounded-t-[3rem] sm:rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] overflow-hidden pointer-events-auto flex flex-col max-h-[90vh] sm:max-h-[80vh] border border-slate-100 animate-drawer sm:animate-in sm:zoom-in">
+                
+                {{-- Header Navigator --}}
+                <div class="px-8 py-8 border-b border-slate-50 flex items-center justify-between shrink-0 bg-slate-50/30">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-900 tracking-tight leading-none mb-2">NAVIGASI UJIAN</h3>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-1.5">
+                                <span id="answered-count" class="text-blue-600 font-bold text-sm">0</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Terjawab</span>
+                            </div>
+                            <div class="w-1 h-1 bg-slate-200 rounded-full"></div>
+                            <div class="flex items-center gap-1.5">
+                                <span id="unanswered-count" class="text-slate-400 font-bold text-sm">{{ $soals->count() }}</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kosong</span>
+                            </div>
+                        </div>
                     </div>
-                    <button onclick="toggleNav()" class="w-10 h-10 bg-white text-slate-400 rounded-xl flex items-center justify-center hover:text-rose-600 transition-all shadow-sm border border-slate-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <button onclick="toggleNav()" class="w-12 h-12 bg-white text-slate-400 rounded-2xl flex items-center justify-center hover:text-rose-500 transition-all border border-slate-100 shadow-sm">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
                 
-                {{-- Scrollable Grid Container --}}
+                {{-- Grid Navigator --}}
                 <div class="flex-1 overflow-y-auto p-8 no-scrollbar">
-                    <div class="grid grid-cols-5 gap-3">
+                    <div class="grid grid-cols-5 md:grid-cols-6 gap-3.5">
                         @foreach($soals as $index => $soal)
                             <button type="button" 
-                                id="nav-btn-{{ $index }}"
+                                id="nav-dot-{{ $index }}"
                                 onclick="jumpToQuestion({{ $index }})"
-                                class="nav-dot perfect-circle w-full rounded-2xl border-2 border-slate-100 bg-white flex items-center justify-center font-black text-sm transition-all hover:border-indigo-600 hover:text-indigo-600 hover:scale-105 transform active:scale-90">
-                                {{ $index + 1 }}
+                                class="nav-dot-pro aspect-square rounded-2xl flex flex-col items-center justify-center group">
+                                <span class="text-xs font-extrabold transition-colors">{{ $index + 1 }}</span>
+                                <div class="w-1 h-1 rounded-full bg-blue-600 mt-1 opacity-0 group-[.nav-dot-current]:opacity-100"></div>
                             </button>
                         @endforeach
                     </div>
-                </div>
 
-                <div class="p-8 bg-slate-50 border-t border-slate-100 flex-shrink-0">
-                    <div class="flex items-center justify-center gap-6 mb-6">
+                    {{-- Legend --}}
+                    <div class="mt-10 flex items-center justify-center gap-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
                         <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full bg-indigo-600 shadow-md shadow-indigo-100"></div>
-                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Terjawab</span>
+                            <div class="status-indicator bg-blue-600"></div>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Selesai</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-200"></div>
-                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Kosong</span>
+                            <div class="status-indicator bg-blue-100 border border-blue-600"></div>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Aktif</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="status-indicator bg-white border border-slate-200"></div>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Kosong</span>
                         </div>
                     </div>
-                    <button type="button" onclick="document.getElementById('exam-form').submit()" class="w-full py-5 bg-slate-900 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-slate-200 active:scale-95 transform">
-                        Kirim Semua Jawaban
+                </div>
+
+                {{-- Footer Modal --}}
+                <div class="p-8 bg-white border-t border-slate-50 shrink-0">
+                    <button type="button" onclick="confirmFinish()" class="w-full py-5 bg-slate-900 text-white rounded-3xl font-bold text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-blue-600 active:scale-95 transition-all transform group">
+                        SUBMIT FINAL ASSESSMENT
+                        <svg class="inline-block w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </button>
                 </div>
             </div>
@@ -186,176 +200,73 @@
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        let currentQuestionIndex = 0;
-        const totalSoals = {{ $soals->count() }};
-        
-        // Timer Logic
-        let durationMinutes = {{ $duration }};
-        let totalSeconds = durationMinutes * 60;
-        const timerDisplay = document.getElementById('timer-display');
+        let currentIdx = 0; const totalSoals = {{ $soals->count() }}; let timeLeft = {{ $duration }} * 60;
         const examForm = document.getElementById('exam-form');
 
-        function startTimer() {
-            const timer = setInterval(() => {
-                if (totalSeconds <= 0) {
-                    clearInterval(timer);
-                    timeIsUp();
-                    return;
-                }
-
-                totalSeconds--;
-                updateTimerDisplay();
-
-                // Alert when 1 minute left
-                if (totalSeconds === 60) {
-                    Swal.fire({
-                        title: 'Waktu Hampir Habis!',
-                        text: 'Sisa waktu Anda tinggal 1 menit lagi.',
-                        icon: 'warning',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000
-                    });
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-
-            const display = [
-                hours.toString().padStart(2, '0'),
-                minutes.toString().padStart(2, '0'),
-                seconds.toString().padStart(2, '0')
-            ].join(':');
-
-            timerDisplay.innerText = display;
-
-            // Change color to red if less than 5 minutes
-            if (totalSeconds < 300) {
-                timerDisplay.parentElement.parentElement.classList.remove('bg-rose-50', 'border-rose-100');
-                timerDisplay.parentElement.parentElement.classList.add('bg-rose-600', 'text-white', 'border-rose-700');
-                timerDisplay.classList.remove('text-rose-600');
-                timerDisplay.classList.add('text-white');
-                timerDisplay.previousElementSibling.classList.remove('text-rose-400');
-                timerDisplay.previousElementSibling.classList.add('text-white/80');
-            }
-        }
-
-        function timeIsUp() {
-            Swal.fire({
-                title: 'Waktu Habis!',
-                text: 'Jawaban Anda akan dikirimkan secara otomatis.',
-                icon: 'info',
-                showConfirmButton: false,
-                timer: 2000,
-                didClose: () => {
-                    // Remove required attributes to prevent validation issues on auto-submit
-                    document.querySelectorAll('input[type="radio"]').forEach(radio => {
-                        radio.removeAttribute('required');
-                    });
-                    examForm.submit();
-                }
-            });
-        }
-
-        function confirmFinish() {
-            const totalQuestions = totalSoals;
-            const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
-            const unanswered = totalQuestions - answeredQuestions;
-
-            if (unanswered > 0) {
-                Swal.fire({
-                    title: 'Belum Selesai!',
-                    html: `Masih ada <b class="text-rose-600">${unanswered} soal</b> yang belum Anda jawab. Silakan lengkapi semua jawaban sebelum mengakhiri ujian.`,
-                    icon: 'warning',
-                    confirmButtonText: 'LENGKAPI SEKARANG',
-                    confirmButtonColor: '#4f46e5',
-                    customClass: {
-                        popup: 'rounded-[2.5rem]',
-                        confirmButton: 'px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest'
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: 'Selesaikan Ujian?',
-                    text: "Apakah Anda yakin ingin mengakhiri ujian sekarang? Jawaban tidak dapat diubah kembali setelah dikirim.",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'YA, SELESAIKAN',
-                    cancelButtonText: 'TIDAK, KEMBALI',
-                    confirmButtonColor: '#10b981',
-                    cancelButtonColor: '#64748b',
-                    reverseButtons: true,
-                    customClass: {
-                        popup: 'rounded-[2.5rem]',
-                        confirmButton: 'px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest mr-2',
-                        cancelButton: 'px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        examForm.submit();
-                    }
-                });
-            }
-        }
-
-        function showQuestion(index) {
-            document.querySelectorAll('.question-wrapper').forEach(wrapper => {
-                wrapper.classList.add('hidden');
-            });
+        function handleSelection(input, idx) {
+            const wrapper = input.closest('.grid');
+            wrapper.querySelectorAll('.option-item').forEach(el => el.classList.remove('option-selected'));
+            input.closest('.option-item').classList.add('option-selected');
             
-            const target = document.getElementById(`question-wrapper-${index}`);
-            if (target) {
-                target.classList.remove('hidden');
-            }
-            
-            document.getElementById('question-counter').innerText = `Soal ${index + 1} / ${totalSoals}`;
-            const progress = ((index + 1) / totalSoals) * 100;
-            document.getElementById('progress-bar').style.width = `${progress}%`;
-            
-            const pText = document.getElementById('progress-text');
-            if(pText) pText.innerText = `${Math.round(progress)}%`;
+            const dot = document.getElementById(`nav-dot-${idx}`);
+            dot.classList.add('nav-dot-answered');
+            updateSummaryCounts();
+        }
 
-            document.querySelectorAll('.nav-dot').forEach((btn, i) => {
-                btn.classList.remove('ring-4', 'ring-indigo-100', 'border-indigo-600');
-                if (i === index) {
-                    btn.classList.add('border-indigo-600');
-                    if (!btn.classList.contains('bg-indigo-600')) {
-                        btn.classList.add('ring-4', 'ring-indigo-100');
-                    }
-                }
-            });
+        function navigateQuestion(dir) {
+            const nextIdx = dir === 'next' ? currentIdx + 1 : currentIdx - 1;
+            if (nextIdx >= 0 && nextIdx < totalSoals) jumpToQuestion(nextIdx);
+        }
 
-            currentQuestionIndex = index;
+        function jumpToQuestion(idx) {
+            document.querySelectorAll('.question-wrapper').forEach(w => w.classList.add('hidden'));
+            document.getElementById(`question-wrapper-${idx}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-dot-pro').forEach(d => d.classList.remove('nav-dot-current'));
+            document.getElementById(`nav-dot-${idx}`).classList.add('nav-dot-current');
+            
+            currentIdx = idx;
+            if(!document.getElementById('nav-modal').classList.contains('hidden')) toggleNav();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function jumpToQuestion(index) {
-            showQuestion(index);
-            toggleNav();
+        function updateSummaryCounts() {
+            const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+            document.getElementById('answered-count').innerText = answered;
+            document.getElementById('unanswered-count').innerText = totalSoals - answered;
+        }
+
+        function startTimer() {
+            const display = document.getElementById('timer-display');
+            const timer = setInterval(() => {
+                if (timeLeft <= 0) { clearInterval(timer); examForm.submit(); return; }
+                timeLeft--;
+                const h = Math.floor(timeLeft / 3600), m = Math.floor((timeLeft % 3600) / 60), s = timeLeft % 60;
+                display.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                if (timeLeft < 300) display.classList.add('text-rose-600');
+            }, 1000);
+        }
+
+        function confirmFinish() {
+            const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+            Swal.fire({
+                title: 'Konfirmasi Akhir',
+                text: answered < totalSoals ? `Masih ada ${totalSoals - answered} soal kosong. Kirim sekarang?` : 'Kirim jawaban Anda sekarang?',
+                icon: 'question', showCancelButton: true, confirmButtonText: 'YA, KIRIM', cancelButtonText: 'BATAL', confirmButtonColor: '#2563eb',
+                customClass: { popup: 'rounded-[2rem]', confirmButton: 'rounded-xl font-bold text-xs px-8 py-4', cancelButton: 'rounded-xl font-bold text-xs px-8 py-4' }
+            }).then((r) => { if (r.isConfirmed) examForm.submit(); });
         }
 
         function toggleNav() {
             const modal = document.getElementById('nav-modal');
             modal.classList.toggle('hidden');
             document.body.style.overflow = modal.classList.contains('hidden') ? 'auto' : 'hidden';
+            if(!modal.classList.contains('hidden')) {
+                document.getElementById(`nav-dot-${currentIdx}`).classList.add('nav-dot-current');
+            }
         }
 
-        function markAnswered(index) {
-            const btn = document.getElementById(`nav-btn-${index}`);
-            btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600', 'shadow-lg', 'shadow-indigo-100');
-            btn.classList.remove('border-slate-100', 'bg-white');
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            showQuestion(0);
-            startTimer();
-            updateTimerDisplay();
-        });
+        document.addEventListener('DOMContentLoaded', () => { startTimer(); updateSummaryCounts(); });
     </script>
     @endpush
 </x-siswa-layout>

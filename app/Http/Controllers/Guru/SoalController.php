@@ -6,9 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Models\Soal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\SoalExport;
+use App\Imports\SoalImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SoalController extends Controller
 {
+    public function export()
+    {
+        return Excel::download(new SoalExport(Auth::id()), 'bank-soal-guru.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ]);
+
+        Excel::import(new SoalImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Soal berhasil diimport.');
+    }
     public function index(Request $request)
     {
         $query = Soal::where('user_id', Auth::id());

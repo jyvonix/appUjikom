@@ -62,6 +62,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'destroy' => 'admin.siswa.destroy',
     ]);
 
+    Route::get('/admin/soal/export', [SoalController::class, 'export'])->name('admin.soal.export');
+    Route::post('/admin/soal/import', [SoalController::class, 'import'])->name('admin.soal.import');
     Route::resource('/admin/soal', SoalController::class)->names([
         'index' => 'admin.soal.index',
         'create' => 'admin.soal.create',
@@ -92,6 +94,8 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         return view('guru.dashboard', compact('stats'));
     })->name('guru.dashboard');
 
+    Route::get('/guru/soal/export', [GuruSoalController::class, 'export'])->name('guru.soal.export');
+    Route::post('/guru/soal/import', [GuruSoalController::class, 'import'])->name('guru.soal.import');
     Route::resource('/guru/soal', GuruSoalController::class)->names([
         'index' => 'guru.soal.index',
         'create' => 'guru.soal.create',

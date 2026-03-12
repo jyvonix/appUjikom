@@ -7,6 +7,7 @@ use App\Models\Soal;
 use App\Models\Nilai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class SiswaController extends Controller
 {
@@ -16,8 +17,48 @@ class SiswaController extends Controller
         $nilai_terakhir = Nilai::where('user_id', $user->id)->latest()->first();
         $total_ujian = Nilai::where('user_id', $user->id)->count();
         $rata_rata = Nilai::where('user_id', $user->id)->avg('skor') ?? 0;
+        
+        $streak = $this->calculateStreak($user->id);
 
-        return view('siswa.dashboard', compact('nilai_terakhir', 'total_ujian', 'rata_rata'));
+        return view('siswa.dashboard', compact('nilai_terakhir', 'total_ujian', 'rata_rata', 'streak'));
+    }
+
+    private function calculateStreak($userId)
+    {
+        $dates = Nilai::where('user_id', $userId)
+            ->selectRaw('DATE(created_at) as date')
+            ->distinct()
+            ->orderBy('date', 'desc')
+            ->pluck('date')
+            ->toArray();
+
+        if (empty($dates)) {
+            return 0;
+        }
+
+        $streak = 0;
+        $today = Carbon::today();
+        $yesterday = Carbon::yesterday();
+        $latestDate = Carbon::parse($dates[0]);
+
+        // If the latest activity is not today or yesterday, the streak is broken
+        if (!$latestDate->equalTo($today) && !$latestDate->equalTo($yesterday)) {
+            return 0;
+        }
+
+        $currentDate = $latestDate;
+        foreach ($dates as $date) {
+            $dateObj = Carbon::parse($date);
+            
+            if ($dateObj->equalTo($currentDate)) {
+                $streak++;
+                $currentDate->subDay();
+            } else {
+                break;
+            }
+        }
+
+        return $streak;
     }
 
     public function indexSoal()
@@ -53,7 +94,7 @@ class SiswaController extends Controller
     {
         $soals = Soal::all();
         $jumlah_benar = 0;
-        $point_per_question = \App\Models\Setting::get('point_per_question', 10);
+        $point_per_question = (float) \App\Models\Setting::get('point_per_question', 10);
         $list_jawaban = [];
 
         foreach ($soals as $soal) {

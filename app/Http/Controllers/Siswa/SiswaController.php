@@ -95,6 +95,7 @@ class SiswaController extends Controller
         $soals = Soal::all();
         $jumlah_benar = 0;
         $point_per_question = (float) \App\Models\Setting::get('point_per_question', 10);
+        $score_divisor = (float) \App\Models\Setting::get('score_divisor', 1);
         $list_jawaban = [];
 
         foreach ($soals as $soal) {
@@ -106,7 +107,8 @@ class SiswaController extends Controller
             }
         }
 
-        $skor = $jumlah_benar * $point_per_question;
+        // Rumus: (Benar * Poin) / Pembagi
+        $skor = ($jumlah_benar * $point_per_question) / ($score_divisor > 0 ? $score_divisor : 1);
 
         Nilai::create([
             'user_id' => Auth::id(),

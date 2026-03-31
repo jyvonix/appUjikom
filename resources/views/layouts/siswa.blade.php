@@ -9,6 +9,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    {{-- Theme Logic --}}
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -16,7 +26,52 @@
             color: #334155;
             overflow-x: hidden;
             letter-spacing: -0.015em;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
+
+        /* Dark Mode Global Styles */
+        html.dark body {
+            background-color: #020617;
+            color: #f1f5f9;
+        }
+
+        html.dark .glass-nav {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+        }
+
+        html.dark .bg-white, html.dark .bg-white\/90 {
+            background-color: #0f172a !important;
+            border-color: #1e293b !important;
+        }
+
+        html.dark .text-slate-900, html.dark .text-slate-800 {
+            color: #f8fafc !important;
+        }
+
+        html.dark .text-slate-500, html.dark .text-slate-400 {
+            color: #94a3b8 !important;
+        }
+
+        html.dark .bg-slate-50, html.dark .bg-slate-50\/30 {
+            background-color: #1e293b !important;
+        }
+
+        html.dark .border-slate-100, html.dark .border-slate-50 {
+            border-color: #1e293b !important;
+        }
+
+        html.dark .card-pro {
+            background: #0f172a;
+            border-color: #1e293b;
+        }
+
+        html.dark .bg-subtle {
+            background: 
+                radial-gradient(circle at 100% 0%, rgba(79, 70, 229, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 0% 100%, rgba(124, 58, 237, 0.05) 0%, transparent 40%);
+        }
+        
         .bg-subtle {
             position: fixed;
             inset: 0;
@@ -79,6 +134,12 @@
             </div>
             
             <div class="flex items-center gap-4">
+                {{-- Theme Toggle --}}
+                <button id="theme-toggle-global" type="button" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-all border border-slate-100 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400">
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                </button>
+
                 <div class="hidden sm:flex flex-col text-right pr-4 border-r border-slate-100">
                     <span class="text-[13px] font-bold text-slate-800 leading-none">{{ Auth::user()->name }}</span>
                     <span class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-1">Student</span>
@@ -119,5 +180,42 @@
     @endif
 
     @stack('scripts')
+    <script>
+        const themeToggleGlobalBtn = document.getElementById('theme-toggle-global');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+        // Sync icons on load
+        if (document.documentElement.classList.contains('dark')) {
+            themeToggleLightIcon.classList.remove('hidden');
+        } else {
+            themeToggleDarkIcon.classList.remove('hidden');
+        }
+
+        themeToggleGlobalBtn.addEventListener('click', function() {
+            // toggle icons
+            themeToggleDarkIcon.classList.toggle('hidden');
+            themeToggleLightIcon.classList.toggle('hidden');
+
+            // if set via local storage previously
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+    </script>
 </body>
 </html>

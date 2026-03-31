@@ -75,6 +75,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/kunci-jawaban', [SoalController::class, 'kunciJawaban'])->name('admin.soal.kunci');
 
     Route::get('/admin/nilai', [NilaiController::class, 'index'])->name('admin.nilai.index');
+    Route::get('/admin/nilai/export', [NilaiController::class, 'export'])->name('admin.nilai.export');
     Route::delete('/admin/nilai/{nilai}', [NilaiController::class, 'destroy'])->name('admin.nilai.destroy');
 
     Route::get('/admin/setting', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('admin.setting.index');
@@ -105,8 +106,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         'destroy' => 'guru.soal.destroy',
     ]);
     Route::get('/guru/kunci-jawaban', [GuruSoalController::class, 'kunciJawaban'])->name('guru.soal.kunci');
+    Route::get('/guru/soal/analisis', [GuruSoalController::class, 'analisis'])->name('guru.soal.analisis');
 
     Route::get('/guru/nilai', [GuruNilaiController::class, 'index'])->name('guru.nilai.index');
+    Route::get('/guru/nilai/export', [GuruNilaiController::class, 'export'])->name('guru.nilai.export');
 });
 
 use App\Http\Controllers\Siswa\SiswaController as StudentSiswaController;

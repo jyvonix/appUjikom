@@ -6,8 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Nilai;
 use Illuminate\Http\Request;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\NilaiExport;
+
 class NilaiController extends Controller
 {
+    public function export()
+    {
+        return Excel::download(new NilaiExport, 'laporan-nilai-guru.xlsx');
+    }
+
     public function index(Request $request)
     {
         $query = Nilai::with('user');

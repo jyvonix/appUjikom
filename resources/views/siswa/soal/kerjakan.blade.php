@@ -5,15 +5,36 @@
             background-color: #fcfcfd !important; 
             -webkit-tap-highlight-color: transparent;
             letter-spacing: -0.01em;
+            transition: background-color 0.5s ease;
         }
         
         .exam-shell { display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* Animation Keyframes */
+        @keyframes questionIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes questionOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        .question-wrapper {
+            animation: questionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .option-item:active {
+            transform: scale(0.97);
+        }
 
         .workspace-header {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(241, 245, 249, 1);
+            transition: all 0.3s ease;
         }
 
         .question-card {
@@ -61,6 +82,76 @@
             to { transform: translateY(0); }
         }
         .animate-drawer { animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* Dark Mode Classes */
+        body.dark-mode {
+            background-color: #020617 !important;
+            color: #f8fafc;
+        }
+
+        body.dark-mode .workspace-header {
+            background: rgba(15, 23, 42, 0.9) !important;
+            border-bottom: 1px solid rgba(30, 41, 59, 1) !important;
+        }
+
+        body.dark-mode .question-card {
+            background: #0f172a !important;
+            border: 1px solid #1e293b !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.dark-mode h2, body.dark-mode .text-slate-900, body.dark-mode .text-slate-800 {
+            color: #f1f5f9 !important;
+        }
+
+        body.dark-mode .text-slate-600 {
+            color: #94a3b8 !important;
+        }
+
+        body.dark-mode .option-item {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+        }
+
+        body.dark-mode .option-badge {
+            background-color: #334155 !important;
+            border-color: #475569 !important;
+            color: #94a3b8 !important;
+        }
+
+        body.dark-mode .option-selected {
+            background-color: #4f46e522 !important;
+            border-color: #6366f1 !important;
+        }
+
+        body.dark-mode .option-selected .option-badge {
+            background-color: #6366f1 !important;
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .nav-modal-bg {
+            background: rgba(2, 6, 23, 0.8) !important;
+        }
+
+        body.dark-mode #nav-modal .bg-white {
+            background: #0f172a !important;
+            border: 1px solid #1e293b !important;
+        }
+
+        body.dark-mode .bg-slate-50, body.dark-mode .bg-slate-50\/30 {
+            background-color: #1e293b !important;
+        }
+
+        body.dark-mode .nav-dot-pro {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            color: #94a3b8 !important;
+        }
+
+        body.dark-mode .nav-dot-current {
+            background: #4f46e522 !important;
+            border-color: #6366f1 !important;
+            color: #6366f1 !important;
+        }
     </style>
 
     <div class="exam-shell">
@@ -74,6 +165,10 @@
                 </div>
 
                 <div class="flex items-center gap-4">
+                    <button type="button" id="theme-toggle" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 transition-all text-slate-600">
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    </button>
                     <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
                         <span id="timer-display" class="font-bold text-slate-700 tabular-nums text-xs md:text-sm">00:00:00</span>
                     </div>
@@ -201,7 +296,110 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let currentIdx = 0; const totalSoals = {{ $soals->count() }}; let timeLeft = {{ $duration }} * 60;
+        let violationCount = 0;
+        const maxViolations = 3;
         const examForm = document.getElementById('exam-form');
+        const examId = "exam_session_{{ auth()->id() }}"; // Unique key for this user
+
+        // --- SECURITY: ANTI-CHEATING (TAB SWITCH) ---
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                violationCount++;
+                if (violationCount >= maxViolations) {
+                    Swal.fire({
+                        title: 'Pelanggaran Berat!',
+                        text: 'Anda terlalu sering meninggalkan halaman ujian. Ujian akan otomatis dikumpulkan.',
+                        icon: 'error',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    }).then(() => {
+                        clearLocalStorage();
+                        examForm.submit();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Peringatan Keamanan!',
+                        html: `Jangan tinggalkan halaman ujian!<br>Pelanggaran: <b>${violationCount}/${maxViolations}</b>`,
+                        icon: 'warning',
+                        confirmButtonText: 'SAYA MENGERTI',
+                        confirmButtonColor: '#2563eb',
+                        allowOutsideClick: false
+                    });
+                }
+            }
+        });
+
+        // --- SECURITY: DISABLE INTERACTION ---
+        document.addEventListener('contextmenu', e => e.preventDefault()); // Disable Right Click
+        document.addEventListener('keydown', function(e) {
+            // Disable Ctrl+C, Ctrl+V, Ctrl+U, F12
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'u' || e.key === 's') || e.key === 'F12') {
+                e.preventDefault();
+                Swal.fire({
+                    toast: true, position: 'top', icon: 'error', title: 'Fitur dilarang selama ujian!', showConfirmButton: false, timer: 2000
+                });
+            }
+        });
+
+        // --- AUTO-SAVE LOGIC ---
+        function saveProgress(input) {
+            let savedData = JSON.parse(localStorage.getItem(examId)) || {};
+            savedData[input.name] = input.value;
+            localStorage.setItem(examId, JSON.stringify(savedData));
+        }
+
+        function restoreProgress() {
+            let savedData = JSON.parse(localStorage.getItem(examId));
+            if (savedData) {
+                Object.keys(savedData).forEach(name => {
+                    const value = savedData[name];
+                    const input = document.querySelector(`input[name="${name}"][value="${value}"]`);
+                    if (input) {
+                        input.checked = true;
+                        // Trigger visual selection
+                        const wrapper = input.closest('.grid');
+                        if(wrapper) {
+                            input.closest('.option-item').classList.add('option-selected');
+                        }
+                        // Update navigation dot
+                        const questionIdx = input.closest('.question-wrapper').id.replace('question-wrapper-', '');
+                        const dot = document.getElementById(`nav-dot-${questionIdx}`);
+                        if(dot) dot.classList.add('nav-dot-answered');
+                    }
+                });
+                updateSummaryCounts();
+            }
+        }
+
+        function clearLocalStorage() {
+            localStorage.removeItem(examId);
+        }
+
+        // --- DARK MODE TOGGLE LOGIC ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.body.classList.add('dark-mode');
+            lightIcon.classList.remove('hidden');
+        } else {
+            darkIcon.classList.remove('hidden');
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            darkIcon.classList.toggle('hidden');
+            lightIcon.classList.toggle('hidden');
+
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('color-theme', 'dark');
+            } else {
+                localStorage.setItem('color-theme', 'light');
+            }
+        });
 
         function handleSelection(input, idx) {
             const wrapper = input.closest('.grid');
@@ -210,6 +408,8 @@
             
             const dot = document.getElementById(`nav-dot-${idx}`);
             dot.classList.add('nav-dot-answered');
+            
+            saveProgress(input); // Auto-save trigger
             updateSummaryCounts();
         }
 
@@ -220,10 +420,12 @@
 
         function jumpToQuestion(idx) {
             document.querySelectorAll('.question-wrapper').forEach(w => w.classList.add('hidden'));
-            document.getElementById(`question-wrapper-${idx}`).classList.remove('hidden');
+            const targetWrapper = document.getElementById(`question-wrapper-${idx}`);
+            if(targetWrapper) targetWrapper.classList.remove('hidden');
             
             document.querySelectorAll('.nav-dot-pro').forEach(d => d.classList.remove('nav-dot-current'));
-            document.getElementById(`nav-dot-${idx}`).classList.add('nav-dot-current');
+            const targetDot = document.getElementById(`nav-dot-${idx}`);
+            if(targetDot) targetDot.classList.add('nav-dot-current');
             
             currentIdx = idx;
             if(!document.getElementById('nav-modal').classList.contains('hidden')) toggleNav();
@@ -239,7 +441,12 @@
         function startTimer() {
             const display = document.getElementById('timer-display');
             const timer = setInterval(() => {
-                if (timeLeft <= 0) { clearInterval(timer); examForm.submit(); return; }
+                if (timeLeft <= 0) { 
+                    clearInterval(timer); 
+                    clearLocalStorage();
+                    examForm.submit(); 
+                    return; 
+                }
                 timeLeft--;
                 const h = Math.floor(timeLeft / 3600), m = Math.floor((timeLeft % 3600) / 60), s = timeLeft % 60;
                 display.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
@@ -254,7 +461,12 @@
                 text: answered < totalSoals ? `Masih ada ${totalSoals - answered} soal kosong. Kirim sekarang?` : 'Kirim jawaban Anda sekarang?',
                 icon: 'question', showCancelButton: true, confirmButtonText: 'YA, KIRIM', cancelButtonText: 'BATAL', confirmButtonColor: '#2563eb',
                 customClass: { popup: 'rounded-[2rem]', confirmButton: 'rounded-xl font-bold text-xs px-8 py-4', cancelButton: 'rounded-xl font-bold text-xs px-8 py-4' }
-            }).then((r) => { if (r.isConfirmed) examForm.submit(); });
+            }).then((r) => { 
+                if (r.isConfirmed) {
+                    clearLocalStorage();
+                    examForm.submit(); 
+                }
+            });
         }
 
         function toggleNav() {
@@ -266,7 +478,11 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => { startTimer(); updateSummaryCounts(); });
+        document.addEventListener('DOMContentLoaded', () => { 
+            restoreProgress(); // Auto-restore on load
+            startTimer(); 
+            updateSummaryCounts(); 
+        });
     </script>
     @endpush
 </x-siswa-layout>

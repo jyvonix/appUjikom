@@ -57,6 +57,8 @@ class SoalController extends Controller
             'opsi_d' => ['required', 'string'],
             'opsi_e' => ['required', 'string'],
             'jawaban_benar' => ['required', 'in:A,B,C,D,E'],
+            'kategori' => ['nullable', 'string', 'max:100'],
+            'kesulitan' => ['required', 'in:mudah,sedang,sulit'],
         ]);
 
         $data = $request->all();
@@ -95,6 +97,8 @@ class SoalController extends Controller
             'opsi_d' => ['required', 'string'],
             'opsi_e' => ['required', 'string'],
             'jawaban_benar' => ['required', 'in:A,B,C,D,E'],
+            'kategori' => ['nullable', 'string', 'max:100'],
+            'kesulitan' => ['required', 'in:mudah,sedang,sulit'],
         ]);
 
         $data = $request->all();
@@ -127,5 +131,53 @@ class SoalController extends Controller
     {
         $soals = Soal::where('user_id', Auth::id())->get();
         return view('guru.soal.kunci_jawaban', compact('soals'));
+    }
+
+    public function analisis()
+    {
+        $soals = Soal::where('user_id', Auth::id())->get();
+        $nilais = \App\Models\Nilai::all();
+        
+        $statistik = [];
+
+        foreach ($soals as $soal) {
+            $total_dijawab = 0;
+            $total_benar = 0;
+            $total_salah = 0;
+            $distribusi_jawaban = ['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'E' => 0];
+
+            foreach ($nilais as $nilai) {
+                if (isset($nilai->list_jawaban[$soal->id])) {
+                    $jawaban_siswa = strtoupper($nilai->list_jawaban[$soal->id]);
+                    $total_dijawab++;
+                    
+                    if ($jawaban_siswa == strtoupper($soal->jawaban_benar)) {
+                        $total_benar++;
+                    } else {
+                        $total_salah++;
+                    }
+
+                    if (isset($distribusi_jawaban[$jawaban_siswa])) {
+                        $distribusi_jawaban[$jawaban_siswa]++;
+                    }
+                }
+            }
+
+            $statistik[$soal->id] = [
+                'soal' => $soal,
+                'total_dijawab' => $total_dijawab,
+                'total_benar' => $total_benar,
+                'total_salah' => $total_salah,
+                'tingkat_kesulitan_aktual' => $total_dijawab > 0 ? round(($total_salah / $total_dijawab) * 100, 2) : 0,
+                'distribusi' => $distribusi_jawaban
+            ];
+        }
+
+        // Urutkan dari yang paling banyak salahnya (paling sulit)
+        uasort($statistik, function($a, $b) {
+            return $b['tingkat_kesulitan_aktual'] <=> $a['tingkat_kesulitan_aktual'];
+        });
+
+        return view('guru.soal.analisis', compact('statistik'));
     }
 }

@@ -17,6 +17,8 @@ class Soal extends Model
         'opsi_e',
         'jawaban_benar',
         'user_id',
+        'kategori',
+        'kesulitan',
     ];
 
     public function user(): BelongsTo

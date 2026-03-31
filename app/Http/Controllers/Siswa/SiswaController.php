@@ -74,7 +74,7 @@ class SiswaController extends Controller
 
     public function kerjakanUjian()
     {
-        $soals = Soal::all();
+        $soals = Soal::inRandomOrder()->get();
         $total_ujian = Nilai::where('user_id', Auth::id())->count();
         $max_retakes = \App\Models\Setting::get('max_retakes', 1);
         $duration = \App\Models\Setting::get('exam_duration', 60);

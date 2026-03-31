@@ -98,24 +98,45 @@
                             
                             <!-- Validation Card -->
                             <div class="bg-slate-900 rounded-[2.5rem] p-8 shadow-xl relative overflow-hidden border-t border-white/10">
-                                <div class="relative z-10 text-center">
-                                    <div class="mb-8">
+                                <div class="relative z-10">
+                                    <div class="text-center mb-8">
                                         <div class="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-400 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 rotate-12 shadow-lg">
                                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         </div>
-                                        <h3 class="text-xl font-black text-white tracking-tight">Kunci Jawaban</h3>
-                                        <p class="text-slate-500 font-bold text-[8px] uppercase tracking-widest mt-1">Validation Protocol</p>
+                                        <h3 class="text-xl font-black text-white tracking-tight">Pengaturan Soal</h3>
+                                        <p class="text-slate-500 font-bold text-[8px] uppercase tracking-widest mt-1">Config & Validation</p>
                                     </div>
 
-                                    <div class="grid grid-cols-5 gap-2 mb-10">
-                                        @foreach(['A', 'B', 'C', 'D', 'E'] as $k)
-                                        <label class="relative cursor-pointer group/opt">
-                                            <input type="radio" name="jawaban_benar" value="{{ $k }}" class="peer hidden" required {{ old('jawaban_benar', $soal->jawaban_benar) == $k ? 'checked' : '' }}>
-                                            <div class="w-full py-4 rounded-xl bg-white/5 border-2 border-transparent text-center font-black text-slate-500 transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-400 text-sm">
-                                                {{ $k }}
-                                            </div>
-                                        </label>
-                                        @endforeach
+                                    <div class="space-y-6 mb-8">
+                                        <div>
+                                            <label class="block text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-3 ml-1">Kategori / Mata Pelajaran</label>
+                                            <input type="text" name="kategori" value="{{ old('kategori', $soal->kategori) }}" 
+                                                class="w-full px-5 py-4 bg-white/5 border-2 border-white/10 rounded-xl focus:bg-white/10 focus:border-blue-500 transition-all outline-none font-bold text-white text-xs placeholder:text-slate-600" 
+                                                placeholder="Contoh: Produktif, MTK, dll">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-3 ml-1">Tingkat Kesulitan</label>
+                                            <select name="kesulitan" class="w-full px-5 py-4 bg-white/5 border-2 border-white/10 rounded-xl focus:bg-white/10 focus:border-blue-500 transition-all outline-none font-black text-white text-xs appearance-none cursor-pointer group">
+                                                <option value="mudah" class="bg-slate-900 text-white font-bold" {{ old('kesulitan', $soal->kesulitan) == 'mudah' ? 'selected' : '' }}>MUDAH</option>
+                                                <option value="sedang" class="bg-slate-900 text-white font-bold" {{ old('kesulitan', $soal->kesulitan) == 'sedang' ? 'selected' : '' }}>SEDANG</option>
+                                                <option value="sulit" class="bg-slate-900 text-white font-bold" {{ old('kesulitan', $soal->kesulitan) == 'sulit' ? 'selected' : '' }}>SULIT</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-10 text-center">
+                                        <label class="block text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-3 ml-1">Kunci Jawaban</label>
+                                        <div class="grid grid-cols-5 gap-2">
+                                            @foreach(['A', 'B', 'C', 'D', 'E'] as $k)
+                                            <label class="relative cursor-pointer group/opt">
+                                                <input type="radio" name="jawaban_benar" value="{{ $k }}" class="peer hidden" required {{ old('jawaban_benar', $soal->jawaban_benar) == $k ? 'checked' : '' }}>
+                                                <div class="w-full py-4 rounded-xl bg-white/5 border-2 border-transparent text-center font-black text-slate-500 transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-400 text-xs">
+                                                    {{ $k }}
+                                                </div>
+                                            </label>
+                                            @endforeach
+                                        </div>
                                     </div>
 
                                     <div class="space-y-3">

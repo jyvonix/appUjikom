@@ -57,6 +57,8 @@ class SoalController extends Controller
             'opsi_d' => ['required', 'string'],
             'opsi_e' => ['required', 'string'],
             'jawaban_benar' => ['required', 'in:A,B,C,D,E'],
+            'kategori' => ['nullable', 'string', 'max:100'],
+            'kesulitan' => ['required', 'in:mudah,sedang,sulit'],
         ]);
 
         $data = $request->all();
@@ -87,6 +89,8 @@ class SoalController extends Controller
             'opsi_d' => ['required', 'string'],
             'opsi_e' => ['required', 'string'],
             'jawaban_benar' => ['required', 'in:A,B,C,D,E'],
+            'kategori' => ['nullable', 'string', 'max:100'],
+            'kesulitan' => ['required', 'in:mudah,sedang,sulit'],
         ]);
 
         $data = $request->all();

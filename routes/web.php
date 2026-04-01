@@ -97,16 +97,17 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     Route::get('/guru/soal/export', [GuruSoalController::class, 'export'])->name('guru.soal.export');
     Route::post('/guru/soal/import', [GuruSoalController::class, 'import'])->name('guru.soal.import');
+    Route::get('/guru/kunci-jawaban', [GuruSoalController::class, 'kunciJawaban'])->name('guru.soal.kunci');
+    Route::get('/guru/soal/analisis', [GuruSoalController::class, 'analisis'])->name('guru.soal.analisis');
     Route::resource('/guru/soal', GuruSoalController::class)->names([
         'index' => 'guru.soal.index',
         'create' => 'guru.soal.create',
         'store' => 'guru.soal.store',
+        'show' => 'guru.soal.show',
         'edit' => 'guru.soal.edit',
         'update' => 'guru.soal.update',
         'destroy' => 'guru.soal.destroy',
     ]);
-    Route::get('/guru/kunci-jawaban', [GuruSoalController::class, 'kunciJawaban'])->name('guru.soal.kunci');
-    Route::get('/guru/soal/analisis', [GuruSoalController::class, 'analisis'])->name('guru.soal.analisis');
 
     Route::get('/guru/nilai', [GuruNilaiController::class, 'index'])->name('guru.nilai.index');
     Route::get('/guru/nilai/export', [GuruNilaiController::class, 'export'])->name('guru.nilai.export');

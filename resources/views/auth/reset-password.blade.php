@@ -35,28 +35,20 @@
                 <!-- Password -->
                 <div class="space-y-2">
                     <label for="password" class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Kata Sandi Baru</label>
-                    <div class="group relative transition-all duration-300">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                        </div>
-                        <input id="password" type="password" name="password" required autofocus
-                            class="w-full pl-12 pr-4 py-4 bg-slate-100/50 border-2 border-transparent rounded-2xl text-sm font-bold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-indigo-600/20 focus:ring-4 focus:ring-indigo-600/5 transition-all shadow-sm"
-                            placeholder="••••••••">
-                    </div>
+                    <x-password-input id="password" name="password" required autofocus
+                        placeholder="••••••••"
+                        leftIcon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>'
+                    />
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
                 <!-- Confirm Password -->
                 <div class="space-y-2">
                     <label for="password_confirmation" class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Konfirmasi Sandi</label>
-                    <div class="group relative transition-all duration-300">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                        </div>
-                        <input id="password_confirmation" type="password" name="password_confirmation" required
-                            class="w-full pl-12 pr-4 py-4 bg-slate-100/50 border-2 border-transparent rounded-2xl text-sm font-bold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-indigo-600/20 focus:ring-4 focus:ring-indigo-600/5 transition-all shadow-sm"
-                            placeholder="••••••••">
-                    </div>
+                    <x-password-input id="password_confirmation" name="password_confirmation" required
+                        placeholder="••••••••"
+                        leftIcon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>'
+                    />
                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                 </div>
 

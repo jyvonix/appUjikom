@@ -1,15 +1,38 @@
 <x-guru-layout>
-    <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
             <h2 class="text-4xl font-extrabold text-slate-800 tracking-tight mb-2">Analisis <span class="text-indigo-600">Butir Soal</span></h2>
             <p class="text-slate-500 font-medium">Evaluasi performa soal berdasarkan tingkat kesulitan aktual dari jawaban siswa.</p>
         </div>
-        <div class="flex items-center gap-3">
-            <div class="px-4 py-2 bg-indigo-50 border border-indigo-100 rounded-xl">
-                <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest block">Total Soal</span>
-                <span class="text-xl font-black text-indigo-700">{{ count($statistik) }}</span>
+        
+        <form action="{{ route('guru.soal.analisis') }}" method="GET" class="flex flex-wrap items-center gap-3">
+            <div class="space-y-1">
+                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Kategori</label>
+                <select name="kategori" class="block w-40 rounded-xl border-slate-200 bg-white text-xs font-bold text-slate-700 focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all">
+                    <option value="">Semua Kategori</option>
+                    @foreach($kategoris as $cat)
+                        <option value="{{ $cat }}" {{ request('kategori') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
             </div>
-        </div>
+            <div class="space-y-1">
+                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Kesulitan</label>
+                <select name="kesulitan" class="block w-32 rounded-xl border-slate-200 bg-white text-xs font-bold text-slate-700 focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all">
+                    <option value="">Semua</option>
+                    <option value="mudah" {{ request('kesulitan') == 'mudah' ? 'selected' : '' }}>Mudah</option>
+                    <option value="sedang" {{ request('kesulitan') == 'sedang' ? 'selected' : '' }}>Sedang</option>
+                    <option value="sulit" {{ request('kesulitan') == 'sulit' ? 'selected' : '' }}>Sulit</option>
+                </select>
+            </div>
+            <button type="submit" class="mt-5 p-2.5 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </button>
+            @if(request()->anyFilled(['kategori', 'kesulitan']))
+                <a href="{{ route('guru.soal.analisis') }}" class="mt-5 p-2.5 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </a>
+            @endif
+        </form>
     </div>
 
     <div class="space-y-6">
@@ -90,12 +113,16 @@
                     </div>
 
                     <div class="mt-6 pt-6 border-t border-slate-200">
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between items-center mb-4">
                             <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">Tingkat Kesulitan Aktual</span>
                             <span class="text-sm font-black {{ $data['tingkat_kesulitan_aktual'] > 70 ? 'text-rose-600' : ($data['tingkat_kesulitan_aktual'] > 40 ? 'text-amber-600' : 'text-emerald-600') }}">
                                 {{ $data['tingkat_kesulitan_aktual'] }}% Gagal
                             </span>
                         </div>
+                        <a href="{{ route('guru.soal.show', $data['soal']->id) }}" class="flex items-center justify-center gap-2 w-full py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-widest hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-[0.98]">
+                            <span>Lihat Riwayat Siswa</span>
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        </a>
                     </div>
                 </div>
             </div>

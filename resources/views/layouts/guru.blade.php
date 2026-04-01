@@ -171,7 +171,7 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="flex items-center gap-3 px-4 mb-4">
-                    <div class="w-12 h-12 bg-white rounded-2xl p-2 shadow-sm border border-slate-100">
+                    <div class="w-16 h-16 bg-white rounded-2xl p-2 shadow-sm border border-slate-100">
                         <img src="{{ asset('storage/image/images.png') }}" alt="Logo" class="w-full h-full object-contain">
                     </div>
                     <div>

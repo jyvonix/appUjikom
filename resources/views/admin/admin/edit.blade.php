@@ -69,8 +69,7 @@
 
                             <div class="space-y-2 text-center md:text-left">
                                 <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Update Password (Opsional)</label>
-                                <input type="password" name="password" placeholder="Biarkan kosong jika tidak ingin mengubah"
-                                    class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm text-center md:text-left">
+                                <x-password-input name="password" placeholder="Biarkan kosong jika tidak ingin mengubah" class="text-center md:text-left" />
                                 <p class="text-[9px] font-medium text-slate-400 mt-2 italic">*Kosongkan jika password tetap sama.</p>
                             </div>
 

@@ -123,7 +123,7 @@
         <div class="max-w-7xl mx-auto px-6 md:px-10 w-full flex justify-between items-center">
             <div class="flex items-center gap-10"> 
                 <a href="{{ route('siswa.dashboard') }}" class="flex items-center gap-2.5 group"> 
-                    <img src="{{ asset('storage/image/images.png') }}" class="w-8 h-8 object-contain" alt="Logo">
+                    <img src="{{ asset('storage/image/images.png') }}" class="w-12 h-12 object-contain" alt="Logo">
                     <span class="text-lg font-bold tracking-tight text-slate-900 hidden sm:inline">Smart<span class="text-blue-600">Exam</span></span>
                 </a>
                 <div class="hidden md:flex items-center gap-1">

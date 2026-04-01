@@ -2,10 +2,9 @@
     {{-- Super Pro Refined Styles --}}
     <style>
         body { 
-            background-color: #fcfcfd !important; 
             -webkit-tap-highlight-color: transparent;
             letter-spacing: -0.01em;
-            transition: background-color 0.5s ease;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
         
         .exam-shell { display: flex; flex-direction: column; min-height: 100vh; }
@@ -37,31 +36,67 @@
             transition: all 0.3s ease;
         }
 
+        html.dark .workspace-header {
+            background: rgba(15, 23, 42, 0.9) !important;
+            border-bottom: 1px solid rgba(30, 41, 59, 1) !important;
+        }
+
         .question-card {
             background: #ffffff;
             border-radius: 1.5rem;
             border: 1px solid rgba(226, 232, 240, 0.8);
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        html.dark .question-card {
+            background: #0f172a !important;
+            border: 1px solid #1e293b !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
         }
 
         .option-item {
             transition: all 0.2s ease;
             border: 1px solid #f1f5f9;
             border-radius: 1rem;
+            background: #ffffff;
+        }
+
+        html.dark .option-item {
+            background: #1e293b !important;
+            border-color: #334155 !important;
         }
 
         .option-selected { border-color: #2563eb !important; background-color: #eff6ff !important; }
+
+        html.dark .option-selected {
+            background-color: rgba(79, 70, 229, 0.1) !important;
+            border-color: #6366f1 !important;
+        }
 
         .option-badge {
             width: 2.25rem; height: 2.25rem; border-radius: 0.75rem;
             background-color: #f8fafc; color: #64748b;
             display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 0.8rem; border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+
+        html.dark .option-badge {
+            background-color: #334155 !important;
+            border-color: #475569 !important;
+            color: #94a3b8 !important;
         }
 
         .option-selected .option-badge { background-color: #2563eb !important; color: #ffffff !important; }
 
+        html.dark .option-selected .option-badge {
+            background-color: #6366f1 !important;
+            color: #ffffff !important;
+        }
+
         .progress-track { height: 4px; background: #f1f5f9; border-radius: 100px; overflow: hidden; }
+        html.dark .progress-track { background: #1e293b; }
         .progress-thumb { background: #2563eb; transition: width 0.6s ease; }
 
         /* Navigator Specific Styles */
@@ -70,9 +105,23 @@
             border: 1.5px solid #f1f5f9;
             background: #ffffff;
             position: relative;
+            color: #64748b;
         }
+        html.dark .nav-dot-pro {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            color: #94a3b8 !important;
+        }
+
         .nav-dot-pro:hover { border-color: #2563eb; color: #2563eb; transform: translateY(-2px); }
         .nav-dot-current { border-color: #2563eb !important; color: #2563eb !important; background: #eff6ff !important; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        
+        html.dark .nav-dot-current {
+            background: rgba(79, 70, 229, 0.1) !important;
+            border-color: #6366f1 !important;
+            color: #6366f1 !important;
+        }
+
         .nav-dot-answered { background: #2563eb !important; border-color: #2563eb !important; color: #ffffff !important; }
         
         .status-indicator { width: 8px; height: 8px; border-radius: 2px; }
@@ -82,75 +131,20 @@
             to { transform: translateY(0); }
         }
         .animate-drawer { animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        /* Dark Mode Classes */
-        body.dark-mode {
+
+        /* Dark Mode Transitions */
+        html.dark body {
             background-color: #020617 !important;
-            color: #f8fafc;
+            color: #f1f5f9;
         }
 
-        body.dark-mode .workspace-header {
-            background: rgba(15, 23, 42, 0.9) !important;
-            border-bottom: 1px solid rgba(30, 41, 59, 1) !important;
-        }
-
-        body.dark-mode .question-card {
-            background: #0f172a !important;
-            border: 1px solid #1e293b !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-        }
-
-        body.dark-mode h2, body.dark-mode .text-slate-900, body.dark-mode .text-slate-800 {
-            color: #f1f5f9 !important;
-        }
-
-        body.dark-mode .text-slate-600 {
-            color: #94a3b8 !important;
-        }
-
-        body.dark-mode .option-item {
-            background: #1e293b !important;
-            border-color: #334155 !important;
-        }
-
-        body.dark-mode .option-badge {
-            background-color: #334155 !important;
-            border-color: #475569 !important;
-            color: #94a3b8 !important;
-        }
-
-        body.dark-mode .option-selected {
-            background-color: #4f46e522 !important;
-            border-color: #6366f1 !important;
-        }
-
-        body.dark-mode .option-selected .option-badge {
-            background-color: #6366f1 !important;
-            color: #ffffff !important;
-        }
-
-        body.dark-mode .nav-modal-bg {
-            background: rgba(2, 6, 23, 0.8) !important;
-        }
-
-        body.dark-mode #nav-modal .bg-white {
+        html.dark #nav-modal .bg-white {
             background: #0f172a !important;
             border: 1px solid #1e293b !important;
         }
 
-        body.dark-mode .bg-slate-50, body.dark-mode .bg-slate-50\/30 {
+        html.dark .bg-slate-50, html.dark .bg-slate-50\/30 {
             background-color: #1e293b !important;
-        }
-
-        body.dark-mode .nav-dot-pro {
-            background: #1e293b !important;
-            border-color: #334155 !important;
-            color: #94a3b8 !important;
-        }
-
-        body.dark-mode .nav-dot-current {
-            background: #4f46e522 !important;
-            border-color: #6366f1 !important;
-            color: #6366f1 !important;
         }
     </style>
 
@@ -161,16 +155,16 @@
                     <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-md">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     </div>
-                    <span class="text-sm font-bold text-slate-900 tracking-tight uppercase">SmartExam</span>
+                    <span class="text-sm font-bold text-slate-900 dark:text-white transition-colors tracking-tight uppercase">SmartExam</span>
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <button type="button" id="theme-toggle" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 transition-all text-slate-600">
+                    <button type="button" id="theme-toggle" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-slate-600 dark:text-slate-300">
                         <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
                         <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
                     </button>
-                    <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
-                        <span id="timer-display" class="font-bold text-slate-700 tabular-nums text-xs md:text-sm">00:00:00</span>
+                    <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 transition-colors rounded-lg border border-slate-100 dark:border-slate-700">
+                        <span id="timer-display" class="font-bold text-slate-700 dark:text-slate-300 transition-colors tabular-nums text-xs md:text-sm">00:00:00</span>
                     </div>
                     <button type="button" onclick="toggleNav()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 group">
                         <svg class="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"/></svg>
@@ -186,34 +180,34 @@
                     <div id="question-wrapper-{{ $index }}" class="question-wrapper {{ $index === 0 ? '' : 'hidden' }}">
                         <div class="mb-8">
                             <div class="flex items-center justify-between text-[9px] font-bold uppercase tracking-widest mb-3">
-                                <span class="text-blue-600">Pertanyaan {{ $index + 1 }} / {{ $soals->count() }}</span>
+                                <span class="text-blue-600 dark:text-blue-400 transition-colors">Pertanyaan {{ $index + 1 }} / {{ $soals->count() }}</span>
                                 <span class="text-slate-400" id="global-progress-text">{{ round((($index + 1) / $soals->count()) * 100) }}%</span>
                             </div>
                             <div class="progress-track"><div class="progress-thumb h-full" style="width: {{ (($index + 1) / $soals->count()) * 100 }}%"></div></div>
                         </div>
 
                         <div class="question-card p-6 md:p-10 mb-8">
-                            <h2 class="text-lg md:text-xl font-semibold text-slate-800 leading-relaxed mb-8">{{ $soal->pertanyaan }}</h2>
-                            @if($soal->gambar)<div class="mb-8 rounded-xl overflow-hidden border border-slate-100 p-1 bg-slate-50"><img src="{{ asset('storage/' . $soal->gambar) }}" class="w-full h-auto rounded-lg"></div>@endif
+                            <h2 class="text-lg md:text-xl font-semibold text-slate-900 dark:text-white transition-colors leading-relaxed mb-8">{{ $soal->pertanyaan }}</h2>
+                            @if($soal->gambar)<div class="mb-8 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 p-1 bg-slate-50 dark:bg-slate-900 transition-colors"><img src="{{ asset('storage/' . $soal->gambar) }}" class="w-full h-auto rounded-lg"></div>@endif
                             <div class="grid grid-cols-1 gap-3">
                                 @foreach(['A', 'B', 'C', 'D', 'E'] as $opsi)
                                     @php $opsiKey = 'opsi_' . strtolower($opsi); @endphp
                                     @if($soal->$opsiKey)
                                     <label class="option-item flex items-center p-4 cursor-pointer group">
                                         <input type="radio" name="jawaban_{{ $soal->id }}" value="{{ $opsi }}" onchange="handleSelection(this, {{ $index }})" class="hidden peer" required>
-                                        <div class="option-badge group-hover:bg-blue-50 group-hover:text-blue-600">{{ $opsi }}</div>
-                                        <span class="ml-4 text-sm md:text-[15px] font-medium text-slate-600 group-hover:text-slate-900 flex-1">{{ $soal->$opsiKey }}</span>
-                                        <div class="ml-3 opacity-0 scale-50 transition-all peer-checked:opacity-100 peer-checked:scale-100 text-blue-600"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg></div>
+                                        <div class="option-badge group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 group-hover:text-blue-600 dark:group-hover:text-blue-400">{{ $opsi }}</div>
+                                        <span class="ml-4 text-sm md:text-[15px] font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-1">{{ $soal->$opsiKey }}</span>
+                                        <div class="ml-3 opacity-0 scale-50 transition-all peer-checked:opacity-100 peer-checked:scale-100 text-blue-600 dark:text-blue-400"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg></div>
                                     </label>
                                     @endif
                                 @endforeach
                             </div>
-                            <div class="mt-12 flex items-center justify-between gap-4 pt-8 border-t border-slate-50">
-                                <button type="button" onclick="navigateQuestion('prev')" class="flex-1 sm:flex-none h-11 px-6 bg-slate-50 text-slate-500 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-100 flex items-center justify-center gap-2">Sebelumnya</button>
+                            <div class="mt-12 flex items-center justify-between gap-4 pt-8 border-t border-slate-50 dark:border-slate-800 transition-colors">
+                                <button type="button" onclick="navigateQuestion('prev')" class="flex-1 sm:flex-none h-11 px-6 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2">Sebelumnya</button>
                                 @if($index < $soals->count() - 1)
-                                    <button type="button" onclick="navigateQuestion('next')" class="flex-1 sm:flex-none h-11 px-10 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-100">Lanjut</button>
+                                    <button type="button" onclick="navigateQuestion('next')" class="flex-1 sm:flex-none h-11 px-10 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">Lanjut</button>
                                 @else
-                                    <button type="button" onclick="confirmFinish()" class="flex-1 sm:flex-none h-11 px-10 bg-emerald-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-100">Selesai</button>
+                                    <button type="button" onclick="confirmFinish()" class="flex-1 sm:flex-none h-11 px-10 bg-emerald-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-emerald-100">Selesai</button>
                                 @endif
                             </div>
                         </div>
@@ -227,25 +221,25 @@
     <div id="nav-modal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="toggleNav()"></div>
         <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-0 sm:p-6 pointer-events-none">
-            <div class="relative w-full max-w-lg bg-white rounded-t-[3rem] sm:rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] overflow-hidden pointer-events-auto flex flex-col max-h-[90vh] sm:max-h-[80vh] border border-slate-100 animate-drawer sm:animate-in sm:zoom-in">
+            <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-[3rem] sm:rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] overflow-hidden pointer-events-auto flex flex-col max-h-[90vh] sm:max-h-[80vh] border border-slate-100 dark:border-slate-800 transition-colors animate-drawer sm:animate-in sm:zoom-in">
                 
                 {{-- Header Navigator --}}
-                <div class="px-8 py-8 border-b border-slate-50 flex items-center justify-between shrink-0 bg-slate-50/30">
+                <div class="px-8 py-8 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between shrink-0 bg-slate-50/30 dark:bg-slate-800/50 transition-colors">
                     <div>
-                        <h3 class="text-xl font-extrabold text-slate-900 tracking-tight leading-none mb-2">NAVIGASI UJIAN</h3>
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white transition-colors tracking-tight leading-none mb-2">NAVIGASI UJIAN</h3>
                         <div class="flex items-center gap-4">
                             <div class="flex items-center gap-1.5">
-                                <span id="answered-count" class="text-blue-600 font-bold text-sm">0</span>
+                                <span id="answered-count" class="text-blue-600 dark:text-blue-400 font-bold text-sm">0</span>
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Terjawab</span>
                             </div>
-                            <div class="w-1 h-1 bg-slate-200 rounded-full"></div>
+                            <div class="w-1 h-1 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
                             <div class="flex items-center gap-1.5">
                                 <span id="unanswered-count" class="text-slate-400 font-bold text-sm">{{ $soals->count() }}</span>
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kosong</span>
                             </div>
                         </div>
                     </div>
-                    <button onclick="toggleNav()" class="w-12 h-12 bg-white text-slate-400 rounded-2xl flex items-center justify-center hover:text-rose-500 transition-all border border-slate-100 shadow-sm">
+                    <button onclick="toggleNav()" class="w-12 h-12 bg-white dark:bg-slate-800 text-slate-400 rounded-2xl flex items-center justify-center hover:text-rose-500 transition-all border border-slate-100 dark:border-slate-700 shadow-sm">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
@@ -265,25 +259,25 @@
                     </div>
 
                     {{-- Legend --}}
-                    <div class="mt-10 flex items-center justify-center gap-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <div class="mt-10 flex items-center justify-center gap-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 transition-colors">
                         <div class="flex items-center gap-2">
                             <div class="status-indicator bg-blue-600"></div>
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Selesai</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="status-indicator bg-blue-100 border border-blue-600"></div>
+                            <div class="status-indicator bg-blue-100 dark:bg-blue-900 transition-colors border border-blue-600"></div>
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Aktif</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="status-indicator bg-white border border-slate-200"></div>
+                            <div class="status-indicator bg-white dark:bg-slate-900 transition-colors border border-slate-200 dark:border-slate-700"></div>
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Kosong</span>
                         </div>
                     </div>
                 </div>
 
                 {{-- Footer Modal --}}
-                <div class="p-8 bg-white border-t border-slate-50 shrink-0">
-                    <button type="button" onclick="confirmFinish()" class="w-full py-5 bg-slate-900 text-white rounded-3xl font-bold text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-blue-600 active:scale-95 transition-all transform group">
+                <div class="p-8 bg-white dark:bg-slate-900 border-t border-slate-50 dark:border-slate-800 transition-colors shrink-0">
+                    <button type="button" onclick="confirmFinish()" class="w-full py-5 bg-slate-900 dark:bg-blue-600 text-white rounded-3xl font-bold text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-blue-600 dark:hover:bg-blue-500 active:scale-95 transition-all transform group">
                         SUBMIT FINAL ASSESSMENT
                         <svg class="inline-block w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </button>
@@ -383,18 +377,18 @@
         const lightIcon = document.getElementById('theme-toggle-light-icon');
 
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.body.classList.add('dark-mode');
+            document.documentElement.classList.add('dark');
             lightIcon.classList.remove('hidden');
         } else {
             darkIcon.classList.remove('hidden');
         }
 
         themeToggleBtn.addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
+            document.documentElement.classList.toggle('dark');
             darkIcon.classList.toggle('hidden');
             lightIcon.classList.toggle('hidden');
 
-            if (document.body.classList.contains('dark-mode')) {
+            if (document.documentElement.classList.contains('dark')) {
                 localStorage.setItem('color-theme', 'dark');
             } else {
                 localStorage.setItem('color-theme', 'light');

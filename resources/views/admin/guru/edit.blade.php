@@ -66,11 +66,11 @@
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Ganti Password (Opsional)</label>
-                                <input type="password" name="password" placeholder="Biarkan kosong jika tidak diubah"
-                                    class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
-                                <p class="text-[10px] font-medium text-slate-400 italic mt-2">*Hanya isi kolom ini jika ingin melakukan reset kredensial guru.</p>
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Update Password Baru</label>
+                                <x-password-input name="password" placeholder="Biarkan kosong jika tidak diubah" />
+                                <p class="text-[10px] font-medium text-slate-400 italic mt-2">*Kosongkan jika tidak ada pembaruan kredensial.</p>
                             </div>
+
 
                             <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-bold text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-900/20 hover:bg-blue-600 transition-all active:scale-95 flex items-center justify-center gap-3 transform">
                                 <span>Perbarui Data Pendidik</span>

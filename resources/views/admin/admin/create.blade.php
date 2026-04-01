@@ -60,13 +60,11 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div class="space-y-2">
                                     <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Password</label>
-                                    <input type="password" name="password" placeholder="••••••••" required
-                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
+                                    <x-password-input name="password" placeholder="••••••••" required />
                                 </div>
                                 <div class="space-y-2">
                                     <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Konfirmasi</label>
-                                    <input type="password" name="password_confirmation" placeholder="••••••••" required
-                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
+                                    <x-password-input name="password_confirmation" placeholder="••••••••" required />
                                 </div>
                             </div>
 

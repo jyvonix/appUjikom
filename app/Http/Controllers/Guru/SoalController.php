@@ -133,9 +133,43 @@ class SoalController extends Controller
         return view('guru.soal.kunci_jawaban', compact('soals'));
     }
 
-    public function analisis()
+    public function show(Soal $soal)
     {
-        $soals = Soal::where('user_id', Auth::id())->get();
+        if ($soal->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $nilais = \App\Models\Nilai::all();
+        $statistik_siswa = [];
+
+        foreach ($nilais as $nilai) {
+            if (isset($nilai->list_jawaban[$soal->id])) {
+                $statistik_siswa[] = [
+                    'nama' => $nilai->user->name,
+                    'username' => $nilai->user->username,
+                    'jawaban' => strtoupper($nilai->list_jawaban[$soal->id]),
+                    'is_correct' => strtoupper($nilai->list_jawaban[$soal->id]) == strtoupper($soal->jawaban_benar),
+                    'waktu' => $nilai->created_at->diffForHumans()
+                ];
+            }
+        }
+
+        return view('guru.soal.show', compact('soal', 'statistik_siswa'));
+    }
+
+    public function analisis(Request $request)
+    {
+        $query = Soal::where('user_id', Auth::id());
+
+        if ($request->has('kategori')) {
+            $query->where('kategori', 'like', "%{$request->kategori}%");
+        }
+
+        if ($request->has('kesulitan')) {
+            $query->where('kesulitan', $request->kesulitan);
+        }
+
+        $soals = $query->get();
         $nilais = \App\Models\Nilai::all();
         
         $statistik = [];
@@ -173,11 +207,13 @@ class SoalController extends Controller
             ];
         }
 
-        // Urutkan dari yang paling banyak salahnya (paling sulit)
+        // Urutkan dari yang paling banyak salahnya (paling sulit) jika tidak ada filter urutan lain
         uasort($statistik, function($a, $b) {
             return $b['tingkat_kesulitan_aktual'] <=> $a['tingkat_kesulitan_aktual'];
         });
 
-        return view('guru.soal.analisis', compact('statistik'));
+        $kategoris = Soal::where('user_id', Auth::id())->distinct()->pluck('kategori')->filter();
+
+        return view('guru.soal.analisis', compact('statistik', 'kategoris'));
     }
 }

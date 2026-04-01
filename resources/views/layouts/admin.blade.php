@@ -116,8 +116,8 @@
             
             {{-- Branding --}}
             <div class="p-8 flex flex-col items-center text-center gap-4">
-                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-xl shadow-blue-100 border border-blue-50">
-                    <img src="{{ asset('storage/image/images.png') }}" class="w-10 h-10 object-contain" alt="Logo">
+                <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-xl shadow-blue-100 border border-blue-50">
+                    <img src="{{ asset('storage/image/images.png') }}" class="w-14 h-14 object-contain" alt="Logo">
                 </div>
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 tracking-tight uppercase leading-none">SmartExam</h2>
@@ -225,4 +225,4 @@
 
     @stack('scripts')
 </body>
-</html>
+</html>l>

@@ -60,15 +60,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div class="space-y-2">
                         <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Password</label>
-                        <input id="password" type="password" name="password" required
-                            class="block w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-semibold text-slate-700 placeholder:text-slate-300 input-focus transition-all"
-                            placeholder="••••••••">
+                        <x-password-input id="password" name="password" required placeholder="••••••••" />
                     </div>
                     <div class="space-y-2">
                         <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Konfirmasi</label>
-                        <input id="password_confirmation" type="password" name="password_confirmation" required
-                            class="block w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-semibold text-slate-700 placeholder:text-slate-300 input-focus transition-all"
-                            placeholder="••••••••">
+                        <x-password-input id="password_confirmation" name="password_confirmation" required placeholder="••••••••" />
                     </div>
                 </div>
                 @error('password') <p class="text-[10px] font-bold text-rose-500 mt-1 ml-1">{{ $message }}</p> @enderror

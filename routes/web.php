@@ -24,16 +24,29 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+use App\Http\Controllers\Admin\ModulController as AdminModulController;
+
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
         $stats = [
+            'admin' => \App\Models\User::where('role', 'admin')->count(),
             'guru' => \App\Models\User::where('role', 'guru')->count(),
             'siswa' => \App\Models\User::where('role', 'siswa')->count(),
-            'admin' => \App\Models\User::where('role', 'admin')->count(),
-            'total_user' => \App\Models\User::count(),
+            'soal' => \App\Models\Soal::count(),
         ];
         return view('admin.dashboard', compact('stats'));
     })->name('admin.dashboard');
+
+    Route::resource('/admin/modul', AdminModulController::class)->names([
+        'index' => 'admin.modul.index',
+        'create' => 'admin.modul.create',
+        'store' => 'admin.modul.store',
+        'show' => 'admin.modul.show',
+        'edit' => 'admin.modul.edit',
+        'update' => 'admin.modul.update',
+        'destroy' => 'admin.modul.destroy',
+    ]);
+
 
     Route::resource('/admin/admin', AdministratorController::class)->names([
         'index' => 'admin.admin.index',
@@ -85,6 +98,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 use App\Http\Controllers\Guru\SoalController as GuruSoalController;
 use App\Http\Controllers\Guru\NilaiController as GuruNilaiController;
 
+use App\Http\Controllers\Guru\ModulController as GuruModulController;
+
 Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/guru/dashboard', function () {
         $stats = [
@@ -95,6 +110,17 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         return view('guru.dashboard', compact('stats'));
     })->name('guru.dashboard');
 
+    Route::resource('/guru/modul', GuruModulController::class)->names([
+        'index' => 'guru.modul.index',
+        'create' => 'guru.modul.create',
+        'store' => 'guru.modul.store',
+        'edit' => 'guru.modul.edit',
+        'update' => 'guru.modul.update',
+        'destroy' => 'guru.modul.destroy',
+    ]);
+
+    Route::get('/guru/soal/bulk', [GuruSoalController::class, 'bulkCreate'])->name('guru.soal.bulk');
+    Route::post('/guru/soal/bulk', [GuruSoalController::class, 'bulkStore'])->name('guru.soal.bulk.store');
     Route::get('/guru/soal/export', [GuruSoalController::class, 'export'])->name('guru.soal.export');
     Route::post('/guru/soal/import', [GuruSoalController::class, 'import'])->name('guru.soal.import');
     Route::get('/guru/kunci-jawaban', [GuruSoalController::class, 'kunciJawaban'])->name('guru.soal.kunci');

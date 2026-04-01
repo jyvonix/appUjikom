@@ -9,6 +9,7 @@ class Nilai extends Model
 {
     protected $fillable = [
         'user_id',
+        'modul_id',
         'jumlah_benar',
         'skor',
         'list_jawaban',
@@ -17,6 +18,11 @@ class Nilai extends Model
     protected $casts = [
         'list_jawaban' => 'array',
     ];
+
+    public function modul(): BelongsTo
+    {
+        return $this->belongsTo(Modul::class);
+    }
 
     public function user(): BelongsTo
     {

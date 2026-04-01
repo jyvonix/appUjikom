@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Soal extends Model
 {
     protected $fillable = [
+        'modul_id',
         'pertanyaan',
         'gambar',
         'opsi_a',
@@ -16,10 +17,16 @@ class Soal extends Model
         'opsi_d',
         'opsi_e',
         'jawaban_benar',
-        'user_id',
         'kategori',
         'kesulitan',
+        'user_id'
     ];
+
+    public function modul()
+    {
+        return $this->belongsTo(Modul::class);
+    }
+
 
     public function user(): BelongsTo
     {

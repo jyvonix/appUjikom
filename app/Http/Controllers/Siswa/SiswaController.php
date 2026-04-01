@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Siswa;
 use App\Http\Controllers\Controller;
 use App\Models\Soal;
 use App\Models\Nilai;
+use App\Models\Modul;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -14,13 +15,13 @@ class SiswaController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-        $nilai_terakhir = Nilai::where('user_id', $user->id)->latest()->first();
+        $moduls = Modul::where('is_active', true)->withCount('soals')->get();
         $total_ujian = Nilai::where('user_id', $user->id)->count();
         $rata_rata = Nilai::where('user_id', $user->id)->avg('skor') ?? 0;
         
         $streak = $this->calculateStreak($user->id);
 
-        return view('siswa.dashboard', compact('nilai_terakhir', 'total_ujian', 'rata_rata', 'streak'));
+        return view('siswa.dashboard', compact('moduls', 'total_ujian', 'rata_rata', 'streak'));
     }
 
     private function calculateStreak($userId)
@@ -41,7 +42,6 @@ class SiswaController extends Controller
         $yesterday = Carbon::yesterday();
         $latestDate = Carbon::parse($dates[0]);
 
-        // If the latest activity is not today or yesterday, the streak is broken
         if (!$latestDate->equalTo($today) && !$latestDate->equalTo($yesterday)) {
             return 0;
         }
@@ -49,7 +49,6 @@ class SiswaController extends Controller
         $currentDate = $latestDate;
         foreach ($dates as $date) {
             $dateObj = Carbon::parse($date);
-            
             if ($dateObj->equalTo($currentDate)) {
                 $streak++;
                 $currentDate->subDay();
@@ -57,45 +56,47 @@ class SiswaController extends Controller
                 break;
             }
         }
-
         return $streak;
     }
 
     public function indexSoal()
     {
-        $soals = Soal::all();
-        $total_ujian = Nilai::where('user_id', Auth::id())->count();
-        $max_retakes = \App\Models\Setting::get('max_retakes', 1);
-        $kkm = \App\Models\Setting::get('kkm', 75);
-        $sudah_mencapai_batas = $total_ujian >= $max_retakes;
-        
-        return view('siswa.soal.index', compact('soals', 'sudah_mencapai_batas', 'max_retakes', 'total_ujian', 'kkm'));
+        // Dialihkan ke dashboard karena sekarang pilih modul di dashboard
+        return redirect()->route('siswa.dashboard');
     }
 
-    public function kerjakanUjian()
+    public function kerjakanUjian(Request $request)
     {
-        $soals = Soal::inRandomOrder()->get();
-        $total_ujian = Nilai::where('user_id', Auth::id())->count();
-        $max_retakes = \App\Models\Setting::get('max_retakes', 1);
-        $duration = \App\Models\Setting::get('exam_duration', 60);
+        $modul_id = $request->query('modul_id');
+        $modul = Modul::with('soals')->findOrFail($modul_id);
 
-        if ($total_ujian >= $max_retakes) {
-            return redirect()->route('siswa.soal.index')->with('error', 'Anda telah mencapai batas maksimal pengulangan ujian.');
+        // Cek apakah sudah pernah mengerjakan modul ini
+        $sudah_ujian = Nilai::where('user_id', Auth::id())->where('modul_id', $modul_id)->exists();
+        $max_retakes = \App\Models\Setting::get('max_retakes', 1);
+        $total_percobaan = Nilai::where('user_id', Auth::id())->where('modul_id', $modul_id)->count();
+
+        if ($total_percobaan >= $max_retakes) {
+            return redirect()->route('siswa.dashboard')->with('error', 'Anda telah mencapai batas maksimal pengerjaan untuk modul ' . $modul->nama);
         }
         
+        $soals = $modul->soals()->inRandomOrder()->get();
+        
         if ($soals->isEmpty()) {
-            return redirect()->route('siswa.soal.index')->with('error', 'Belum ada soal yang tersedia.');
+            return redirect()->route('siswa.dashboard')->with('error', 'Modul ini belum memiliki soal.');
         }
 
-        return view('siswa.soal.kerjakan', compact('soals', 'duration'));
+        $duration = $modul->waktu;
+
+        return view('siswa.soal.kerjakan', compact('soals', 'modul', 'duration'));
     }
 
     public function simpanUjian(Request $request)
     {
-        $soals = Soal::all();
+        $modul_id = $request->input('modul_id');
+        $modul = Modul::findOrFail($modul_id);
+        $soals = $modul->soals;
+        
         $jumlah_benar = 0;
-        $point_per_question = (float) \App\Models\Setting::get('point_per_question', 10);
-        $score_divisor = (float) \App\Models\Setting::get('score_divisor', 1);
         $list_jawaban = [];
 
         foreach ($soals as $soal) {
@@ -107,43 +108,34 @@ class SiswaController extends Controller
             }
         }
 
-        // Rumus: (Benar * Poin) / Pembagi
-        $skor = ($jumlah_benar * $point_per_question) / ($score_divisor > 0 ? $score_divisor : 1);
+        // Skor = (Benar / Total) * 100
+        $total_soal = $soals->count();
+        $skor = ($jumlah_benar / ($total_soal > 0 ? $total_soal : 1)) * 100;
 
         Nilai::create([
             'user_id' => Auth::id(),
+            'modul_id' => $modul_id,
             'jumlah_benar' => $jumlah_benar,
             'skor' => round($skor, 2),
             'list_jawaban' => $list_jawaban,
         ]);
 
-        return redirect()->route('siswa.nilai.index')->with('success', 'Ujian telah selesai! Skor Anda: ' . round($skor, 2));
+        return redirect()->route('siswa.nilai.index')->with('success', 'Ujian ' . $modul->nama . ' telah selesai! Skor Anda: ' . round($skor, 2));
     }
 
     public function indexNilai()
     {
         $user = Auth::user();
-        $nilais = Nilai::where('user_id', $user->id)->latest()->get();
+        $nilais = Nilai::where('user_id', $user->id)->with('modul')->latest()->get();
         $kkm = \App\Models\Setting::get('kkm', 75);
-        $total_ujian = Nilai::where('user_id', $user->id)->count();
-        $max_retakes = \App\Models\Setting::get('max_retakes', 1);
 
-        return view('siswa.nilai.index', compact('nilais', 'kkm', 'total_ujian', 'max_retakes'));
+        return view('siswa.nilai.index', compact('nilais', 'kkm'));
     }
 
     public function previewNilai($id)
     {
-        $user = Auth::user();
-        $total_ujian = Nilai::where('user_id', $user->id)->count();
-        $max_retakes = \App\Models\Setting::get('max_retakes', 1);
-
-        // Hanya boleh preview jika sudah mencapai batas maksimal percobaan
-        if ($total_ujian < $max_retakes) {
-            return redirect()->route('siswa.nilai.index')->with('error', 'Fitur review hanya tersedia setelah Anda menyelesaikan seluruh kesempatan ujian.');
-        }
-
-        $nilai = Nilai::where('id', $id)->where('user_id', $user->id)->firstOrFail();
-        $soals = Soal::all();
+        $nilai = Nilai::where('id', $id)->where('user_id', Auth::id())->with('modul')->firstOrFail();
+        $soals = Soal::where('modul_id', $nilai->modul_id)->get();
 
         return view('siswa.nilai.preview', compact('nilai', 'soals'));
     }

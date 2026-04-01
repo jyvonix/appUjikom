@@ -108,12 +108,21 @@
 
                                     <div class="space-y-6 mb-8">
                                         <div>
-                                            <label class="block text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-3 ml-1">Kategori / Mata Pelajaran</label>
-                                            <input type="text" name="kategori" value="{{ old('kategori', $soal->kategori) }}" 
-                                                class="w-full px-5 py-4 bg-white/5 border-2 border-white/10 rounded-xl focus:bg-white/10 focus:border-blue-500 transition-all outline-none font-bold text-white text-xs placeholder:text-slate-600" 
-                                                placeholder="Contoh: Produktif, MTK, dll">
+                                            <label class="block text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-3 ml-1">Pilih Modul Ujian</label>
+                                            <select name="modul_id" required class="w-full px-5 py-4 bg-white/5 border-2 border-white/10 rounded-xl focus:bg-white/10 focus:border-blue-500 transition-all outline-none font-black text-white text-xs appearance-none cursor-pointer group">
+                                                @foreach($moduls as $modul)
+                                                    <option value="{{ $modul->id }}" class="bg-slate-900" {{ old('modul_id', $soal->modul_id) == $modul->id ? 'selected' : '' }}>{{ $modul->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('modul_id') <p class="mt-1 text-rose-500 text-[8px] font-black uppercase">{{ $message }}</p> @enderror
                                         </div>
 
+                                        <div>
+                                            <label class="block text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-3 ml-1">Kategori (Label Tambahan)</label>
+                                            <input type="text" name="kategori" value="{{ old('kategori', $soal->kategori) }}" 
+                                                class="w-full px-5 py-4 bg-white/5 border-2 border-white/10 rounded-xl focus:bg-white/10 focus:border-blue-500 transition-all outline-none font-bold text-white text-xs placeholder:text-slate-600" 
+                                                placeholder="Contoh: Logika, MTK, dll">
+                                        </div>
                                         <div>
                                             <label class="block text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-3 ml-1">Tingkat Kesulitan</label>
                                             <select name="kesulitan" class="w-full px-5 py-4 bg-white/5 border-2 border-white/10 rounded-xl focus:bg-white/10 focus:border-blue-500 transition-all outline-none font-black text-white text-xs appearance-none cursor-pointer group">

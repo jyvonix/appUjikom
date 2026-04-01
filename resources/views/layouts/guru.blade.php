@@ -79,6 +79,10 @@
                             Dashboard
                         </x-nav-link-guru>
 
+                        <x-nav-link-guru href="{{ route('guru.modul.index') }}" :active="request()->routeIs('guru.modul.*')" icon="modul">
+                            Modul Ujian
+                        </x-nav-link-guru>
+
                         <p x-show="sidebarOpen" class="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 mt-8">Manajemen Ujian</p>
                         
                         <x-nav-link-guru href="{{ route('guru.soal.index') }}" :active="request()->routeIs('guru.soal.*') && !request()->routeIs('guru.soal.analisis')" icon="bank">
@@ -186,12 +190,16 @@
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
-            timer: 4500,
+            timer: 4000,
             timerProgressBar: true,
             customClass: {
-                popup: 'swal-custom shadow-2xl border-none p-4',
+                popup: 'rounded-[1.5rem] border-none shadow-2xl backdrop-blur-xl bg-white/90 p-4',
                 title: 'text-sm font-black text-slate-800',
                 htmlContainer: 'text-[11px] font-bold text-slate-500'
+            },
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
             }
         });
 

@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     {{-- Theme Logic --}}
     <script>
@@ -181,6 +182,31 @@
 
     @stack('scripts')
     <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true,
+            customClass: {
+                popup: 'rounded-[1.5rem] border-none shadow-2xl backdrop-blur-xl bg-white/90 p-4',
+                title: 'text-sm font-black text-slate-800',
+                htmlContainer: 'text-[11px] font-bold text-slate-500'
+            },
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        @if(session('success'))
+            Toast.fire({ icon: 'success', title: 'Berhasil', text: '{{ session('success') }}', iconColor: '#3b82f6' });
+        @endif
+
+        @if(session('error'))
+            Toast.fire({ icon: 'error', title: 'Gagal', text: '{{ session('error') }}', iconColor: '#f43f5e' });
+        @endif
+
         const themeToggleGlobalBtn = document.getElementById('theme-toggle-global');
         const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
         const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');

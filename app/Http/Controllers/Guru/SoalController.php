@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
 use App\Models\Soal;
+use App\Models\Modul;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\SoalExport;
@@ -20,13 +21,76 @@ class SoalController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+            'file' => 'required|mimes:xlsx,xls,csv',
+            'modul_id' => 'nullable|exists:moduls,id'
         ]);
 
-        Excel::import(new SoalImport, $request->file('file'));
+        Excel::import(new SoalImport($request->modul_id), $request->file('file'));
 
-        return redirect()->back()->with('success', 'Soal berhasil diimport.');
+        return redirect()->back()->with('success', 'Data soal berhasil diimpor.');
     }
+
+    public function bulkCreate(Request $request)
+    {
+        $selected_modul_id = $request->query('modul_id');
+        $moduls = Modul::where('user_id', Auth::id())->where('is_active', true)->get();
+        return view('guru.soal.bulk', compact('moduls', 'selected_modul_id'));
+    }
+
+    public function bulkStore(Request $request)
+    {
+        $request->validate([
+            'modul_id' => 'required|exists:moduls,id',
+            'raw_text' => 'required|string'
+        ]);
+
+        $text = $request->raw_text;
+        // Logika sederhana untuk memisahkan soal berdasarkan baris baru dan pola A. B. C.
+        $lines = explode("\n", $text);
+        $current_soal = null;
+        $count = 0;
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line)) continue;
+
+            // Jika baris mengandung pola "1. " atau diakhiri "?" atau tidak diawali A-E, anggap sebagai pertanyaan
+            if (!preg_match('/^[A-E][.\)]/i', $line)) {
+                if ($current_soal) {
+                    Soal::create($current_soal);
+                    $count++;
+                }
+                $current_soal = [
+                    'modul_id' => $request->modul_id,
+                    'pertanyaan' => preg_replace('/^\d+[.\)]\s*/', '', $line),
+                    'opsi_a' => '', 'opsi_b' => '', 'opsi_c' => '', 'opsi_d' => '', 'opsi_e' => '',
+                    'jawaban_benar' => 'A',
+                    'kesulitan' => 'sedang',
+                    'user_id' => Auth::id()
+                ];
+            } else {
+                // Ekstrak opsi
+                if (preg_match('/^A[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_a'] = $matches[1];
+                elseif (preg_match('/^B[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_b'] = $matches[1];
+                elseif (preg_match('/^C[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_c'] = $matches[1];
+                elseif (preg_match('/^D[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_d'] = $matches[1];
+                elseif (preg_match('/^E[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_e'] = $matches[1];
+                
+                // Cek jika baris mengandung kunci jawaban (misal: *Kunci: A*)
+                if (preg_match('/Kunci:\s*([A-E])/i', $line, $matches)) {
+                    $current_soal['jawaban_benar'] = strtoupper($matches[1]);
+                }
+            }
+        }
+
+        if ($current_soal) {
+            Soal::create($current_soal);
+            $count++;
+        }
+
+        return redirect()->route('guru.modul.show', $request->modul_id)->with('success', "$count soal berhasil diimpor dari teks.");
+    }
+
     public function index(Request $request)
     {
         $query = Soal::where('user_id', Auth::id());
@@ -41,14 +105,17 @@ class SoalController extends Controller
         return view('guru.soal.index', compact('soals'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('guru.soal.create');
+        $selected_modul_id = $request->query('modul_id');
+        $moduls = Modul::where('user_id', Auth::id())->where('is_active', true)->get();
+        return view('guru.soal.create', compact('moduls', 'selected_modul_id'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'modul_id' => ['required', 'exists:moduls,id'],
             'pertanyaan' => ['required', 'string'],
             'gambar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'opsi_a' => ['required', 'string'],
@@ -70,7 +137,7 @@ class SoalController extends Controller
 
         Soal::create($data);
 
-        return redirect()->route('guru.soal.index')->with('success', 'Soal berhasil ditambahkan.');
+        return redirect()->route('guru.soal.index')->with('success', 'Soal berhasil ditambahkan ke modul.');
     }
 
     public function edit(Soal $soal)
@@ -79,7 +146,8 @@ class SoalController extends Controller
         if ($soal->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
-        return view('guru.soal.edit', compact('soal'));
+        $moduls = Modul::where('user_id', Auth::id())->get();
+        return view('guru.soal.edit', compact('soal', 'moduls'));
     }
 
     public function update(Request $request, Soal $soal)
@@ -89,6 +157,7 @@ class SoalController extends Controller
         }
 
         $request->validate([
+            'modul_id' => ['required', 'exists:moduls,id'],
             'pertanyaan' => ['required', 'string'],
             'gambar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'opsi_a' => ['required', 'string'],

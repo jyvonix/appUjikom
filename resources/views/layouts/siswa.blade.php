@@ -119,6 +119,17 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.2); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.4); }
+
+        /* Custom Mobile Nav Styles */
+        .mobile-dock {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        html.dark .mobile-dock {
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -126,34 +137,35 @@
 
     @if(!($hideNav ?? false))
     <nav class="fixed top-0 left-0 right-0 z-[100] glass-nav h-16 md:h-20 flex items-center">
-        <div class="max-w-7xl mx-auto px-6 md:px-10 w-full flex justify-between items-center">
-            <div class="flex items-center gap-10"> 
+        <div class="max-w-7xl mx-auto px-4 md:px-10 w-full flex justify-between items-center">
+            <div class="flex items-center gap-8"> 
                 <a href="{{ route('siswa.dashboard') }}" class="flex items-center gap-2.5 group"> 
-                    <img src="{{ asset('storage/image/images.png') }}" class="w-12 h-12 object-contain" alt="Logo">
-                    <span class="text-lg font-bold tracking-tight text-slate-900 hidden sm:inline">Smart<span class="text-blue-600">Exam</span></span>
+                    <img src="{{ asset('storage/image/images.png') }}" class="w-10 h-10 md:w-12 md:h-12 object-contain" alt="Logo">
+                    <span class="text-base md:text-lg font-black tracking-tighter dark:text-white">SMART<span class="text-indigo-600">EXAM</span></span>
                 </a>
                 <div class="hidden md:flex items-center gap-1">
-                    <a href="{{ route('siswa.dashboard') }}" class="px-4 py-2 rounded-xl text-[13px] font-semibold transition-all {{ request()->routeIs('siswa.dashboard') ? 'text-blue-600 bg-blue-50' : 'text-slate-500 hover:text-blue-600 hover:bg-slate-50' }}">Dashboard</a>
-                    <a href="{{ route('siswa.soal.index') }}" class="px-4 py-2 rounded-xl text-[13px] font-semibold transition-all {{ request()->routeIs('siswa.soal.*') ? 'text-blue-600 bg-blue-50' : 'text-slate-500 hover:text-blue-600 hover:bg-slate-50' }}">Ujian</a>
-                    <a href="{{ route('siswa.nilai.index') }}" class="px-4 py-2 rounded-xl text-[13px] font-semibold transition-all {{ request()->routeIs('siswa.nilai.*') ? 'text-blue-600 bg-blue-50' : 'text-slate-500 hover:text-blue-600 hover:bg-slate-50' }}">Riwayat</a>
+                    <a href="{{ route('siswa.dashboard') }}" class="px-5 py-2 rounded-xl text-[13px] font-bold transition-all {{ request()->routeIs('siswa.dashboard') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Dashboard</a>
+                    <a href="{{ route('siswa.soal.index') }}" class="px-5 py-2 rounded-xl text-[13px] font-bold transition-all {{ request()->routeIs('siswa.soal.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Ujian</a>
+                    <a href="{{ route('siswa.nilai.index') }}" class="px-5 py-2 rounded-xl text-[13px] font-bold transition-all {{ request()->routeIs('siswa.nilai.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Riwayat</a>
                 </div>
             </div>
             
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 md:gap-4">
                 {{-- Theme Toggle --}}
-                <button id="theme-toggle-global" type="button" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-all border border-slate-100 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400">
-                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                <button id="theme-toggle-global" type="button" class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-slate-500 hover:text-indigo-600 transition-all border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <svg id="theme-toggle-dark-icon" class="hidden w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
                 </button>
 
-                <div class="hidden sm:flex flex-col text-right pr-4 border-r border-slate-100">
-                    <span class="text-[13px] font-bold text-slate-800 leading-none">{{ Auth::user()->name }}</span>
-                    <span class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-1">Student</span>
+                <div class="hidden sm:flex flex-col text-right pr-4 border-r border-slate-200 dark:border-slate-700">
+                    <span class="text-[13px] font-black text-slate-800 dark:text-white leading-none">{{ Auth::user()->name }}</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Authorized User</span>
                 </div>
+                
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all border border-slate-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <button type="submit" class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-rose-500 transition-all border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     </button>
                 </form>
             </div>
@@ -161,25 +173,30 @@
     </nav>
     @endif
 
-    <main class="w-full max-w-7xl mx-auto px-6 md:px-10 {{ ($hideNav ?? false) ? 'pt-6' : 'pt-24 md:pt-32' }} pb-32 page-enter">
+    <main class="w-full max-w-7xl mx-auto px-4 md:px-10 {{ ($hideNav ?? false) ? 'pt-6' : 'pt-24 md:pt-36' }} pb-32 md:pb-20 page-enter">
         {{ $slot }}
     </main>
 
-    {{-- Luxury Bottom Tab for Mobile --}}
+    {{-- Refined Mobile Tab Bar --}}
     @if(!($hideNav ?? false))
-    <div class="md:hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-[360px]">
-        <div class="bg-white/90 backdrop-blur-xl rounded-[2rem] p-2 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100">
-            <a href="{{ route('siswa.dashboard') }}" class="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all {{ request()->routeIs('siswa.dashboard') ? 'text-blue-600 bg-blue-50' : 'text-slate-400' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                <span class="text-[10px] font-bold uppercase tracking-tight">Home</span>
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-[100] mobile-dock pb-safe">
+        <div class="flex items-center justify-around h-20 px-4">
+            <a href="{{ route('siswa.dashboard') }}" class="flex flex-col items-center gap-1 px-4 transition-all {{ request()->routeIs('siswa.dashboard') ? 'text-indigo-600 scale-110' : 'text-slate-400' }}">
+                <div class="w-6 h-6 flex items-center justify-center">
+                    <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                </div>
+                <span class="text-[9px] font-black uppercase tracking-widest">Home</span>
             </a>
-            <a href="{{ route('siswa.soal.index') }}" class="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all {{ request()->routeIs('siswa.soal.*') ? 'text-blue-600 bg-blue-50' : 'text-slate-400' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                <span class="text-[10px] font-bold uppercase tracking-tight">Exam</span>
+            <a href="{{ route('siswa.soal.index') }}" class="relative -top-8 flex flex-col items-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-indigo-500/40 border-4 border-[#f8fafc] dark:border-[#020617] active:scale-90 transition-transform">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
             </a>
-            <a href="{{ route('siswa.nilai.index') }}" class="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all {{ request()->routeIs('siswa.nilai.*') ? 'text-blue-600 bg-blue-50' : 'text-slate-400' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span class="text-[10px] font-bold uppercase tracking-tight">History</span>
+            <a href="{{ route('siswa.nilai.index') }}" class="flex flex-col items-center gap-1 px-4 transition-all {{ request()->routeIs('siswa.nilai.*') ? 'text-indigo-600 scale-110' : 'text-slate-400' }}">
+                <div class="w-6 h-6 flex items-center justify-center">
+                    <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <span class="text-[9px] font-black uppercase tracking-widest">History</span>
             </a>
         </div>
     </div>

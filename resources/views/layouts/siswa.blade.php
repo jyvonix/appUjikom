@@ -24,10 +24,10 @@
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: #f8fafc;
-            color: #334155;
+            color: #1e293b;
             overflow-x: hidden;
-            letter-spacing: -0.015em;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            letter-spacing: -0.02em;
+            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Dark Mode Global Styles */
@@ -36,84 +36,89 @@
             color: #f1f5f9;
         }
 
-        html.dark .glass-nav {
-            background: rgba(15, 23, 42, 0.8);
-            border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+        /* Core Elements Text Visibility Fix */
+        html.dark .text-slate-900, html.dark .text-slate-800, html.dark h1, html.dark h2, html.dark h3, html.dark h4 {
+            color: #ffffff !important;
         }
-
-        html.dark .bg-white, html.dark .bg-white\/90 {
-            background-color: #0f172a !important;
-            border-color: #1e293b !important;
-        }
-
-        html.dark .text-slate-900, html.dark .text-slate-800 {
-            color: #f8fafc !important;
-        }
-
-        html.dark .text-slate-500, html.dark .text-slate-400 {
+        html.dark .text-slate-600, html.dark .text-slate-500, html.dark .text-slate-400 {
             color: #94a3b8 !important;
         }
 
-        html.dark .bg-slate-50, html.dark .bg-slate-50\/30 {
-            background-color: #1e293b !important;
-        }
-
-        html.dark .border-slate-100, html.dark .border-slate-50 {
-            border-color: #1e293b !important;
-        }
-
-        html.dark .card-pro {
-            background: #0f172a;
-            border-color: #1e293b;
-        }
-
-        html.dark .bg-subtle {
-            background: 
-                radial-gradient(circle at 100% 0%, rgba(79, 70, 229, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 0% 100%, rgba(124, 58, 237, 0.05) 0%, transparent 40%);
-        }
-        
         .bg-subtle {
             position: fixed;
             inset: 0;
             z-index: -1;
             background: 
-                radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 0% 100%, rgba(59, 130, 246, 0.02) 0%, transparent 40%);
+                radial-gradient(circle at 100% 0%, rgba(79, 70, 229, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.04) 0%, transparent 40%);
         }
+        
+        html.dark .bg-subtle {
+            background: 
+                radial-gradient(circle at 100% 0%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+        }
+
         .glass-nav {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: saturate(180%) blur(12px);
-            -webkit-backdrop-filter: saturate(180%) blur(12px);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
+
+        html.dark .glass-nav {
+            background: rgba(15, 23, 42, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
         .card-pro {
             background: #ffffff;
-            border: 1px solid rgba(241, 245, 249, 1);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02), 0 4px 6px -2px rgba(0, 0, 0, 0.01);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        html.dark .card-pro {
+            background: #0f172a;
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
         .card-pro:hover {
+            transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-            border-color: rgba(37, 99, 235, 0.1);
+            border-color: rgba(79, 70, 229, 0.2);
         }
-        .text-blue-gradient {
-            background: linear-gradient(to right, #1e40af, #3b82f6);
+
+        .text-indigo-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #a855f7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .page-enter {
-            animation: fadeIn 0.5s ease-out;
+
+        .btn-premium {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+
+        .btn-premium:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+        }
+
+        .page-enter {
+            animation: slideUpFade 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Optimized for Mobile Touch */
-        .touch-action-none { touch-action: none; }
-        ::-webkit-scrollbar { width: 5px; }
+
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.4); }
     </style>
 </head>
 <body class="antialiased">

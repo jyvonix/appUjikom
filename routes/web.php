@@ -32,7 +32,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             'admin' => \App\Models\User::where('role', 'admin')->count(),
             'guru' => \App\Models\User::where('role', 'guru')->count(),
             'siswa' => \App\Models\User::where('role', 'siswa')->count(),
-            'soal' => \App\Models\Soal::count(),
+            'modul' => \App\Models\Modul::count(),
         ];
         return view('admin.dashboard', compact('stats'));
     })->name('admin.dashboard');
@@ -77,8 +77,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/soal/export', [SoalController::class, 'export'])->name('admin.soal.export');
     Route::post('/admin/soal/import', [SoalController::class, 'import'])->name('admin.soal.import');
-    Route::resource('/admin/soal', SoalController::class)->names([
-        'index' => 'admin.soal.index',
+    Route::resource('/admin/soal', SoalController::class)->except(['index'])->names([
         'create' => 'admin.soal.create',
         'store' => 'admin.soal.store',
         'edit' => 'admin.soal.edit',
@@ -114,6 +113,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         'index' => 'guru.modul.index',
         'create' => 'guru.modul.create',
         'store' => 'guru.modul.store',
+        'show' => 'guru.modul.show',
         'edit' => 'guru.modul.edit',
         'update' => 'guru.modul.update',
         'destroy' => 'guru.modul.destroy',
@@ -124,9 +124,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/guru/soal/export', [GuruSoalController::class, 'export'])->name('guru.soal.export');
     Route::post('/guru/soal/import', [GuruSoalController::class, 'import'])->name('guru.soal.import');
     Route::get('/guru/kunci-jawaban', [GuruSoalController::class, 'kunciJawaban'])->name('guru.soal.kunci');
-    Route::get('/guru/soal/analisis', [GuruSoalController::class, 'analisis'])->name('guru.soal.analisis');
-    Route::resource('/guru/soal', GuruSoalController::class)->names([
-        'index' => 'guru.soal.index',
+    Route::resource('/guru/soal', GuruSoalController::class)->except(['index'])->names([
         'create' => 'guru.soal.create',
         'store' => 'guru.soal.store',
         'show' => 'guru.soal.show',
@@ -137,6 +135,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     Route::get('/guru/nilai', [GuruNilaiController::class, 'index'])->name('guru.nilai.index');
     Route::get('/guru/nilai/export', [GuruNilaiController::class, 'export'])->name('guru.nilai.export');
+    Route::get('/guru/nilai/pdf', [GuruNilaiController::class, 'exportPdf'])->name('guru.nilai.pdf');
 });
 
 use App\Http\Controllers\Siswa\SiswaController as StudentSiswaController;

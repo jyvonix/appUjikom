@@ -13,12 +13,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <div class="lg:col-span-7">
                 <div class="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm relative overflow-hidden">
-                    <form action="{{ route('guru.soal.bulk.store') }}" method="POST">
+                    <form action="{{ route('guru.soal.bulk.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         
                         <div class="mb-8">
                             <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Target Modul Ujian</label>
-                            <select name="modul_id" required class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-indigo-500 focus:ring-8 focus:ring-indigo-500/5 transition-all font-semibold text-sm">
+                            <select name="modul_id" required class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-sm">
                                 <option value="">-- Pilih Modul --</option>
                                 @foreach($moduls as $modul)
                                     <option value="{{ $modul->id }}" {{ $selected_modul_id == $modul->id ? 'selected' : '' }}>{{ $modul->nama }}</option>
@@ -26,11 +26,30 @@
                             </select>
                         </div>
 
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="space-y-4">
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Unggah Dokumen (Word/PDF)</label>
+                                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-white hover:border-indigo-400 transition-all cursor-pointer group">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg class="w-8 h-8 mb-3 text-slate-300 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                                        <p id="file-label" class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-indigo-600 transition-colors">Pilih File .docx / .pdf</p>
+                                    </div>
+                                    <input type="file" name="file" class="hidden" accept=".docx,.pdf" onchange="document.getElementById('file-label').textContent = this.files[0].name" />
+                                </label>
+                            </div>
+                            <div class="flex flex-col justify-end">
+                                <p class="text-[10px] font-medium text-slate-400 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                    <span class="text-indigo-600 font-black block mb-1">Catatan:</span>
+                                    Gunakan fitur upload jika Anda ingin sistem mengekstrak teks secara otomatis dari file Word atau PDF. Pastikan format soal di dalam file sudah sesuai.
+                                </p>
+                            </div>
+                        </div>
+
                         <div class="mb-8">
-                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1 text-center">Tempel Teks Soal Di Sini</label>
-                            <textarea name="raw_text" rows="15" required
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1 text-center">Tempel Teks Soal Di Sini (Opsi Manual)</label>
+                            <textarea name="raw_text" rows="10"
                                 class="w-full px-6 py-8 bg-slate-900 border-none rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 transition-all outline-none font-mono text-indigo-300 text-sm placeholder:text-slate-700 shadow-inner resize-none leading-relaxed"
-                                placeholder="Contoh format:&#10;1. Apa ibu kota Indonesia?&#10;A. Jakarta&#10;B. Bandung&#10;C. Surabaya&#10;Kunci: A"></textarea>
+                                placeholder="Pilih file di atas ATAU tempel teks soal di sini..."></textarea>
                         </div>
 
                         <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95 flex items-center justify-center gap-3">

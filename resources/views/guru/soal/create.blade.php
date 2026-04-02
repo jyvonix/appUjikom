@@ -6,7 +6,7 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-10">
             <!-- Header Section (Compact) -->
             <div class="mb-10 flex items-center gap-6">
-                <a href="{{ route('guru.soal.index') }}" 
+                <a href="{{ $selected_modul_id ? route('guru.modul.show', $selected_modul_id) : route('guru.modul.index') }}" 
                     class="group w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-200 hover:bg-blue-600 transition-all duration-300">
                     <svg class="w-5 h-5 text-blue-600 group-hover:text-white transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -153,7 +153,7 @@
                                         <button type="submit" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg hover:scale-[1.02] transition-all active:scale-95">
                                             Simpan Soal
                                         </button>
-                                        <a href="{{ route('guru.soal.index') }}" class="block w-full py-3 text-slate-500 font-black text-center text-[9px] uppercase tracking-widest hover:text-white transition-all">
+                                        <a href="{{ $selected_modul_id ? route('guru.modul.show', $selected_modul_id) : route('guru.modul.index') }}" class="block w-full py-3 text-slate-500 font-black text-center text-[9px] uppercase tracking-widest hover:text-white transition-all">
                                             Batalkan
                                         </a>
                                     </div>

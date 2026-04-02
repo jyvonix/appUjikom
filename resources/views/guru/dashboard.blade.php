@@ -30,7 +30,7 @@
                 <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-xl shadow-indigo-200 group-hover:scale-110 transition-transform">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                 </div>
-                <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Bank Soal</p>
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Koleksi Soal</p>
                 <div class="flex items-end gap-3">
                     <h3 class="text-5xl font-black text-slate-900 leading-none tracking-tighter">{{ $stats['soal'] }}</h3>
                     <span class="text-xs font-black text-indigo-500 mb-1">Butir Soal</span>
@@ -82,21 +82,13 @@
             <h3 class="text-2xl font-black text-slate-800 tracking-tight mb-2">Alur Kerja Cepat</h3>
             <p class="text-slate-500 font-bold text-sm mb-12">Pilih tindakan yang ingin Anda lakukan segera.</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <a href="{{ route('guru.soal.create') }}" class="group p-8 rounded-[2.5rem] bg-indigo-50/50 border border-indigo-100 hover:bg-indigo-600 transition-all duration-500">
+            <div class="flex justify-center">
+                <a href="{{ route('guru.modul.create') }}" class="group w-full md:w-1/2 p-8 rounded-[2.5rem] bg-indigo-50/50 border border-indigo-100 hover:bg-indigo-600 transition-all duration-500">
                     <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-indigo-600 mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-6 transition-all">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
                     </div>
-                    <h4 class="text-lg font-black text-slate-900 group-hover:text-white transition-colors mb-2">Tambah Butir Soal</h4>
-                    <p class="text-xs font-bold text-indigo-400 group-hover:text-indigo-100 transition-colors">Susun pertanyaan baru untuk bank soal Anda.</p>
-                </a>
-
-                <a href="{{ route('guru.soal.analisis') }}" class="group p-8 rounded-[2.5rem] bg-slate-50 border border-slate-200 hover:bg-slate-900 transition-all duration-500">
-                    <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-slate-900 mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-6 transition-all">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    </div>
-                    <h4 class="text-lg font-black text-slate-900 group-hover:text-white transition-colors mb-2">Analisis Performa</h4>
-                    <p class="text-xs font-bold text-slate-400 group-hover:text-slate-500 transition-colors">Lihat statistik kesulitan soal secara real-time.</p>
+                    <h4 class="text-lg font-black text-slate-900 group-hover:text-white transition-colors mb-2">Buat Modul Ujian</h4>
+                    <p class="text-xs font-bold text-indigo-400 group-hover:text-indigo-100 transition-colors">Inisialisasi paket ujian baru untuk siswa Anda.</p>
                 </a>
             </div>
         </div>

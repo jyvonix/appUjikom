@@ -85,16 +85,8 @@
 
                         <p x-show="sidebarOpen" class="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 mt-8">Manajemen Ujian</p>
                         
-                        <x-nav-link-guru href="{{ route('guru.soal.index') }}" :active="request()->routeIs('guru.soal.*') && !request()->routeIs('guru.soal.analisis')" icon="bank">
-                            Bank Soal
-                        </x-nav-link-guru>
-                        
                         <x-nav-link-guru href="{{ route('guru.nilai.index') }}" :active="request()->routeIs('guru.nilai.*')" icon="results">
                             Hasil Ujian
-                        </x-nav-link-guru>
-                        
-                        <x-nav-link-guru href="{{ route('guru.soal.analisis') }}" :active="request()->routeIs('guru.soal.analisis')" icon="analysis">
-                            Analisis Soal
                         </x-nav-link-guru>
                     </div>
                 </div>

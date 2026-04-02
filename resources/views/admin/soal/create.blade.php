@@ -6,7 +6,7 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-10">
             <!-- Header Section (Compact) -->
             <div class="mb-10 flex items-center gap-6">
-                <a href="{{ route('admin.soal.index') }}" 
+                <a href="{{ $selected_modul_id ? route('admin.modul.show', $selected_modul_id) : route('admin.modul.index') }}" 
                     class="group w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-200 hover:bg-blue-600 transition-all duration-300">
                     <svg class="w-5 h-5 text-blue-600 group-hover:text-white transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -108,6 +108,17 @@
 
                                     <div class="space-y-6 mb-8">
                                         <div>
+                                            <label class="block text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-3 ml-1">Pilih Modul Ujian</label>
+                                            <select name="modul_id" required class="w-full px-5 py-4 bg-white/5 border-2 border-white/10 rounded-xl focus:bg-white/10 focus:border-blue-500 transition-all outline-none font-black text-white text-xs appearance-none cursor-pointer group">
+                                                <option value="" class="bg-slate-900">-- Pilih Modul --</option>
+                                                @foreach($moduls as $modul)
+                                                    <option value="{{ $modul->id }}" class="bg-slate-900" {{ (old('modul_id') ?? $selected_modul_id) == $modul->id ? 'selected' : '' }}>{{ $modul->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('modul_id') <p class="mt-1 text-rose-500 text-[8px] font-black uppercase">{{ $message }}</p> @enderror
+                                        </div>
+
+                                        <div>
                                             <label class="block text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-3 ml-1">Kategori / Mata Pelajaran</label>
                                             <input type="text" name="kategori" value="{{ old('kategori') }}" 
                                                 class="w-full px-5 py-4 bg-white/5 border-2 border-white/10 rounded-xl focus:bg-white/10 focus:border-blue-500 transition-all outline-none font-bold text-white text-xs placeholder:text-slate-600" 
@@ -142,7 +153,7 @@
                                         <button type="submit" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg hover:scale-[1.02] transition-all active:scale-95">
                                             Simpan Soal
                                         </button>
-                                        <a href="{{ route('admin.soal.index') }}" class="block w-full py-3 text-slate-500 font-black text-center text-[9px] uppercase tracking-widest hover:text-white transition-all">
+                                        <a href="{{ $selected_modul_id ? route('admin.modul.show', $selected_modul_id) : route('admin.modul.index') }}" class="block w-full py-3 text-slate-500 font-black text-center text-[9px] uppercase tracking-widest hover:text-white transition-all">
                                             Batalkan
                                         </a>
                                     </div>

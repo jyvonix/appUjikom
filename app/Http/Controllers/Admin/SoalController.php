@@ -41,14 +41,17 @@ class SoalController extends Controller
         return view('admin.soal.index', compact('soals'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.soal.create');
+        $selected_modul_id = $request->query('modul_id');
+        $moduls = \App\Models\Modul::all();
+        return view('admin.soal.create', compact('moduls', 'selected_modul_id'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'modul_id' => ['required', 'exists:moduls,id'],
             'pertanyaan' => ['required', 'string'],
             'gambar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'opsi_a' => ['required', 'string'],
@@ -70,17 +73,19 @@ class SoalController extends Controller
 
         Soal::create($data);
 
-        return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil ditambahkan.');
+        return redirect()->route('admin.modul.show', $request->modul_id)->with('success', 'Soal berhasil ditambahkan.');
     }
 
     public function edit(Soal $soal)
     {
-        return view('admin.soal.edit', compact('soal'));
+        $moduls = \App\Models\Modul::all();
+        return view('admin.soal.edit', compact('soal', 'moduls'));
     }
 
     public function update(Request $request, Soal $soal)
     {
         $request->validate([
+            'modul_id' => ['required', 'exists:moduls,id'],
             'pertanyaan' => ['required', 'string'],
             'gambar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'opsi_a' => ['required', 'string'],
@@ -104,17 +109,18 @@ class SoalController extends Controller
 
         $soal->update($data);
 
-        return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil diperbarui.');
+        return redirect()->route('admin.modul.show', $soal->modul_id)->with('success', 'Soal berhasil diperbarui.');
     }
 
     public function destroy(Soal $soal)
     {
+        $modul_id = $soal->modul_id;
         if ($soal->gambar) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($soal->gambar);
         }
         $soal->delete();
 
-        return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil dihapus.');
+        return redirect()->route('admin.modul.show', $modul_id)->with('success', 'Soal berhasil dihapus.');
     }
 
     public function kunciJawaban()

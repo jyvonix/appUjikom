@@ -11,6 +11,12 @@
                 </div>
             </div>
         </div>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.soal.create', ['modul_id' => $modul->id]) }}" class="inline-flex items-center gap-2 px-6 py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm shadow-xl hover:bg-blue-600 transition-all active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                Tambah Soal Manual
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 gap-6">
@@ -42,6 +48,18 @@
                             @endforeach
                         </div>
                     </div>
+
+                    <!-- Actions -->
+                    <div class="lg:w-48 flex flex-row lg:flex-col gap-3 justify-end lg:justify-start">
+                        <a href="{{ route('admin.soal.edit', $soal->id) }}" class="flex-1 lg:flex-none py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-widest text-center hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            Edit
+                        </a>
+                        <button type="button" @click="confirmDeleteSoal('{{ route('admin.soal.destroy', $soal->id) }}')" class="flex-1 lg:flex-none py-3 bg-white border border-slate-200 rounded-xl text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-colors flex items-center justify-center gap-2 font-black text-[10px] uppercase tracking-widest">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            Hapus
+                        </button>
+                    </div>
                 </div>
             </div>
         @empty
@@ -51,4 +69,38 @@
             </div>
         @endforelse
     </div>
+    @push('scripts')
+    <form id="delete-soal-form" action="" method="POST" class="hidden">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    <script>
+        function confirmDeleteSoal(url) {
+            Swal.fire({
+                title: 'Hapus Soal?',
+                text: "Data soal ini akan dihapus secara permanen dari modul!",
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-[2rem] border-none shadow-2xl',
+                    title: 'text-2xl font-black text-slate-800',
+                    htmlContainer: 'text-sm font-medium text-slate-500',
+                    confirmButton: 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest',
+                    cancelButton: 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('delete-soal-form');
+                    form.action = url;
+                    form.submit();
+                }
+            })
+        }
+    </script>
+    @endpush
 </x-admin-layout>

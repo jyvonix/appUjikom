@@ -13,9 +13,11 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SoalController extends Controller
 {
-    public function export()
+    public function export(Request $request)
     {
-        return Excel::download(new SoalExport(Auth::id()), 'bank-soal-guru.xlsx');
+        $modul_id = $request->query('modul_id');
+        $fileName = 'bank-soal-guru' . ($modul_id ? '-modul-' . $modul_id : '') . '.xlsx';
+        return Excel::download(new SoalExport(Auth::id(), $modul_id), $fileName);
     }
 
     public function import(Request $request)
@@ -41,11 +43,43 @@ class SoalController extends Controller
     {
         $request->validate([
             'modul_id' => 'required|exists:moduls,id',
-            'raw_text' => 'required|string'
+            'raw_text' => 'nullable|string',
+            'file' => 'nullable|mimes:docx,pdf|max:5120',
         ]);
 
-        $text = $request->raw_text;
-        // Logika sederhana untuk memisahkan soal berdasarkan baris baru dan pola A. B. C.
+        $text = $request->raw_text ?? '';
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $extension = $file->getClientOriginalExtension();
+
+            if ($extension === 'docx') {
+                $phpWord = \PhpOffice\PhpWord\IOFactory::load($file->getRealPath());
+                foreach ($phpWord->getSections() as $section) {
+                    foreach ($section->getElements() as $element) {
+                        if (method_exists($element, 'getElements')) {
+                            foreach ($element->getElements() as $childElement) {
+                                if (method_exists($childElement, 'getText')) {
+                                    $text .= $childElement->getText() . "\n";
+                                }
+                            }
+                        } elseif (method_exists($element, 'getText')) {
+                            $text .= $element->getText() . "\n";
+                        }
+                    }
+                }
+            } elseif ($extension === 'pdf') {
+                $pdfParser = new \Smalot\PdfParser\Parser();
+                $pdf = $pdfParser->parseFile($file->getRealPath());
+                $text = $pdf->getText();
+            }
+        }
+
+        if (empty(trim($text))) {
+            return redirect()->back()->with('error', 'Tidak ada teks yang ditemukan untuk diproses.');
+        }
+
+        // Improved Parsing Logic
         $lines = explode("\n", $text);
         $current_soal = null;
         $count = 0;
@@ -54,9 +88,9 @@ class SoalController extends Controller
             $line = trim($line);
             if (empty($line)) continue;
 
-            // Jika baris mengandung pola "1. " atau diakhiri "?" atau tidak diawali A-E, anggap sebagai pertanyaan
-            if (!preg_match('/^[A-E][.\)]/i', $line)) {
-                if ($current_soal) {
+            // Pattern for a new question (starts with number or just text but not A-E options)
+            if (!preg_match('/^[A-E][.\)]/i', $line) && !preg_match('/^Kunci:/i', $line)) {
+                if ($current_soal && !empty($current_soal['pertanyaan'])) {
                     Soal::create($current_soal);
                     $count++;
                 }
@@ -69,26 +103,28 @@ class SoalController extends Controller
                     'user_id' => Auth::id()
                 ];
             } else {
-                // Ekstrak opsi
+                if (!$current_soal) continue;
+
+                // Pattern for options
                 if (preg_match('/^A[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_a'] = $matches[1];
                 elseif (preg_match('/^B[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_b'] = $matches[1];
                 elseif (preg_match('/^C[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_c'] = $matches[1];
                 elseif (preg_match('/^D[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_d'] = $matches[1];
                 elseif (preg_match('/^E[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_e'] = $matches[1];
                 
-                // Cek jika baris mengandung kunci jawaban (misal: *Kunci: A*)
+                // Pattern for answer key
                 if (preg_match('/Kunci:\s*([A-E])/i', $line, $matches)) {
                     $current_soal['jawaban_benar'] = strtoupper($matches[1]);
                 }
             }
         }
 
-        if ($current_soal) {
+        if ($current_soal && !empty($current_soal['pertanyaan'])) {
             Soal::create($current_soal);
             $count++;
         }
 
-        return redirect()->route('guru.modul.show', $request->modul_id)->with('success', "$count soal berhasil diimpor dari teks.");
+        return redirect()->route('guru.modul.show', $request->modul_id)->with('success', "$count soal berhasil diimpor.");
     }
 
     public function index(Request $request)
@@ -100,9 +136,14 @@ class SoalController extends Controller
             $query->where('pertanyaan', 'like', "%{$search}%");
         }
 
-        $soals = $query->oldest()->paginate(10)->withQueryString();
+        if ($request->has('modul_id')) {
+            $query->where('modul_id', $request->get('modul_id'));
+        }
 
-        return view('guru.soal.index', compact('soals'));
+        $soals = $query->with('modul')->latest()->paginate(10)->withQueryString();
+        $moduls = Modul::where('user_id', Auth::id())->get();
+
+        return view('guru.soal.index', compact('soals', 'moduls'));
     }
 
     public function create(Request $request)
@@ -137,7 +178,7 @@ class SoalController extends Controller
 
         Soal::create($data);
 
-        return redirect()->route('guru.soal.index')->with('success', 'Soal berhasil ditambahkan ke modul.');
+        return redirect()->route('guru.modul.show', $request->modul_id)->with('success', 'Soal berhasil ditambahkan ke modul.');
     }
 
     public function edit(Soal $soal)
@@ -181,7 +222,7 @@ class SoalController extends Controller
 
         $soal->update($data);
 
-        return redirect()->route('guru.soal.index')->with('success', 'Soal berhasil diperbarui.');
+        return redirect()->route('guru.modul.show', $soal->modul_id)->with('success', 'Soal berhasil diperbarui.');
     }
 
     public function destroy(Soal $soal)
@@ -189,11 +230,12 @@ class SoalController extends Controller
         if ($soal->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
+        $modul_id = $soal->modul_id;
         if ($soal->gambar) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($soal->gambar);
         }
         $soal->delete();
-        return redirect()->route('guru.soal.index')->with('success', 'Soal berhasil dihapus.');
+        return redirect()->route('guru.modul.show', $modul_id)->with('success', 'Soal berhasil dihapus.');
     }
 
     public function kunciJawaban()
@@ -226,63 +268,4 @@ class SoalController extends Controller
         return view('guru.soal.show', compact('soal', 'statistik_siswa'));
     }
 
-    public function analisis(Request $request)
-    {
-        $query = Soal::where('user_id', Auth::id());
-
-        if ($request->has('kategori')) {
-            $query->where('kategori', 'like', "%{$request->kategori}%");
-        }
-
-        if ($request->has('kesulitan')) {
-            $query->where('kesulitan', $request->kesulitan);
-        }
-
-        $soals = $query->get();
-        $nilais = \App\Models\Nilai::all();
-        
-        $statistik = [];
-
-        foreach ($soals as $soal) {
-            $total_dijawab = 0;
-            $total_benar = 0;
-            $total_salah = 0;
-            $distribusi_jawaban = ['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'E' => 0];
-
-            foreach ($nilais as $nilai) {
-                if (isset($nilai->list_jawaban[$soal->id])) {
-                    $jawaban_siswa = strtoupper($nilai->list_jawaban[$soal->id]);
-                    $total_dijawab++;
-                    
-                    if ($jawaban_siswa == strtoupper($soal->jawaban_benar)) {
-                        $total_benar++;
-                    } else {
-                        $total_salah++;
-                    }
-
-                    if (isset($distribusi_jawaban[$jawaban_siswa])) {
-                        $distribusi_jawaban[$jawaban_siswa]++;
-                    }
-                }
-            }
-
-            $statistik[$soal->id] = [
-                'soal' => $soal,
-                'total_dijawab' => $total_dijawab,
-                'total_benar' => $total_benar,
-                'total_salah' => $total_salah,
-                'tingkat_kesulitan_aktual' => $total_dijawab > 0 ? round(($total_salah / $total_dijawab) * 100, 2) : 0,
-                'distribusi' => $distribusi_jawaban
-            ];
-        }
-
-        // Urutkan dari yang paling banyak salahnya (paling sulit) jika tidak ada filter urutan lain
-        uasort($statistik, function($a, $b) {
-            return $b['tingkat_kesulitan_aktual'] <=> $a['tingkat_kesulitan_aktual'];
-        });
-
-        $kategoris = Soal::where('user_id', Auth::id())->distinct()->pluck('kategori')->filter();
-
-        return view('guru.soal.analisis', compact('statistik', 'kategoris'));
-    }
 }

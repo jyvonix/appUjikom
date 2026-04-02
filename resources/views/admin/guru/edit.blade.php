@@ -123,7 +123,7 @@
                     <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[3rem] p-10 text-white shadow-2xl shadow-blue-300 relative overflow-hidden">
                         <div class="absolute bottom-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mb-16 -mr-16"></div>
                         <h4 class="text-sm font-bold uppercase tracking-widest mb-4 opacity-60">Security Integrity</h4>
-                        <p class="text-sm font-medium leading-relaxed italic">"Setiap perubahan profil guru akan berdampak pada hak akses pengelolaan bank soal dan laporan nilai siswa."</p>
+                        <p class="text-sm font-medium leading-relaxed italic">"Setiap perubahan profil guru akan berdampak pada hak akses pengelolaan modul ujian dan laporan nilai siswa."</p>
                     </div>
                 </div>
             </div>

@@ -1,482 +1,343 @@
 <x-siswa-layout :hideNav="true">
-    {{-- Super Pro Refined Styles --}}
-    <style>
-        body { 
-            -webkit-tap-highlight-color: transparent;
-            letter-spacing: -0.01em;
-            transition: background-color 0.5s ease, color 0.5s ease;
-        }
-        
-        .exam-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    <div class="fixed inset-0 overflow-hidden font-sans transition-colors duration-500" 
+         :class="theme === 'light' ? 'bg-slate-50 text-slate-900' : 'bg-[#020617] text-slate-200'"
+         x-data="examEngine()">
+        {{-- High-End Immersive Background --}}
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="absolute top-0 right-0 w-[1000px] h-[1000px] bg-indigo-600/10 rounded-full blur-[150px] animate-pulse"></div>
+            <div class="absolute bottom-0 left-0 w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-[120px] animate-pulse"></div>
+        </div>
 
-        /* Animation Keyframes */
-        @keyframes questionIn {
-            from { opacity: 0; transform: translateY(10px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        @keyframes questionOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-10px); }
-        }
-
-        .question-wrapper {
-            animation: questionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .option-item:active {
-            transform: scale(0.97);
-        }
-
-        .workspace-header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(241, 245, 249, 1);
-            transition: all 0.3s ease;
-        }
-
-        html.dark .workspace-header {
-            background: rgba(15, 23, 42, 0.9) !important;
-            border-bottom: 1px solid rgba(30, 41, 59, 1) !important;
-        }
-
-        .question-card {
-            background: #ffffff;
-            border-radius: 1.5rem;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        html.dark .question-card {
-            background: #0f172a !important;
-            border: 1px solid #1e293b !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-        }
-
-        .option-item {
-            transition: all 0.2s ease;
-            border: 1px solid #f1f5f9;
-            border-radius: 1rem;
-            background: #ffffff;
-        }
-
-        html.dark .option-item {
-            background: #1e293b !important;
-            border-color: #334155 !important;
-        }
-
-        .option-selected { border-color: #2563eb !important; background-color: #eff6ff !important; }
-
-        html.dark .option-selected {
-            background-color: rgba(79, 70, 229, 0.1) !important;
-            border-color: #6366f1 !important;
-        }
-
-        .option-badge {
-            width: 2.25rem; height: 2.25rem; border-radius: 0.75rem;
-            background-color: #f8fafc; color: #64748b;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 0.8rem; border: 1px solid #f1f5f9;
-            transition: all 0.3s ease;
-        }
-
-        html.dark .option-badge {
-            background-color: #334155 !important;
-            border-color: #475569 !important;
-            color: #94a3b8 !important;
-        }
-
-        .option-selected .option-badge { background-color: #2563eb !important; color: #ffffff !important; }
-
-        html.dark .option-selected .option-badge {
-            background-color: #6366f1 !important;
-            color: #ffffff !important;
-        }
-
-        .progress-track { height: 4px; background: #f1f5f9; border-radius: 100px; overflow: hidden; }
-        html.dark .progress-track { background: #1e293b; }
-        .progress-thumb { background: #2563eb; transition: width 0.6s ease; }
-
-        /* Navigator Specific Styles */
-        .nav-dot-pro {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1.5px solid #f1f5f9;
-            background: #ffffff;
-            position: relative;
-            color: #64748b;
-        }
-        html.dark .nav-dot-pro {
-            background: #1e293b !important;
-            border-color: #334155 !important;
-            color: #94a3b8 !important;
-        }
-
-        .nav-dot-pro:hover { border-color: #2563eb; color: #2563eb; transform: translateY(-2px); }
-        .nav-dot-current { border-color: #2563eb !important; color: #2563eb !important; background: #eff6ff !important; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        
-        html.dark .nav-dot-current {
-            background: rgba(79, 70, 229, 0.1) !important;
-            border-color: #6366f1 !important;
-            color: #6366f1 !important;
-        }
-
-        .nav-dot-answered { background: #2563eb !important; border-color: #2563eb !important; color: #ffffff !important; }
-        
-        .status-indicator { width: 8px; height: 8px; border-radius: 2px; }
-
-        @keyframes slideInUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-        .animate-drawer { animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-
-        /* Dark Mode Transitions */
-        html.dark body {
-            background-color: #020617 !important;
-            color: #f1f5f9;
-        }
-
-        html.dark #nav-modal .bg-white {
-            background: #0f172a !important;
-            border: 1px solid #1e293b !important;
-        }
-
-        html.dark .bg-slate-50, html.dark .bg-slate-50\/30 {
-            background-color: #1e293b !important;
-        }
-    </style>
-
-    <div class="exam-shell">
-        <header class="fixed top-0 left-0 right-0 z-50 workspace-header">
-            <div class="max-w-5xl mx-auto px-6 h-14 md:h-16 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-md">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        {{-- Main Interface Container --}}
+        <div class="relative z-10 h-full flex flex-col">
+            
+            {{-- Pro Header --}}
+            <header class="h-20 md:h-24 border-b px-6 md:px-12 flex items-center justify-between transition-colors duration-500"
+                    :class="theme === 'light' ? 'bg-white/80 border-slate-200 backdrop-blur-2xl' : 'bg-slate-950/50 border-white/5 backdrop-blur-2xl'">
+                <div class="flex items-center gap-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/20">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     </div>
-                    <span class="text-sm font-bold text-slate-900 dark:text-white transition-colors tracking-tight uppercase">SmartExam</span>
+                    <div class="hidden sm:block">
+                        <h1 class="text-sm font-black uppercase tracking-[0.2em] leading-none mb-1" :class="theme === 'light' ? 'text-slate-900' : 'text-white'">{{ $modul->nama }}</h1>
+                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Digital Intelligence Protocol</p>
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <button type="button" id="theme-toggle" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-slate-600 dark:text-slate-300">
-                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                {{-- Interactive Progress Ring & Timer --}}
+                <div class="flex items-center gap-8">
+                    {{-- Theme Toggle --}}
+                    <button @click="toggleTheme()" type="button" class="w-10 h-10 flex items-center justify-center rounded-xl transition-all border"
+                            :class="theme === 'light' ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-white/5 border-white/5 text-slate-400 hover:text-indigo-500'">
+                        <template x-if="theme === 'dark'">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                        </template>
+                        <template x-if="theme === 'light'">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        </template>
                     </button>
-                    <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 transition-colors rounded-lg border border-slate-100 dark:border-slate-700">
-                        <span id="timer-display" class="font-bold text-slate-700 dark:text-slate-300 transition-colors tabular-nums text-xs md:text-sm">00:00:00</span>
+
+                    <div class="h-12 w-px bg-slate-200 dark:bg-white/5"></div>
+
+                    <div class="flex items-center gap-4 px-6 py-3 rounded-2xl border shadow-inner transition-colors duration-500"
+                         :class="[timeLeft < 300 ? 'border-rose-500/30 bg-rose-500/5' : '', theme === 'light' ? 'bg-slate-100 border-slate-200' : 'bg-white/5 border-white/5']">
+                        <div class="flex flex-col items-center">
+                            <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Chronometer</span>
+                            <span class="text-2xl font-black tabular-nums tracking-tighter" 
+                                  :class="[timeLeft < 300 ? 'text-rose-500 animate-pulse' : '', theme === 'light' && timeLeft >= 300 ? 'text-slate-900' : 'text-white']"
+                                  x-text="formatTime(timeLeft)">--:--</span>
+                        </div>
                     </div>
-                    <button type="button" onclick="toggleNav()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 group">
-                        <svg class="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-                    </button>
                 </div>
-            </div>
-        </header>
+            </header>
 
-        <main class="flex-1 max-w-3xl mx-auto w-full pt-20 md:pt-28 pb-20 px-6">
-            <form action="{{ route('siswa.soal.simpan') }}" method="POST" id="exam-form">
-                @csrf
-                @foreach($soals as $index => $soal)
-                    <div id="question-wrapper-{{ $index }}" class="question-wrapper {{ $index === 0 ? '' : 'hidden' }}">
-                        <div class="mb-8">
-                            <div class="flex items-center justify-between text-[9px] font-bold uppercase tracking-widest mb-3">
-                                <span class="text-blue-600 dark:text-blue-400 transition-colors">Pertanyaan {{ $index + 1 }} / {{ $soals->count() }}</span>
-                                <span class="text-slate-400" id="global-progress-text">{{ round((($index + 1) / $soals->count()) * 100) }}%</span>
-                            </div>
-                            <div class="progress-track"><div class="progress-thumb h-full" style="width: {{ (($index + 1) / $soals->count()) * 100 }}%"></div></div>
-                        </div>
+            {{-- Main Examination Area --}}
+            <main class="flex-1 overflow-y-auto custom-scrollbar px-6 py-12 md:px-12 lg:py-20" @contextmenu.prevent @copy.prevent @paste.prevent>
+                <form id="ujian-form" action="{{ route('siswa.soal.simpan') }}" method="POST" class="max-w-5xl mx-auto h-full flex flex-col lg:flex-row gap-12">
+                    @csrf
+                    <input type="hidden" name="modul_id" value="{{ $modul->id }}">
 
-                        <div class="question-card p-6 md:p-10 mb-8">
-                            <h2 class="text-lg md:text-xl font-semibold text-slate-900 dark:text-white transition-colors leading-relaxed mb-8">{{ $soal->pertanyaan }}</h2>
-                            @if($soal->gambar)<div class="mb-8 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 p-1 bg-slate-50 dark:bg-slate-900 transition-colors"><img src="{{ asset('storage/' . $soal->gambar) }}" class="w-full h-auto rounded-lg"></div>@endif
-                            <div class="grid grid-cols-1 gap-3">
-                                @foreach(['A', 'B', 'C', 'D', 'E'] as $opsi)
-                                    @php $opsiKey = 'opsi_' . strtolower($opsi); @endphp
-                                    @if($soal->$opsiKey)
-                                    <label class="option-item flex items-center p-4 cursor-pointer group">
-                                        <input type="radio" name="jawaban_{{ $soal->id }}" value="{{ $opsi }}" onchange="handleSelection(this, {{ $index }})" class="hidden peer" required>
-                                        <div class="option-badge group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 group-hover:text-blue-600 dark:group-hover:text-blue-400">{{ $opsi }}</div>
-                                        <span class="ml-4 text-sm md:text-[15px] font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-1">{{ $soal->$opsiKey }}</span>
-                                        <div class="ml-3 opacity-0 scale-50 transition-all peer-checked:opacity-100 peer-checked:scale-100 text-blue-600 dark:text-blue-400"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg></div>
-                                    </label>
-                                    @endif
-                                @endforeach
-                            </div>
-                            <div class="mt-12 flex items-center justify-between gap-4 pt-8 border-t border-slate-50 dark:border-slate-800 transition-colors">
-                                <button type="button" onclick="navigateQuestion('prev')" class="flex-1 sm:flex-none h-11 px-6 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2">Sebelumnya</button>
-                                @if($index < $soals->count() - 1)
-                                    <button type="button" onclick="navigateQuestion('next')" class="flex-1 sm:flex-none h-11 px-10 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">Lanjut</button>
-                                @else
-                                    <button type="button" onclick="confirmFinish()" class="flex-1 sm:flex-none h-11 px-10 bg-emerald-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-emerald-100">Selesai</button>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </form>
-        </main>
-    </div>
-
-    {{-- The Masterpiece Navigator --}}
-    <div id="nav-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="toggleNav()"></div>
-        <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-0 sm:p-6 pointer-events-none">
-            <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-[3rem] sm:rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] overflow-hidden pointer-events-auto flex flex-col max-h-[90vh] sm:max-h-[80vh] border border-slate-100 dark:border-slate-800 transition-colors animate-drawer sm:animate-in sm:zoom-in">
-                
-                {{-- Header Navigator --}}
-                <div class="px-8 py-8 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between shrink-0 bg-slate-50/30 dark:bg-slate-800/50 transition-colors">
-                    <div>
-                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white transition-colors tracking-tight leading-none mb-2">NAVIGASI UJIAN</h3>
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-1.5">
-                                <span id="answered-count" class="text-blue-600 dark:text-blue-400 font-bold text-sm">0</span>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Terjawab</span>
-                            </div>
-                            <div class="w-1 h-1 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-                            <div class="flex items-center gap-1.5">
-                                <span id="unanswered-count" class="text-slate-400 font-bold text-sm">{{ $soals->count() }}</span>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kosong</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button onclick="toggleNav()" class="w-12 h-12 bg-white dark:bg-slate-800 text-slate-400 rounded-2xl flex items-center justify-center hover:text-rose-500 transition-all border border-slate-100 dark:border-slate-700 shadow-sm">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-                
-                {{-- Grid Navigator --}}
-                <div class="flex-1 overflow-y-auto p-8 no-scrollbar">
-                    <div class="grid grid-cols-5 md:grid-cols-6 gap-3.5">
+                    {{-- Left: Question Content --}}
+                    <div class="flex-1 space-y-12">
                         @foreach($soals as $index => $soal)
-                            <button type="button" 
-                                id="nav-dot-{{ $index }}"
-                                onclick="jumpToQuestion({{ $index }})"
-                                class="nav-dot-pro aspect-square rounded-2xl flex flex-col items-center justify-center group">
-                                <span class="text-xs font-extrabold transition-colors">{{ $index + 1 }}</span>
-                                <div class="w-1 h-1 rounded-full bg-blue-600 mt-1 opacity-0 group-[.nav-dot-current]:opacity-100"></div>
-                            </button>
+                            <div class="space-y-12 animate-enter" x-show="currentIndex === {{ $index }}" x-cloak>
+                                {{-- Question Indicator --}}
+                                <div class="flex items-center gap-6">
+                                    <span class="text-6xl font-black select-none tracking-tighter transition-colors duration-500" :class="theme === 'light' ? 'text-slate-200' : 'text-white/5'">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                    <div class="h-px flex-1 bg-gradient-to-r from-indigo-500/20 to-transparent"></div>
+                                    <div class="px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
+                                        <span class="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Weight: Standard</span>
+                                    </div>
+                                </div>
+
+                                {{-- Question Body --}}
+                                <div class="space-y-10">
+                                    <h2 class="text-2xl md:text-4xl font-bold leading-tight tracking-tight transition-colors duration-500" :class="theme === 'light' ? 'text-slate-800' : 'text-white'">
+                                        {{ $soal->pertanyaan }}
+                                    </h2>
+
+                                    @if($soal->gambar)
+                                        <div class="rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl group cursor-zoom-in">
+                                            <img src="{{ asset('storage/' . $soal->gambar) }}" class="w-full h-auto transition-transform duration-700 group-hover:scale-105" alt="Assessment Artifact">
+                                        </div>
+                                    @endif
+
+                                    {{-- Options Architecture --}}
+                                    <div class="grid grid-cols-1 gap-4">
+                                        @foreach(['a', 'b', 'c', 'd', 'e'] as $opt)
+                                            @if($soal->{'opsi_'.$opt})
+                                                <label class="group relative flex items-center p-6 md:p-8 rounded-[2rem] border transition-all duration-300 cursor-pointer overflow-hidden"
+                                                       :class="theme === 'light' ? 'bg-white border-slate-200 hover:bg-slate-50' : 'bg-slate-900/40 border-white/5 hover:bg-slate-800/40 hover:border-indigo-500/30'">
+                                                    <input type="radio" name="jawaban_{{ $soal->id }}" value="{{ strtoupper($opt) }}" 
+                                                           class="hidden peer"
+                                                           x-model="answers['{{ $soal->id }}']"
+                                                           @change="markAnswered({{ $index }}, '{{ $soal->id }}')">
+                                                    
+                                                    {{-- Active Indicator Gradient --}}
+                                                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-600/20 via-purple-600/10 to-transparent opacity-0 peer-checked:opacity-100 transition-opacity duration-500"></div>
+                                                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 transform -translate-x-full peer-checked:translate-x-0 transition-transform duration-500"></div>
+
+                                                    <div class="relative z-10 flex items-center gap-8 w-full">
+                                                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center font-black text-lg border transition-all group-hover:scale-110"
+                                                             :class="theme === 'light' ? 'bg-slate-100 border-slate-200 text-slate-400 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-400' : 'bg-white/10 border-white/10 text-white peer-checked:bg-indigo-600 peer-checked:border-indigo-400 peer-checked:shadow-2xl peer-checked:shadow-indigo-500/40'">
+                                                            {{ strtoupper($opt) }}
+                                                        </div>
+                                                        <span class="text-lg md:text-xl font-medium transition-colors tracking-tight leading-snug"
+                                                              :class="[theme === 'light' ? 'text-slate-600 peer-checked:text-indigo-600' : 'text-slate-300 peer-checked:text-white']">
+                                                            {{ $soal->{'opsi_'.$opt} }}
+                                                        </span>
+                                                        <div class="ml-auto opacity-0 peer-checked:opacity-100 transition-all transform scale-50 peer-checked:scale-100 duration-500">
+                                                            <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center shadow-lg">
+                                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
                         @endforeach
                     </div>
 
-                    {{-- Legend --}}
-                    <div class="mt-10 flex items-center justify-center gap-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 transition-colors">
-                        <div class="flex items-center gap-2">
-                            <div class="status-indicator bg-blue-600"></div>
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Selesai</span>
+                    {{-- Right: Navigation Ecosystem --}}
+                    <aside class="w-full lg:w-80 space-y-8">
+                        <div class="border rounded-[3rem] p-8 md:p-10 sticky top-0 shadow-2xl transition-colors duration-500"
+                             :class="theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-950/50 border-white/5 backdrop-blur-3xl'">
+                            <div class="flex items-center justify-between mb-8 pb-6 border-b" :class="theme === 'light' ? 'border-slate-100' : 'border-white/5'">
+                                <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Navigation Matrix</h4>
+                                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-5 gap-3">
+                                @foreach($soals as $index => $soal)
+                                    <button type="button" @click="currentIndex = {{ $index }}"
+                                            class="aspect-square rounded-xl border flex items-center justify-center text-[11px] font-black transition-all duration-300 transform"
+                                            :class="currentIndex === {{ $index }} ? 'bg-indigo-600 border-indigo-400 text-white scale-110 z-20 shadow-[0_10px_30px_rgba(79,70,229,0.4)]' : (isAnswered({{ $index }}) ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-500' : 'bg-transparent border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-600 hover:border-indigo-500/20 hover:text-indigo-500')">
+                                        {{ $index + 1 }}
+                                    </button>
+                                @endforeach
+                            </div>
+
+                            <div class="mt-10 pt-8 border-t space-y-4" :class="theme === 'light' ? 'border-slate-100' : 'border-white/5'">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Completion</span>
+                                    <span class="text-[10px] font-black" :class="theme === 'light' ? 'text-slate-900' : 'text-white'" x-text="Math.round((answeredCount/{{ $soals->count() }})*100) + '%'">0%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-slate-900/5 dark:bg-slate-900/50 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-1000" 
+                                         :style="`width: ${(answeredCount/{{ $soals->count() }})*100}%` "></div>
+                                </div>
+                            </div>
+
+                            <button type="button" @click="confirmFinish()"
+                                    class="w-full mt-10 py-5 bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-emerald-900/20 transition-all hover:scale-[1.02] hover:shadow-emerald-500/20 active:scale-95">
+                                Finalize Upload
+                            </button>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <div class="status-indicator bg-blue-100 dark:bg-blue-900 transition-colors border border-blue-600"></div>
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Aktif</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="status-indicator bg-white dark:bg-slate-900 transition-colors border border-slate-200 dark:border-slate-700"></div>
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Kosong</span>
+                    </aside>
+                </form>
+            </main>
+
+            {{-- Dynamic Control Dock --}}
+            <footer class="h-24 md:h-32 border-t flex items-center px-6 md:px-12 transition-colors duration-500"
+                    :class="theme === 'light' ? 'bg-white/90 border-slate-200 backdrop-blur-3xl' : 'bg-slate-950/80 border-white/5 backdrop-blur-3xl'">
+                <div class="max-w-5xl mx-auto w-full flex items-center justify-between gap-10">
+                    <button type="button" @click="prev()" :disabled="currentIndex === 0"
+                            class="group flex items-center gap-4 px-8 py-4 bg-white/5 text-slate-400 rounded-2xl border border-white/5 font-black text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-white/10 hover:text-white disabled:opacity-10"
+                            :class="theme === 'light' ? 'bg-slate-100 border-slate-200 text-slate-500' : ''">
+                        <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
+                        Backward
+                    </button>
+
+                    <div class="hidden md:flex flex-col items-center gap-2">
+                        <div class="text-[10px] font-black uppercase tracking-[0.4em] mb-1" :class="theme === 'light' ? 'text-slate-400' : 'text-white'">Sector Navigation</div>
+                        <div class="flex items-center gap-3">
+                            <template x-for="i in {{ $soals->count() }}">
+                                <div class="w-1.5 h-1.5 rounded-full transition-all duration-500"
+                                     :class="currentIndex + 1 === i ? 'bg-indigo-500 scale-150 shadow-[0_0_10px_rgba(79,70,229,0.8)]' : (isAnswered(i-1) ? 'bg-indigo-500/30' : 'bg-slate-200 dark:bg-slate-800')"></div>
+                            </template>
                         </div>
                     </div>
-                </div>
 
-                {{-- Footer Modal --}}
-                <div class="p-8 bg-white dark:bg-slate-900 border-t border-slate-50 dark:border-slate-800 transition-colors shrink-0">
-                    <button type="button" onclick="confirmFinish()" class="w-full py-5 bg-slate-900 dark:bg-blue-600 text-white rounded-3xl font-bold text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-blue-600 dark:hover:bg-blue-500 active:scale-95 transition-all transform group">
-                        SUBMIT FINAL ASSESSMENT
-                        <svg class="inline-block w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    <button type="button" x-show="currentIndex < {{ $soals->count() - 1 }}" @click="next()"
+                            class="group flex items-center gap-4 px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-indigo-500/20 transition-all hover:bg-indigo-500 hover:scale-105 active:scale-95">
+                        Forward Scan
+                        <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+                    </button>
+
+                    <button type="button" x-show="currentIndex === {{ $soals->count() - 1 }}" @click="confirmFinish()"
+                            class="group flex items-center gap-4 px-10 py-4 bg-emerald-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-emerald-500/20 transition-all hover:bg-emerald-500 hover:scale-105">
+                        Submit Payload
+                        <svg class="w-4 h-4 animate-bounce-x" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
-            </div>
+            </footer>
         </div>
     </div>
 
+    <style>
+        .animate-enter { animation: enterEffect 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes enterEffect { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.1); border-radius: 10px; }
+        .animate-bounce-x { animation: bounceX 1s infinite; }
+        @keyframes bounceX { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+    </style>
+
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        let currentIdx = 0; const totalSoals = {{ $soals->count() }}; let timeLeft = {{ $duration }} * 60;
-        let violationCount = 0;
-        const maxViolations = 3;
-        const examForm = document.getElementById('exam-form');
-        const examId = "exam_session_{{ auth()->id() }}"; // Unique key for this user
+        function examEngine() {
+            return {
+                currentIndex: 0,
+                timeLeft: {{ $duration * 60 }},
+                answeredList: new Array({{ $soals->count() }}).fill(false),
+                answeredCount: 0,
+                answers: {},
+                theme: localStorage.getItem('color-theme') || 'dark',
+                tabSwitchCount: 0,
 
-        // --- SECURITY: ANTI-CHEATING (TAB SWITCH) ---
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'hidden') {
-                violationCount++;
-                if (violationCount >= maxViolations) {
-                    Swal.fire({
-                        title: 'Pelanggaran Berat!',
-                        text: 'Anda terlalu sering meninggalkan halaman ujian. Ujian akan otomatis dikumpulkan.',
-                        icon: 'error',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        allowOutsideClick: false
-                    }).then(() => {
-                        clearLocalStorage();
-                        examForm.submit();
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Peringatan Keamanan!',
-                        html: `Jangan tinggalkan halaman ujian!<br>Pelanggaran: <b>${violationCount}/${maxViolations}</b>`,
-                        icon: 'warning',
-                        confirmButtonText: 'SAYA MENGERTI',
-                        confirmButtonColor: '#2563eb',
-                        allowOutsideClick: false
-                    });
-                }
-            }
-        });
+                init() {
+                    this.startTimer();
+                    this.preventTampering();
+                    this.loadSavedProgress();
+                    this.initAntiCheating();
+                },
 
-        // --- SECURITY: DISABLE INTERACTION ---
-        document.addEventListener('contextmenu', e => e.preventDefault()); // Disable Right Click
-        document.addEventListener('keydown', function(e) {
-            // Disable Ctrl+C, Ctrl+V, Ctrl+U, F12
-            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'u' || e.key === 's') || e.key === 'F12') {
-                e.preventDefault();
-                Swal.fire({
-                    toast: true, position: 'top', icon: 'error', title: 'Fitur dilarang selama ujian!', showConfirmButton: false, timer: 2000
-                });
-            }
-        });
+                toggleTheme() {
+                    this.theme = this.theme === 'dark' ? 'light' : 'dark';
+                    localStorage.setItem('color-theme', this.theme);
+                    if (this.theme === 'dark') document.documentElement.classList.add('dark');
+                    else document.documentElement.classList.remove('dark');
+                },
 
-        // --- AUTO-SAVE LOGIC ---
-        function saveProgress(input) {
-            let savedData = JSON.parse(localStorage.getItem(examId)) || {};
-            savedData[input.name] = input.value;
-            localStorage.setItem(examId, JSON.stringify(savedData));
-        }
-
-        function restoreProgress() {
-            let savedData = JSON.parse(localStorage.getItem(examId));
-            if (savedData) {
-                Object.keys(savedData).forEach(name => {
-                    const value = savedData[name];
-                    const input = document.querySelector(`input[name="${name}"][value="${value}"]`);
-                    if (input) {
-                        input.checked = true;
-                        // Trigger visual selection
-                        const wrapper = input.closest('.grid');
-                        if(wrapper) {
-                            input.closest('.option-item').classList.add('option-selected');
+                initAntiCheating() {
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.hidden) {
+                            this.tabSwitchCount++;
+                            
+                            if (this.tabSwitchCount >= 3) {
+                                Swal.fire({
+                                    title: 'Keamanan Dilanggar!',
+                                    text: 'Anda telah meninggalkan tab ujian sebanyak 3 kali. Ujian akan dihentikan sekarang.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Selesaikan Ujian',
+                                    allowOutsideClick: false,
+                                    background: this.theme === 'dark' ? '#0f172a' : '#fff',
+                                    color: this.theme === 'dark' ? '#fff' : '#000',
+                                }).then(() => {
+                                    this.forceSubmit();
+                                });
+                            } else {
+                                Toast.fire({
+                                    icon: 'warning',
+                                    title: 'Peringatan Keamanan',
+                                    text: `Jangan meninggalkan tab ujian! Pelanggaran ke-${this.tabSwitchCount}/3 tercatat.`,
+                                    timer: 5000
+                                });
+                            }
                         }
-                        // Update navigation dot
-                        const questionIdx = input.closest('.question-wrapper').id.replace('question-wrapper-', '');
-                        const dot = document.getElementById(`nav-dot-${questionIdx}`);
-                        if(dot) dot.classList.add('nav-dot-answered');
+                    });
+                },
+
+                startTimer() {
+                    setInterval(() => {
+                        if (this.timeLeft > 0) this.timeLeft--;
+                        else this.forceSubmit();
+                    }, 1000);
+                },
+
+                formatTime(s) {
+                    const m = Math.floor(s / 60);
+                    const sec = s % 60;
+                    return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+                },
+
+                markAnswered(idx, id) {
+                    if (!this.answeredList[idx]) {
+                        this.answeredList[idx] = true;
+                        this.answeredCount = this.answeredList.filter(x => x).length;
                     }
-                });
-                updateSummaryCounts();
-            }
-        }
+                    this.saveProgress();
+                },
 
-        function clearLocalStorage() {
-            localStorage.removeItem(examId);
-        }
+                saveProgress() {
+                    const progress = {
+                        answers: this.answers,
+                        modulId: {{ $modul->id }},
+                        userId: {{ Auth::id() }}
+                    };
+                    localStorage.setItem(`exam_progress_${progress.userId}_${progress.modulId}`, JSON.stringify(progress));
+                },
 
-        // --- DARK MODE TOGGLE LOGIC ---
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const darkIcon = document.getElementById('theme-toggle-dark-icon');
-        const lightIcon = document.getElementById('theme-toggle-light-icon');
+                loadSavedProgress() {
+                    const saved = localStorage.getItem(`exam_progress_{{ Auth::id() }}_{{ $modul->id }}`);
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        this.answers = data.answers;
+                        
+                        @foreach($soals as $idx => $s)
+                            if (this.answers["{{ $s->id }}"]) {
+                                this.answeredList[{{ $idx }}] = true;
+                            }
+                        @endforeach
+                        this.answeredCount = this.answeredList.filter(x => x).length;
+                    }
+                },
 
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            lightIcon.classList.remove('hidden');
-        } else {
-            darkIcon.classList.remove('hidden');
-        }
+                isAnswered(idx) { return this.answeredList[idx]; },
+                next() { if (this.currentIndex < {{ $soals->count() - 1 }}) this.currentIndex++; },
+                prev() { if (this.currentIndex > 0) this.currentIndex--; },
 
-        themeToggleBtn.addEventListener('click', function() {
-            document.documentElement.classList.toggle('dark');
-            darkIcon.classList.toggle('hidden');
-            lightIcon.classList.toggle('hidden');
+                preventTampering() {
+                    window.history.pushState(null, null, window.location.href);
+                    window.onpopstate = () => window.history.go(1);
+                },
 
-            if (document.documentElement.classList.contains('dark')) {
-                localStorage.setItem('color-theme', 'dark');
-            } else {
-                localStorage.setItem('color-theme', 'light');
-            }
-        });
+                forceSubmit() {
+                    localStorage.removeItem(`exam_progress_{{ Auth::id() }}_{{ $modul->id }}`);
+                    document.getElementById('ujian-form').submit();
+                },
 
-        function handleSelection(input, idx) {
-            const wrapper = input.closest('.grid');
-            wrapper.querySelectorAll('.option-item').forEach(el => el.classList.remove('option-selected'));
-            input.closest('.option-item').classList.add('option-selected');
-            
-            const dot = document.getElementById(`nav-dot-${idx}`);
-            dot.classList.add('nav-dot-answered');
-            
-            saveProgress(input); // Auto-save trigger
-            updateSummaryCounts();
-        }
-
-        function navigateQuestion(dir) {
-            const nextIdx = dir === 'next' ? currentIdx + 1 : currentIdx - 1;
-            if (nextIdx >= 0 && nextIdx < totalSoals) jumpToQuestion(nextIdx);
-        }
-
-        function jumpToQuestion(idx) {
-            document.querySelectorAll('.question-wrapper').forEach(w => w.classList.add('hidden'));
-            const targetWrapper = document.getElementById(`question-wrapper-${idx}`);
-            if(targetWrapper) targetWrapper.classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-dot-pro').forEach(d => d.classList.remove('nav-dot-current'));
-            const targetDot = document.getElementById(`nav-dot-${idx}`);
-            if(targetDot) targetDot.classList.add('nav-dot-current');
-            
-            currentIdx = idx;
-            if(!document.getElementById('nav-modal').classList.contains('hidden')) toggleNav();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function updateSummaryCounts() {
-            const answered = document.querySelectorAll('input[type="radio"]:checked').length;
-            document.getElementById('answered-count').innerText = answered;
-            document.getElementById('unanswered-count').innerText = totalSoals - answered;
-        }
-
-        function startTimer() {
-            const display = document.getElementById('timer-display');
-            const timer = setInterval(() => {
-                if (timeLeft <= 0) { 
-                    clearInterval(timer); 
-                    clearLocalStorage();
-                    examForm.submit(); 
-                    return; 
+                confirmFinish() {
+                    const pending = {{ $soals->count() }} - this.answeredCount;
+                    Swal.fire({
+                        title: 'Confirm Submission?',
+                        text: pending > 0 ? `Alert: ${pending} questions remain unanswered.` : "All questions have been securely documented.",
+                        icon: 'warning',
+                        background: this.theme === 'dark' ? '#0f172a' : '#fff',
+                        color: this.theme === 'dark' ? '#fff' : '#000',
+                        showCancelButton: true,
+                        confirmButtonText: 'Submit Assessment',
+                        confirmButtonColor: '#4f46e5',
+                        cancelButtonColor: '#1e293b',
+                        customClass: { popup: 'rounded-[2rem] border border-white/10 shadow-2xl' }
+                    }).then(r => { if (r.isConfirmed) this.forceSubmit(); });
                 }
-                timeLeft--;
-                const h = Math.floor(timeLeft / 3600), m = Math.floor((timeLeft % 3600) / 60), s = timeLeft % 60;
-                display.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                if (timeLeft < 300) display.classList.add('text-rose-600');
-            }, 1000);
-        }
-
-        function confirmFinish() {
-            const answered = document.querySelectorAll('input[type="radio"]:checked').length;
-            Swal.fire({
-                title: 'Konfirmasi Akhir',
-                text: answered < totalSoals ? `Masih ada ${totalSoals - answered} soal kosong. Kirim sekarang?` : 'Kirim jawaban Anda sekarang?',
-                icon: 'question', showCancelButton: true, confirmButtonText: 'YA, KIRIM', cancelButtonText: 'BATAL', confirmButtonColor: '#2563eb',
-                customClass: { popup: 'rounded-[2rem]', confirmButton: 'rounded-xl font-bold text-xs px-8 py-4', cancelButton: 'rounded-xl font-bold text-xs px-8 py-4' }
-            }).then((r) => { 
-                if (r.isConfirmed) {
-                    clearLocalStorage();
-                    examForm.submit(); 
-                }
-            });
-        }
-
-        function toggleNav() {
-            const modal = document.getElementById('nav-modal');
-            modal.classList.toggle('hidden');
-            document.body.style.overflow = modal.classList.contains('hidden') ? 'auto' : 'hidden';
-            if(!modal.classList.contains('hidden')) {
-                document.getElementById(`nav-dot-${currentIdx}`).classList.add('nav-dot-current');
             }
         }
-
-        document.addEventListener('DOMContentLoaded', () => { 
-            restoreProgress(); // Auto-restore on load
-            startTimer(); 
-            updateSummaryCounts(); 
-        });
     </script>
     @endpush
 </x-siswa-layout>

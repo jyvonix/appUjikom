@@ -27,15 +27,20 @@ class ModulController extends Controller
             'deskripsi' => 'nullable|string',
             'waktu' => 'required|integer|min:1',
             'is_active' => 'required|boolean',
+            'kkm' => 'nullable|integer|min:0|max:100',
+            'max_retakes' => 'nullable|integer|min:1',
+            'point_per_question' => 'nullable|integer|min:0',
+            'score_divisor' => 'nullable|numeric|min:0.01',
+            'is_random' => 'nullable|boolean',
+            'show_result' => 'nullable|boolean',
         ]);
 
-        Modul::create([
-            'nama' => $request->nama,
-            'deskripsi' => $request->deskripsi,
-            'waktu' => $request->waktu,
-            'is_active' => $request->is_active,
-            'user_id' => Auth::id(),
-        ]);
+        $data = $request->all();
+        $data['user_id'] = Auth::id();
+        $data['is_random'] = $request->has('is_random');
+        $data['show_result'] = $request->has('show_result');
+
+        Modul::create($data);
 
         return redirect()->route('guru.modul.index')->with('success', 'Modul ujian berhasil dibuat!');
     }
@@ -69,9 +74,19 @@ class ModulController extends Controller
             'deskripsi' => 'nullable|string',
             'waktu' => 'required|integer|min:1',
             'is_active' => 'required|boolean',
+            'kkm' => 'nullable|integer|min:0|max:100',
+            'max_retakes' => 'nullable|integer|min:1',
+            'point_per_question' => 'nullable|integer|min:0',
+            'score_divisor' => 'nullable|numeric|min:0.01',
+            'is_random' => 'nullable|boolean',
+            'show_result' => 'nullable|boolean',
         ]);
 
-        $modul->update($request->all());
+        $data = $request->all();
+        $data['is_random'] = $request->has('is_random');
+        $data['show_result'] = $request->has('show_result');
+
+        $modul->update($data);
 
         return redirect()->route('guru.modul.index')->with('success', 'Modul ujian berhasil diperbarui!');
     }

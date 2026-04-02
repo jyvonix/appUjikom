@@ -124,12 +124,12 @@
                         </div>
 
                         <div class="flex-1 flex flex-col gap-3">
-                            <a href="{{ route('admin.soal.create') }}" class="group flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-blue-600 hover:border-blue-400 transition-all duration-300">
+                            <a href="{{ route('admin.modul.create') }}" class="group flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-blue-600 hover:border-blue-400 transition-all duration-300">
                                 <div class="flex items-center gap-4">
                                     <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white transition-all group-hover:scale-110">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                                     </div>
-                                    <span class="font-black text-[11px] uppercase tracking-widest">Build Asset</span>
+                                    <span class="font-black text-[11px] uppercase tracking-widest">Create Module</span>
                                 </div>
                                 <svg class="w-4 h-4 text-white/20 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                             </a>

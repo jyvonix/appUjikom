@@ -61,8 +61,8 @@ class SiswaController extends Controller
 
     public function indexSoal()
     {
-        // Dialihkan ke dashboard karena sekarang pilih modul di dashboard
-        return redirect()->route('siswa.dashboard');
+        $moduls = Modul::where('is_active', true)->withCount('soals')->get();
+        return view('siswa.soal.index', compact('moduls'));
     }
 
     public function kerjakanUjian(Request $request)
@@ -71,15 +71,18 @@ class SiswaController extends Controller
         $modul = Modul::with('soals')->findOrFail($modul_id);
 
         // Cek apakah sudah pernah mengerjakan modul ini
-        $sudah_ujian = Nilai::where('user_id', Auth::id())->where('modul_id', $modul_id)->exists();
-        $max_retakes = \App\Models\Setting::get('max_retakes', 1);
+        $max_retakes = $modul->getSetting('max_retakes');
         $total_percobaan = Nilai::where('user_id', Auth::id())->where('modul_id', $modul_id)->count();
 
         if ($total_percobaan >= $max_retakes) {
-            return redirect()->route('siswa.dashboard')->with('error', 'Anda telah mencapai batas maksimal pengerjaan untuk modul ' . $modul->nama);
+            return redirect()->route('siswa.dashboard')->with('error', 'Anda telah mencapai batas maksimal pengerjaan (' . $max_retakes . 'x) untuk modul ' . $modul->nama);
         }
         
-        $soals = $modul->soals()->inRandomOrder()->get();
+        $query = $modul->soals();
+        if ($modul->is_random) {
+            $query->inRandomOrder();
+        }
+        $soals = $query->get();
         
         if ($soals->isEmpty()) {
             return redirect()->route('siswa.dashboard')->with('error', 'Modul ini belum memiliki soal.');
@@ -98,6 +101,11 @@ class SiswaController extends Controller
         
         $jumlah_benar = 0;
         $list_jawaban = [];
+        $total_soal = $soals->count();
+
+        if ($total_soal === 0) {
+            return redirect()->route('siswa.dashboard')->with('error', 'Tidak ada soal dalam modul ini.');
+        }
 
         foreach ($soals as $soal) {
             $jawaban_siswa = $request->input('jawaban_' . $soal->id);
@@ -108,9 +116,16 @@ class SiswaController extends Controller
             }
         }
 
-        // Skor = (Benar / Total) * 100
-        $total_soal = $soals->count();
-        $skor = ($jumlah_benar / ($total_soal > 0 ? $total_soal : 1)) * 100;
+        // Advanced Score Calculation
+        $point_per_question = $modul->getSetting('point_per_question');
+        $score_divisor = $modul->getSetting('score_divisor');
+
+        if ($point_per_question > 0 && $score_divisor > 0) {
+            $skor = ($jumlah_benar * $point_per_question) / $score_divisor;
+        } else {
+            // Default: (Benar / Total) * 100
+            $skor = ($jumlah_benar / $total_soal) * 100;
+        }
 
         Nilai::create([
             'user_id' => Auth::id(),
@@ -120,16 +135,25 @@ class SiswaController extends Controller
             'list_jawaban' => $list_jawaban,
         ]);
 
-        return redirect()->route('siswa.nilai.index')->with('success', 'Ujian ' . $modul->nama . ' telah selesai! Skor Anda: ' . round($skor, 2));
+        $message = 'Ujian ' . $modul->nama . ' telah selesai! Skor Anda: ' . round($skor, 2);
+        if ($modul->show_result) {
+            return redirect()->route('siswa.nilai.index')->with('success', $message);
+        } else {
+            return redirect()->route('siswa.dashboard')->with('success', 'Ujian selesai. Hasil akan diumumkan kemudian.');
+        }
     }
 
     public function indexNilai()
     {
         $user = Auth::user();
-        $nilais = Nilai::where('user_id', $user->id)->with('modul')->latest()->get();
-        $kkm = \App\Models\Setting::get('kkm', 75);
+        $nilais = Nilai::where('user_id', $user->id)
+            ->with(['modul' => function($query) {
+                $query->withCount('soals');
+            }])
+            ->latest()
+            ->get();
 
-        return view('siswa.nilai.index', compact('nilais', 'kkm'));
+        return view('siswa.nilai.index', compact('nilais'));
     }
 
     public function previewNilai($id)

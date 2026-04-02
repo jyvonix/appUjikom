@@ -86,7 +86,7 @@
                             </div>
                             <div class="space-y-4">
                                 <h3 class="text-2xl font-bold tracking-tight">Otoritas Pengajar</h3>
-                                <p class="text-blue-100 text-sm font-medium leading-relaxed">Guru memiliki wewenang untuk mengelola bank soal, memantau hasil ujian siswa, dan melakukan analisis performa kelas secara real-time.</p>
+                                <p class="text-blue-100 text-sm font-medium leading-relaxed">Guru memiliki wewenang untuk mengelola modul ujian, memantau hasil pengerjaan siswa, dan melakukan analisis performa kelas secara real-time.</p>
                             </div>
                         </div>
                     </div>

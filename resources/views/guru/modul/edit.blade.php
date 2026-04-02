@@ -35,17 +35,58 @@
                         <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Durasi Waktu (Menit)</label>
                         <div class="relative">
                             <input type="number" name="waktu" value="{{ old('waktu', $modul->waktu) }}" min="1" required
-                                class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-indigo-500 focus:ring-8 focus:ring-indigo-500/5 transition-all font-semibold text-sm">
+                                class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4 px-6 text-slate-700 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-sm">
                             <span class="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400 uppercase">Menit</span>
                         </div>
                     </div>
                     <div class="space-y-2">
                         <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Status Aktivitas</label>
                         <select name="is_active" required
-                            class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-indigo-500 focus:ring-8 focus:ring-indigo-500/5 transition-all font-semibold text-sm">
+                            class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4 px-6 text-slate-700 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-sm">
                             <option value="1" {{ $modul->is_active ? 'selected' : '' }}>Aktifkan Sekarang</option>
                             <option value="0" {{ !$modul->is_active ? 'selected' : '' }}>Simpan Sebagai Draft</option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-slate-100">
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Pengaturan Lanjutan (Opsional)
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">KKM Modul</label>
+                            <input type="number" name="kkm" value="{{ old('kkm', $modul->kkm) }}" placeholder="Default: Global"
+                                class="block w-full rounded-xl border border-slate-200 bg-slate-50/30 py-3.5 px-5 text-slate-700 placeholder:text-slate-300 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-xs">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Maksimal Remedial</label>
+                            <input type="number" name="max_retakes" value="{{ old('max_retakes', $modul->max_retakes) }}" placeholder="Default: Global"
+                                class="block w-full rounded-xl border border-slate-200 bg-slate-50/30 py-3.5 px-5 text-slate-700 placeholder:text-slate-300 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-xs">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Poin per Soal</label>
+                            <input type="number" name="point_per_question" value="{{ old('point_per_question', $modul->point_per_question) }}" placeholder="Default: Global"
+                                class="block w-full rounded-xl border border-slate-200 bg-slate-50/30 py-3.5 px-5 text-slate-700 placeholder:text-slate-300 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-xs">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pembagi Skor</label>
+                            <input type="number" step="0.01" name="score_divisor" value="{{ old('score_divisor', $modul->score_divisor) }}" placeholder="Default: Global"
+                                class="block w-full rounded-xl border border-slate-200 bg-slate-50/30 py-3.5 px-5 text-slate-700 placeholder:text-slate-300 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-xs">
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex flex-wrap gap-6">
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" name="is_random" value="1" {{ old('is_random', $modul->is_random) ? 'checked' : '' }} class="w-5 h-5 rounded-lg border-slate-200 text-indigo-600 focus:ring-indigo-500 transition-all">
+                            <span class="text-xs font-bold text-slate-600 group-hover:text-indigo-600 transition-colors">Acak Urutan Soal</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" name="show_result" value="1" {{ old('show_result', $modul->show_result) ? 'checked' : '' }} class="w-5 h-5 rounded-lg border-slate-200 text-indigo-600 focus:ring-indigo-500 transition-all">
+                            <span class="text-xs font-bold text-slate-600 group-hover:text-indigo-600 transition-colors">Tampilkan Hasil Langsung</span>
+                        </label>
                     </div>
                 </div>
 

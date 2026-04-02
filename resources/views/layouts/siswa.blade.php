@@ -33,30 +33,26 @@
         /* Dark Mode Global Styles */
         html.dark body {
             background-color: #020617;
-            color: #f1f5f9;
+            color: #f8fafc;
         }
 
-        /* Core Elements Text Visibility Fix */
-        html.dark .text-slate-900, html.dark .text-slate-800, html.dark h1, html.dark h2, html.dark h3, html.dark h4 {
-            color: #ffffff !important;
-        }
-        html.dark .text-slate-600, html.dark .text-slate-500, html.dark .text-slate-400 {
-            color: #94a3b8 !important;
-        }
+        /* Core Elements Text Visibility Refinement */
+        html.dark .text-slate-900, html.dark .text-slate-800 { color: #f8fafc; }
+        html.dark .text-slate-600, html.dark .text-slate-500 { color: #94a3b8; }
 
         .bg-subtle {
             position: fixed;
             inset: 0;
             z-index: -1;
             background: 
-                radial-gradient(circle at 100% 0%, rgba(79, 70, 229, 0.04) 0%, transparent 40%),
-                radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.04) 0%, transparent 40%);
+                radial-gradient(circle at 100% 0%, rgba(79, 70, 229, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.03) 0%, transparent 40%);
         }
         
         html.dark .bg-subtle {
             background: 
-                radial-gradient(circle at 100% 0%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+                radial-gradient(circle at 100% 0%, rgba(79, 70, 229, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.06) 0%, transparent 50%);
         }
 
         .glass-nav {
@@ -67,27 +63,27 @@
         }
 
         html.dark .glass-nav {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(2, 6, 23, 0.7);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .card-pro {
             background: #ffffff;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02), 0 4px 6px -2px rgba(0, 0, 0, 0.01);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         html.dark .card-pro {
-            background: #0f172a;
+            background: rgba(15, 23, 42, 0.4);
             border-color: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
         }
 
         .card-pro:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-            border-color: rgba(79, 70, 229, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+            border-color: rgba(79, 70, 229, 0.1);
         }
 
         .text-indigo-gradient {

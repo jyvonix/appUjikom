@@ -31,6 +31,16 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="space-y-2">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Target Jurusan</label>
+                        <select name="jurusan" required
+                            class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4 px-6 text-slate-700 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-sm cursor-pointer">
+                            <option value="" disabled selected>Pilih Jurusan</option>
+                            <option value="RPL" {{ old('jurusan') == 'RPL' ? 'selected' : '' }}>Rekayasa Perangkat Lunak (RPL)</option>
+                            <option value="MPLB" {{ old('jurusan') == 'MPLB' ? 'selected' : '' }}>Manajemen Perkantoran & Layanan Bisnis (MPLB)</option>
+                        </select>
+                        @error('jurusan') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="space-y-2">
                         <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Durasi Waktu (Menit)</label>
                         <div class="relative">
                             <input type="number" name="waktu" value="{{ old('waktu', 60) }}" min="1" required
@@ -38,14 +48,15 @@
                             <span class="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400 uppercase">Menit</span>
                         </div>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Status Aktivitas</label>
-                        <select name="is_active" required
-                            class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4 px-6 text-slate-700 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-sm">
-                            <option value="1">Aktifkan Sekarang</option>
-                            <option value="0">Simpan Sebagai Draft</option>
-                        </select>
-                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Status Aktivitas</label>
+                    <select name="is_active" required
+                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4 px-6 text-slate-700 focus:bg-white focus:border-indigo-500 transition-all font-semibold text-sm">
+                        <option value="1">Aktifkan Sekarang</option>
+                        <option value="0">Simpan Sebagai Draft</option>
+                    </select>
                 </div>
 
                 <div class="pt-6 border-t border-slate-100">

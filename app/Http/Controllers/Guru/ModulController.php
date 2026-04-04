@@ -25,6 +25,7 @@ class ModulController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255|unique:moduls,nama',
             'deskripsi' => 'nullable|string',
+            'jurusan' => 'required|string|in:RPL,MPLB',
             'waktu' => 'required|integer|min:1',
             'is_active' => 'required|boolean',
             'kkm' => 'nullable|integer|min:0|max:100',
@@ -72,6 +73,7 @@ class ModulController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255|unique:moduls,nama,' . $modul->id,
             'deskripsi' => 'nullable|string',
+            'jurusan' => 'required|string|in:RPL,MPLB',
             'waktu' => 'required|integer|min:1',
             'is_active' => 'required|boolean',
             'kkm' => 'nullable|integer|min:0|max:100',

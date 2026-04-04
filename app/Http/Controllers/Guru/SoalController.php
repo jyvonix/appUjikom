@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Exports\SoalExport;
 use App\Imports\SoalImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
 
 class SoalController extends Controller
 {
@@ -54,24 +55,9 @@ class SoalController extends Controller
             $extension = $file->getClientOriginalExtension();
 
             if ($extension === 'docx') {
-                $phpWord = \PhpOffice\PhpWord\IOFactory::load($file->getRealPath());
-                foreach ($phpWord->getSections() as $section) {
-                    foreach ($section->getElements() as $element) {
-                        if (method_exists($element, 'getElements')) {
-                            foreach ($element->getElements() as $childElement) {
-                                if (method_exists($childElement, 'getText')) {
-                                    $text .= $childElement->getText() . "\n";
-                                }
-                            }
-                        } elseif (method_exists($element, 'getText')) {
-                            $text .= $element->getText() . "\n";
-                        }
-                    }
-                }
+                $text = $this->extractTextFromDocx($file->getRealPath());
             } elseif ($extension === 'pdf') {
-                $pdfParser = new \Smalot\PdfParser\Parser();
-                $pdf = $pdfParser->parseFile($file->getRealPath());
-                $text = $pdf->getText();
+                $text = $this->extractTextFromPdf($file->getRealPath());
             }
         }
 
@@ -79,52 +65,190 @@ class SoalController extends Controller
             return redirect()->back()->with('error', 'Tidak ada teks yang ditemukan untuk diproses.');
         }
 
-        // Improved Parsing Logic
+        $parsedSoals = $this->parseQuestionTextProfessional($text, $request->modul_id);
+        
+        if (empty($parsedSoals)) {
+            return redirect()->back()->with('error', 'Gagal memproses soal. Pastikan format dokumen sesuai (Soal diawali nomor, Pilihan diawali a-e).');
+        }
+
+        foreach ($parsedSoals as $soalData) {
+            Soal::create($soalData);
+        }
+
+        $count = count($parsedSoals);
+        return redirect()->route('guru.modul.show', $request->modul_id)->with('success', "Sistem Cerdas berhasil mengimpor $count soal dengan akurasi tinggi.");
+    }
+
+    private function extractTextFromDocx($path)
+    {
+        $text = '';
+        try {
+            $phpWord = \PhpOffice\PhpWord\IOFactory::load($path);
+            foreach ($phpWord->getSections() as $section) {
+                foreach ($section->getElements() as $element) {
+                    $text .= $this->processDocxElement($element) . "\n";
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error("Docx Extraction Error: " . $e->getMessage());
+        }
+        return $text;
+    }
+
+    private function processDocxElement($element)
+    {
+        $text = '';
+        if ($element instanceof \PhpOffice\PhpWord\Element\Table) {
+            foreach ($element->getRows() as $row) {
+                foreach ($row->getCells() as $cell) {
+                    foreach ($cell->getElements() as $cellElement) {
+                        $text .= $this->processDocxElement($cellElement);
+                    }
+                    $text .= " "; // Beri spasi antar sel
+                }
+                $text .= "\n"; // Newline antar baris tabel
+            }
+        } elseif ($element instanceof \PhpOffice\PhpWord\Element\TextRun || method_exists($element, 'getElements')) {
+            foreach ($element->getElements() as $child) {
+                $text .= $this->processDocxElement($child);
+            }
+        } elseif (method_exists($element, 'getText')) {
+            $text .= $element->getText();
+        } elseif ($element instanceof \PhpOffice\PhpWord\Element\TextBreak) {
+            $text .= "\n";
+        }
+        return $text;
+    }
+
+    private function extractTextFromPdf($path)
+    {
+        try {
+            $parser = new \Smalot\PdfParser\Parser();
+            $pdf = $parser->parseFile($path);
+            return $pdf->getText();
+        } catch (\Exception $e) {
+            \Log::error("PDF Extraction Error: " . $e->getMessage());
+            return '';
+        }
+    }
+
+    private function parseQuestionTextProfessional($text, $modul_id)
+    {
+        // 1. Normalisasi Total
+        $text = str_replace(["\r\n", "\r"], "\n", $text);
+        $text = preg_replace('/\x{00A0}+/u', ' ', $text);
+        $text = preg_replace('/ +/', ' ', $text);
+
+        // Pecah Opsi horizontal (A... B...) menjadi vertikal
+        $text = preg_replace('/\s+([A-Ea-e][.\)])\s+/u', "\n$1 ", $text);
+        
+        // Bersihkan teks sampah administratif LSP agar tidak mengganggu
+        $junkPatterns = [
+            '/FR\.IA\.\d+[^ \n]*/i',
+            '/Skema Sertifikasi[^ \n]*/i',
+            '/Halaman \d+ dari \d+/i',
+            '/Nama Asesi:[^ \n]*/i',
+            '/Tanda Tangan:[^ \n]*/i',
+            '/Jawab semua pertanyaan berikut:/i'
+        ];
+        $text = preg_replace($junkPatterns, '', $text);
+
         $lines = explode("\n", $text);
-        $current_soal = null;
-        $count = 0;
+        $soals = [];
+        $tempSoal = null;
+        $activeSlot = null;
 
         foreach ($lines as $line) {
             $line = trim($line);
             if (empty($line)) continue;
 
-            // Pattern for a new question (starts with number or just text but not A-E options)
-            if (!preg_match('/^[A-E][.\)]/i', $line) && !preg_match('/^Kunci:/i', $line)) {
-                if ($current_soal && !empty($current_soal['pertanyaan'])) {
-                    Soal::create($current_soal);
-                    $count++;
-                }
-                $current_soal = [
-                    'modul_id' => $request->modul_id,
-                    'pertanyaan' => preg_replace('/^\d+[.\)]\s*/', '', $line),
-                    'opsi_a' => '', 'opsi_b' => '', 'opsi_c' => '', 'opsi_d' => '', 'opsi_e' => '',
-                    'jawaban_benar' => 'A',
-                    'kesulitan' => 'sedang',
-                    'user_id' => Auth::id()
-                ];
-            } else {
-                if (!$current_soal) continue;
+            // DETEKSI CALON NOMOR SOAL (Contoh: "1." atau "40.")
+            if (preg_match('/^(\d+)[.\)]\s*(.*)/u', $line, $matches)) {
+                $num = (int)$matches[1];
+                $content = trim($matches[2]);
 
-                // Pattern for options
-                if (preg_match('/^A[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_a'] = $matches[1];
-                elseif (preg_match('/^B[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_b'] = $matches[1];
-                elseif (preg_match('/^C[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_c'] = $matches[1];
-                elseif (preg_match('/^D[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_d'] = $matches[1];
-                elseif (preg_match('/^E[.\)]\s*(.*)/i', $line, $matches)) $current_soal['opsi_e'] = $matches[1];
-                
-                // Pattern for answer key
-                if (preg_match('/Kunci:\s*([A-E])/i', $line, $matches)) {
-                    $current_soal['jawaban_benar'] = strtoupper($matches[1]);
+                // Jika ini soal baru (bukan bagian dari list 1-6 di soal 12)
+                // Kita asumsikan soal baru jika nomornya > nomor terakhir yang tersimpan
+                // ATAU jika ini adalah nomor 1 pertama kali
+                if ($num == 1 || $num > count($soals) + 1 || ($tempSoal && $num == count($soals) + 1)) {
+                    if ($tempSoal) {
+                        // Sebelum simpan soal lama, pastikan dia valid (punya minimal 2 opsi)
+                        if (!empty($tempSoal['opsi_a']) && !empty($tempSoal['opsi_b'])) {
+                            $soals[] = $this->finalizeSoal($tempSoal);
+                        } else if ($tempSoal) {
+                            // Jika ternyata soal lama tidak punya opsi, berarti dia mungkin 
+                            // bagian dari teks pertanyaan soal sebelumnya.
+                            $prevIdx = count($soals) - 1;
+                            if ($prevIdx >= 0) {
+                                $soals[$prevIdx]['pertanyaan'] .= "\n" . $tempSoal['pertanyaan'];
+                            }
+                        }
+                    }
+                    
+                    $tempSoal = $this->initSoalTemplate($modul_id, $content);
+                    $activeSlot = 'pertanyaan';
+                    continue;
+                }
+            }
+
+            // DETEKSI OPSI (a. b. c. d. e.)
+            if (preg_match('/^([a-e])[.\)]\s*(.*)/iu', $line, $matches)) {
+                if ($tempSoal) {
+                    $letter = strtolower($matches[1]);
+                    $activeSlot = 'opsi_' . $letter;
+                    $tempSoal[$activeSlot] = trim($matches[2]);
+                    continue;
+                }
+            }
+
+            // DETEKSI KUNCI JAWABAN
+            if (preg_match('/^(Kunci|Jawaban|Ans)[:\s]+([A-E])/iu', $line, $matches)) {
+                if ($tempSoal) {
+                    $tempSoal['jawaban_benar'] = strtoupper($matches[2]);
+                    $activeSlot = null;
+                    continue;
+                }
+            }
+
+            // JIKA TIDAK COCOK APAPUN, BERARTI LANJUTAN TEKS (APPEND)
+            if ($tempSoal && $activeSlot) {
+                if ($activeSlot === 'pertanyaan') {
+                    $tempSoal['pertanyaan'] .= "\n" . $line;
+                } else {
+                    $tempSoal[$activeSlot] .= " " . $line;
                 }
             }
         }
 
-        if ($current_soal && !empty($current_soal['pertanyaan'])) {
-            Soal::create($current_soal);
-            $count++;
+        // Simpan soal terakhir
+        if ($tempSoal && !empty($tempSoal['opsi_a']) && !empty($tempSoal['opsi_b'])) {
+            $soals[] = $this->finalizeSoal($tempSoal);
         }
 
-        return redirect()->route('guru.modul.show', $request->modul_id)->with('success', "$count soal berhasil diimpor.");
+        return $soals;
+    }
+
+    private function finalizeSoal($soal)
+    {
+        $soal['pertanyaan'] = trim($soal['pertanyaan']);
+        $soal['opsi_a'] = Str::limit(trim($soal['opsi_a']), 250);
+        $soal['opsi_b'] = Str::limit(trim($soal['opsi_b']), 250);
+        $soal['opsi_c'] = Str::limit(trim($soal['opsi_c']), 250);
+        $soal['opsi_d'] = Str::limit(trim($soal['opsi_d']), 250);
+        $soal['opsi_e'] = Str::limit(trim($soal['opsi_e']), 250);
+        return $soal;
+    }
+
+    private function initSoalTemplate($modul_id, $pertanyaan)
+    {
+        return [
+            'modul_id' => $modul_id,
+            'pertanyaan' => $pertanyaan,
+            'opsi_a' => '', 'opsi_b' => '', 'opsi_c' => '', 'opsi_d' => '', 'opsi_e' => '',
+            'jawaban_benar' => 'A',
+            'kesulitan' => 'sedang',
+            'user_id' => Auth::id()
+        ];
     }
 
     public function index(Request $request)
@@ -183,7 +307,6 @@ class SoalController extends Controller
 
     public function edit(Soal $soal)
     {
-        // Ensure guru can only edit their own questions
         if ($soal->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }

@@ -33,6 +33,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'jurusan' => ['required', 'string', 'in:RPL,MPLB'],
         ]);
 
         $user = User::create([
@@ -40,6 +41,7 @@ class RegisteredUserController extends Controller
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'role' => 'siswa',
+            'jurusan' => strtoupper($request->jurusan),
         ]);
 
         event(new Registered($user));

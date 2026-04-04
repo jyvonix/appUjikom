@@ -65,6 +65,16 @@
                                 </div>
                             </div>
 
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Jurusan</label>
+                                <select name="jurusan" required
+                                    class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm cursor-pointer">
+                                    <option value="RPL" {{ old('jurusan', $siswa->jurusan) == 'RPL' ? 'selected' : '' }}>Rekayasa Perangkat Lunak (RPL)</option>
+                                    <option value="MPLB" {{ old('jurusan', $siswa->jurusan) == 'MPLB' ? 'selected' : '' }}>Manajemen Perkantoran & Layanan Bisnis (MPLB)</option>
+                                </select>
+                                @error('jurusan') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                            </div>
+
                             <div class="relative py-4 text-center">
                                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
                                     <div class="w-full border-t border-slate-100"></div>
@@ -74,7 +84,15 @@
 
                             <div class="space-y-2">
                                 <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Update Password Baru</label>
-                                <x-password-input name="password" placeholder="Kosongkan jika tidak ingin mengubah" />
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div class="space-y-2">
+                                        <x-password-input name="password" placeholder="Password Baru" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <x-password-input name="password_confirmation" placeholder="Konfirmasi Password" />
+                                    </div>
+                                </div>
+                                @error('password') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
                                 <p class="text-[10px] font-medium text-slate-400 italic mt-2">*Biarkan kolom ini kosong jika password tidak perlu diganti.</p>
                             </div>
 

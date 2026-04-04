@@ -53,10 +53,21 @@
                                     @error('username') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
                                 </div>
                                 <div class="space-y-2">
-                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email (Opsional)</label>
-                                    <input type="email" name="email" value="{{ old('email') }}" placeholder="siswa@sekolah.id"
-                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Jurusan</label>
+                                    <select name="jurusan" required
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm cursor-pointer">
+                                        <option value="" disabled selected>Pilih Jurusan</option>
+                                        <option value="RPL" {{ old('jurusan') == 'RPL' ? 'selected' : '' }}>Rekayasa Perangkat Lunak (RPL)</option>
+                                        <option value="MPLB" {{ old('jurusan') == 'MPLB' ? 'selected' : '' }}>Manajemen Perkantoran & Layanan Bisnis (MPLB)</option>
+                                    </select>
+                                    @error('jurusan') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
                                 </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email (Opsional)</label>
+                                <input type="email" name="email" value="{{ old('email') }}" placeholder="siswa@sekolah.id"
+                                    class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm">
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">

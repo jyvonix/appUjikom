@@ -1,3 +1,4 @@
+<x-guru-layout>
     <div class="relative min-h-screen pb-20 bg-slate-50/30">
         <!-- Background Accents (Subtle) -->
         <div class="fixed top-0 left-0 -z-10 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px]"></div>

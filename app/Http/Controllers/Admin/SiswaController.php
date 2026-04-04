@@ -40,6 +40,7 @@ class SiswaController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
             'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'jurusan' => ['required', 'string', 'in:RPL,MPLB'],
         ]);
 
         User::create([
@@ -48,6 +49,7 @@ class SiswaController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'siswa',
+            'jurusan' => $request->jurusan,
         ]);
 
         return redirect()->route('admin.siswa.index')->with('success', 'Data Siswa berhasil ditambahkan.');
@@ -71,20 +73,23 @@ class SiswaController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:users,username,'.$siswa->id],
             'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$siswa->id],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'password' => ['nullable', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'jurusan' => ['required', 'string', 'in:RPL,MPLB'],
         ]);
 
         $siswa->name = $request->name;
         $siswa->username = $request->username;
         $siswa->email = $request->email;
+        $siswa->jurusan = $request->jurusan;
         
+        // Update password HANYA jika diisi
         if ($request->filled('password')) {
-            $siswa->password = Hash::make($request->password);
+            $siswa->password = \Illuminate\Support\Facades\Hash::make($request->password);
         }
 
         $siswa->save();
 
-        return redirect()->route('admin.siswa.index')->with('success', 'Data Siswa berhasil diperbarui.');
+        return redirect()->route('admin.siswa.index')->with('success', 'Data Siswa ' . $siswa->name . ' berhasil diperbarui.');
     }
 
     public function destroy(User $siswa)

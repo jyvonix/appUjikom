@@ -145,7 +145,11 @@ class SiswaController extends Controller
     public function kerjakanUjian(Request $request)
     {
         $modul_id = $request->query('modul_id');
-        $modul = Modul::with('soals')->findOrFail($modul_id);
+        $user = Auth::user();
+        $modul = Modul::where('id', $modul_id)
+            ->where('jurusan', $user->jurusan)
+            ->with('soals')
+            ->firstOrFail();
 
         $max_retakes = $modul->getSetting('max_retakes');
         $total_percobaan = Nilai::where('user_id', Auth::id())->where('modul_id', $modul_id)->count();

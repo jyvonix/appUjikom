@@ -20,7 +20,8 @@ class Modul extends Model
         'point_per_question',
         'score_divisor',
         'is_random',
-        'show_result'
+        'show_result',
+        'jurusan',
     ];
 
     /**

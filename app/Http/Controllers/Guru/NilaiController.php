@@ -20,14 +20,18 @@ class NilaiController extends Controller
     public function exportPdf(Request $request)
     {
         $modul_id = $request->query('modul_id');
-        $query = Nilai::with(['user', 'modul']);
+        $guru_id = \Illuminate\Support\Facades\Auth::id();
+        
+        $query = Nilai::whereHas('modul', function($q) use ($guru_id) {
+            $q->where('user_id', $guru_id);
+        })->with(['user', 'modul']);
         
         if ($modul_id) {
             $query->where('modul_id', $modul_id);
         }
 
         $nilais = $query->latest()->get();
-        $modul = $modul_id ? \App\Models\Modul::find($modul_id) : null;
+        $modul = $modul_id ? \App\Models\Modul::where('id', $modul_id)->where('user_id', $guru_id)->first() : null;
 
         $pdf = Pdf::loadView('guru.nilai.pdf', compact('nilais', 'modul'));
         return $pdf->download('laporan-nilai-' . ($modul ? str_replace(' ', '-', strtolower($modul->nama)) : 'semua') . '.pdf');
@@ -35,7 +39,12 @@ class NilaiController extends Controller
 
     public function index(Request $request)
     {
-        $query = Nilai::with(['user', 'modul']);
+        $guru_id = \Illuminate\Support\Facades\Auth::id();
+        
+        // Hanya ambil nilai untuk modul yang dibuat oleh guru ini
+        $query = Nilai::whereHas('modul', function($q) use ($guru_id) {
+            $q->where('user_id', $guru_id);
+        })->with(['user', 'modul']);
 
         if ($request->has('search')) {
             $search = $request->get('search');
@@ -47,10 +56,6 @@ class NilaiController extends Controller
 
         $nilais = $query->latest()->paginate(10)->withQueryString();
         $kkm = \App\Models\Setting::get('kkm', 75);
-
-        if ($request->ajax()) {
-            return view('guru.nilai.table', compact('nilais', 'kkm'))->render();
-        }
 
         return view('guru.nilai.index', compact('nilais', 'kkm'));
     }

@@ -7,7 +7,7 @@
                 <div class="w-20 h-20 rounded-2xl bg-white p-1.5 mb-6 shadow-xl shadow-blue-100 border border-blue-50">
                     <img src="{{ asset('storage/image/images.png') }}" alt="Logo" class="w-full h-full object-contain">
                 </div>
-                <h1 class="text-3xl font-bold text-slate-900 tracking-tight leading-none">Smart<span class="text-blue-600">Exam</span></h1>
+                <h1 class="text-3xl font-bold text-slate-900 tracking-tight leading-none">Smart Thinking <span class="text-blue-600">Exam</span></h1>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-3">Intelligence Access</p>
             </div>
 

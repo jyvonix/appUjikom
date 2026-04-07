@@ -48,7 +48,7 @@ class ModulController extends Controller
 
     public function show(Modul $modul)
     {
-        if ($modul->user_id !== Auth::id()) {
+        if ((int) $modul->user_id !== (int) Auth::id()) {
             abort(403);
         }
 
@@ -58,7 +58,7 @@ class ModulController extends Controller
 
     public function edit(Modul $modul)
     {
-        if ($modul->user_id !== Auth::id()) {
+        if ((int) $modul->user_id !== (int) Auth::id()) {
             abort(403);
         }
         return view('guru.modul.edit', compact('modul'));
@@ -66,7 +66,7 @@ class ModulController extends Controller
 
     public function update(Request $request, Modul $modul)
     {
-        if ($modul->user_id !== Auth::id()) {
+        if ((int) $modul->user_id !== (int) Auth::id()) {
             abort(403);
         }
 
@@ -95,7 +95,7 @@ class ModulController extends Controller
 
     public function destroy(Modul $modul)
     {
-        if ($modul->user_id !== Auth::id()) {
+        if ((int) $modul->user_id !== (int) Auth::id()) {
             abort(403);
         }
         $modul->delete();

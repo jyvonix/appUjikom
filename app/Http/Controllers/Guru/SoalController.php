@@ -307,7 +307,7 @@ class SoalController extends Controller
 
     public function edit(Soal $soal)
     {
-        if ($soal->user_id !== Auth::id()) {
+        if ((int) $soal->user_id !== (int) Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
         $moduls = Modul::where('user_id', Auth::id())->get();
@@ -316,7 +316,7 @@ class SoalController extends Controller
 
     public function update(Request $request, Soal $soal)
     {
-        if ($soal->user_id !== Auth::id()) {
+        if ((int) $soal->user_id !== (int) Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -350,7 +350,7 @@ class SoalController extends Controller
 
     public function destroy(Soal $soal)
     {
-        if ($soal->user_id !== Auth::id()) {
+        if ((int) $soal->user_id !== (int) Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
         $modul_id = $soal->modul_id;
@@ -369,7 +369,7 @@ class SoalController extends Controller
 
     public function show(Soal $soal)
     {
-        if ($soal->user_id !== Auth::id()) {
+        if ((int) $soal->user_id !== (int) Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 

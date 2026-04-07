@@ -36,13 +36,17 @@ class GuruController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'jurusan' => ['required', 'string', 'in:RPL,MPLB'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         User::create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
+            'jurusan' => $request->jurusan,
             'password' => Hash::make($request->password),
             'role' => 'guru',
         ]);
@@ -66,12 +70,16 @@ class GuruController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,'.$guru->id],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$guru->id],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'jurusan' => ['required', 'string', 'in:RPL,MPLB'],
+            'password' => ['nullable', Rules\Password::defaults()],
         ]);
 
         $guru->name = $request->name;
+        $guru->username = $request->username;
         $guru->email = $request->email;
+        $guru->jurusan = $request->jurusan;
         
         if ($request->filled('password')) {
             $guru->password = Hash::make($request->password);

@@ -51,6 +51,24 @@
                                 @error('name') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
                             </div>
 
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Username Guru</label>
+                                    <input type="text" name="username" value="{{ old('username', $guru->username) }}" required
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 placeholder:text-slate-300 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
+                                    @error('username') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Jurusan / Departemen</label>
+                                    <select name="jurusan" required
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm appearance-none">
+                                        <option value="RPL" {{ old('jurusan', $guru->jurusan) == 'RPL' ? 'selected' : '' }}>RPL</option>
+                                        <option value="MPLB" {{ old('jurusan', $guru->jurusan) == 'MPLB' ? 'selected' : '' }}>MPLB</option>
+                                    </select>
+                                    @error('jurusan') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+
                             <div class="space-y-2">
                                 <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email Aktif</label>
                                 <input type="email" name="email" value="{{ old('email', $guru->email) }}" required

@@ -45,6 +45,35 @@
                                 @error('name') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
                             </div>
 
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Username Login</label>
+                                    <div class="relative group">
+                                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                            <svg class="h-5 w-5 text-slate-300 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                        </div>
+                                        <input type="text" name="username" value="{{ old('username') }}" placeholder="guru_smart" required
+                                            class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 pl-12 pr-4 text-slate-700 placeholder:text-slate-300 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
+                                    </div>
+                                    @error('username') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Jurusan / Departemen</label>
+                                    <div class="relative group">
+                                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                            <svg class="h-5 w-5 text-slate-300 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                                        </div>
+                                        <select name="jurusan" required
+                                            class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 pl-12 pr-4 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm appearance-none">
+                                            <option value="">Pilih Jurusan</option>
+                                            <option value="RPL" {{ old('jurusan') == 'RPL' ? 'selected' : '' }}>Rekayasa Perangkat Lunak (RPL)</option>
+                                            <option value="MPLB" {{ old('jurusan') == 'MPLB' ? 'selected' : '' }}>Manajemen Perkantoran (MPLB)</option>
+                                        </select>
+                                    </div>
+                                    @error('jurusan') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+
                             <div class="space-y-2">
                                 <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Alamat Email Guru</label>
                                 <div class="relative group">

@@ -192,7 +192,7 @@ class SiswaController extends Controller
         return view('siswa.soal.kerjakan', [
             'soals' => $soals,
             'modul' => $modul,
-            'duration' => $remainingSeconds, // Now in seconds
+            'duration' => $remainingSeconds,
             'violationCount' => $violationCount
         ]);
     }

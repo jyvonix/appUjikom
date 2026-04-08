@@ -77,11 +77,9 @@
 
                                 {{-- Question & Media --}}
                                 <div class="space-y-8 relative">
-                                    {{-- Invisible OCR Blocker Layer --}}
                                     <div class="absolute inset-0 bg-transparent z-[70] cursor-default" title="Secure Content"></div>
                                     
                                     <h2 class="text-lg md:text-2xl font-bold leading-relaxed tracking-tight text-slate-800 dark:text-slate-100 relative">
-                                        {{-- Scrambled detection prevention --}}
                                         <span class="relative">
                                             {{ $soal->pertanyaan }}
                                             <span class="absolute inset-0 blur-[100px] bg-white dark:bg-slate-950 opacity-10 pointer-events-none"></span>
@@ -136,149 +134,19 @@
                 </form>
             </main>
 
-... (rest of the action dock code)
-
-    <style>
-        .prevent-select {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-        }
-        .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.1); border-radius: 10px; }
-        [x-cloak] { display: none !important; }
-        
-        /* Violation Screen Flash */
-        .violation-flash { animation: flashRed 0.5s linear 2; }
-        @keyframes flashRed { 0% { background: transparent; } 50% { background: rgba(225, 29, 72, 0.2); } 100% { background: transparent; } }
-    </style>
-
-    @push('scripts')
-    <script>
-        function examEngine() {
-            return {
-                currentIndex: 0,
-                timeLeft: {{ $duration }}, // Already in seconds from server
-                answeredList: new Array({{ $soals->count() }}).fill(false),
-                answeredCount: 0,
-                answers: {},
-                theme: localStorage.getItem('color-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
-                tabSwitchCount: {{ $violationCount }}, // From server
-                showNav: false,
-
-                init() {
-                    this.applyTheme();
-                    this.startTimer();
-                    this.preventTampering();
-                    this.loadSavedProgress();
-                    this.initAntiCheating();
-                },
-
-                async logViolationOnServer() {
-                    try {
-                        const response = await fetch("{{ route('siswa.soal.violation') }}", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                            },
-                            body: JSON.stringify({ modul_id: {{ $modul->id }} })
-                        });
-                        const data = await response.json();
-                        this.tabSwitchCount = data.count;
-                        this.handleViolationLevel();
-                    } catch (e) { console.error("Violation logging failed", e); }
-                },
-
-                handleViolationLevel() {
-                    document.body.classList.add('violation-flash');
-                    setTimeout(() => document.body.classList.remove('violation-flash'), 1000);
-
-                    if (this.tabSwitchCount >= 3) {
-                        Swal.fire({
-                            title: '<span class="text-rose-600">Security Interruption!</span>',
-                            html: '<div class="text-sm font-medium text-slate-500 mt-2">Violation limit reached. Closing session.</div>',
-                            icon: 'error',
-                            confirmButtonText: 'Submit Assessment',
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            background: this.theme === 'dark' ? '#020617' : '#fff',
-                            color: this.theme === 'dark' ? '#fff' : '#1e293b',
-                            customClass: {
-                                popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
-                                confirmButton: 'bg-rose-600 hover:bg-rose-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-rose-500/20'
-                            }
-                        }).then(() => this.forceSubmit());
-                    } else {
-                        Swal.fire({
-                            title: 'Security Alert!',
-                            html: `<div class="text-sm font-medium text-slate-500 mt-2">Suspicious activity detected. Violation <span class="text-rose-500 font-bold">(${this.tabSwitchCount}/3)</span> recorded on server. Your session will be terminated on the next attempt.</div>`,
-                            icon: 'warning',
-                            confirmButtonText: 'Acknowledge',
-                            background: this.theme === 'dark' ? '#020617' : '#fff',
-                            color: this.theme === 'dark' ? '#fff' : '#1e293b',
-                            customClass: {
-                                popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
-                                confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-500/20'
-                            }
-                        });
-                    }
-                },
-
-                initAntiCheating() {
-                    document.addEventListener('visibilitychange', () => {
-                        if (document.hidden) {
-                            this.logViolationOnServer();
-                        }
-                    });
-
-                    // Extra layer for mobile AI prevention
-                    window.onblur = () => {
-                        // Some mobile browsers trigger blur instead of visibilitychange
-                        // but we check document.hidden to be sure it's not a temporary lag
-                        if (document.hidden) this.logViolationOnServer();
-                    };
-                },
-
-                startTimer() {
-                    const timer = setInterval(() => {
-                        if (this.timeLeft > 0) this.timeLeft--;
-                        else { 
-                            clearInterval(timer); 
-                            this.forceSubmit();
-                        }
-                    }, 1000);
-                },
-
-                formatTime(s) {
-                    const m = Math.floor(s / 60);
-                    const sec = s % 60;
-                    return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-                },
-
-... (rest of the methods)
-
-            {{-- Smart Action Dock (Optimized for Thumb Reach) --}}
+            {{-- Smart Action Dock --}}
             <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4">
                 <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-2 shadow-2xl flex items-center justify-between gap-2 transition-all duration-500">
-                    
                     <div class="flex items-center gap-1">
                         <button type="button" @click="prev()" :disabled="currentIndex === 0"
                                 class="w-11 h-11 md:w-12 md:h-12 flex items-center justify-center rounded-2xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-300 disabled:opacity-20 transition-all active:scale-90">
                             <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"/></svg>
                         </button>
-                        
                         <button @click="showNav = true" type="button" class="px-4 h-11 md:h-12 flex items-center gap-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all group border border-transparent hover:border-slate-200 dark:hover:border-white/10">
                             <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
                             <span class="text-[10px] md:text-xs font-black text-slate-700 dark:text-slate-100 tracking-tighter uppercase" x-text="(currentIndex + 1) + ' / {{ $soals->count() }}'"></span>
                         </button>
                     </div>
-
                     <div class="flex items-center gap-2">
                         <template x-if="currentIndex < {{ $soals->count() - 1 }}">
                             <button type="button" @click="next()" 
@@ -286,7 +154,6 @@
                                 NEXT
                             </button>
                         </template>
-                        
                         <template x-if="currentIndex === {{ $soals->count() - 1 }}">
                             <button type="button" @click="confirmFinish()" 
                                     class="h-11 md:h-12 px-7 md:px-8 bg-indigo-600 text-white rounded-[1.2rem] font-black text-[10px] md:text-xs tracking-widest shadow-xl shadow-indigo-500/20 hover:bg-indigo-500 active:scale-95 transition-all uppercase">
@@ -298,41 +165,21 @@
             </div>
         </div>
 
-        {{-- Bottom-Sheet Question Navigator (Mobile Optimized) --}}
-        <div x-show="showNav" 
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 translate-y-full"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 translate-y-0"
-             x-transition:leave-end="opacity-0 translate-y-full"
-             class="fixed inset-0 z-[200] flex items-end justify-center" x-cloak>
-            
+        {{-- Navigator --}}
+        <div x-show="showNav" x-cloak class="fixed inset-0 z-[200] flex items-end justify-center">
             <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-md" @click="showNav = false"></div>
-            
-            <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-t-[2.5rem] shadow-2xl border-t border-slate-200 dark:border-white/10 p-6 md:p-10 overflow-hidden transition-colors duration-500">
-                {{-- Handle for Bottom Sheet --}}
-                <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto mb-6 md:hidden"></div>
-
+            <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-t-[2.5rem] p-6 md:p-10 border-t border-slate-200 dark:border-white/10">
                 <div class="flex items-center justify-between mb-8">
-                    <div>
-                        <h3 class="font-black text-xl dark:text-white tracking-tight">Question Grid</h3>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Jump to specific session</p>
-                    </div>
-                    <button @click="showNav = false" class="hidden md:flex w-10 h-10 items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-rose-500 transition-all">
+                    <h3 class="font-black text-xl dark:text-white">Question Grid</h3>
+                    <button @click="showNav = false" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
-
-                <div class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-[50vh] overflow-y-auto custom-scrollbar pr-1 pb-10 md:pb-0">
+                <div class="grid grid-cols-5 gap-3">
                     @foreach($soals as $index => $soal)
                         <button type="button" @click="currentIndex = {{ $index }}; showNav = false"
-                                class="aspect-square rounded-xl md:rounded-2xl border flex items-center justify-center text-xs md:text-sm font-black transition-all transform active:scale-90"
-                                :class="currentIndex === {{ $index }} 
-                                    ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20 scale-105' 
-                                    : (isAnswered({{ $index }}) 
-                                        ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400' 
-                                        : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-600')">
+                                class="aspect-square rounded-xl border flex items-center justify-center text-xs font-black transition-all"
+                                :class="currentIndex === {{ $index }} ? 'bg-indigo-600 text-white' : (isAnswered({{ $index }}) ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-50 text-slate-400')">
                             {{ $index + 1 }}
                         </button>
                     @endforeach
@@ -342,12 +189,14 @@
     </div>
 
     <style>
+        .prevent-select { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.1); border-radius: 10px; }
         [x-cloak] { display: none !important; }
+        .violation-flash { animation: flashRed 0.5s linear 2; }
+        @keyframes flashRed { 0% { background: transparent; } 50% { background: rgba(225, 29, 72, 0.2); } 100% { background: transparent; } }
     </style>
 
     @push('scripts')
@@ -355,12 +204,12 @@
         function examEngine() {
             return {
                 currentIndex: 0,
-                timeLeft: {{ $duration * 60 }},
+                timeLeft: {{ $duration }},
                 answeredList: new Array({{ $soals->count() }}).fill(false),
                 answeredCount: 0,
                 answers: {},
-                theme: localStorage.getItem('color-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
-                tabSwitchCount: 0,
+                theme: localStorage.getItem('color-theme') || 'light',
+                tabSwitchCount: {{ $violationCount }},
                 showNav: false,
 
                 init() {
@@ -382,57 +231,51 @@
                     this.applyTheme();
                 },
 
+                async logViolationOnServer() {
+                    try {
+                        const response = await fetch("{{ route('siswa.soal.violation') }}", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+                            body: JSON.stringify({ modul_id: {{ $modul->id }} })
+                        });
+                        const data = await response.json();
+                        this.tabSwitchCount = data.count;
+                        this.handleViolationLevel();
+                    } catch (e) { console.error(e); }
+                },
+
+                handleViolationLevel() {
+                    document.body.classList.add('violation-flash');
+                    setTimeout(() => document.body.classList.remove('violation-flash'), 1000);
+                    if (this.tabSwitchCount >= 3) {
+                        Swal.fire({
+                            title: '<span class="text-rose-600">Security Interruption!</span>',
+                            html: '<div class="text-sm font-medium text-slate-500 mt-2">Violation limit reached. Closing session.</div>',
+                            icon: 'error',
+                            confirmButtonText: 'Submit Assessment',
+                            allowOutsideClick: false,
+                            background: this.theme === 'dark' ? '#020617' : '#fff',
+                            color: this.theme === 'dark' ? '#fff' : '#1e293b'
+                        }).then(() => this.forceSubmit());
+                    } else {
+                        Swal.fire({
+                            title: 'Security Alert!',
+                            html: `<div class="text-sm font-medium text-slate-500 mt-2">Suspicious activity detected. Violation (${this.tabSwitchCount}/3) recorded.</div>`,
+                            icon: 'warning',
+                            confirmButtonText: 'Acknowledge',
+                            background: this.theme === 'dark' ? '#020617' : '#fff'
+                        });
+                    }
+                },
+
                 initAntiCheating() {
-                    document.addEventListener('visibilitychange', () => {
-                        if (document.hidden) {
-                            this.tabSwitchCount++;
-                            if (this.tabSwitchCount >= 3) {
-                                Swal.fire({
-                                    title: '<span class="text-rose-600">Security Interruption!</span>',
-                                    html: '<div class="text-sm font-medium text-slate-500 mt-2">Violation limit reached. Closing session.</div>',
-                                    icon: 'error',
-                                    confirmButtonText: 'Submit Assessment',
-                                    allowOutsideClick: false,
-                                    allowEscapeKey: false,
-                                    background: this.theme === 'dark' ? '#020617' : '#fff',
-                                    color: this.theme === 'dark' ? '#fff' : '#1e293b',
-                                    customClass: {
-                                        popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
-                                        confirmButton: 'bg-rose-600 hover:bg-rose-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-rose-500/20'
-                                    }
-                                }).then(() => this.forceSubmit());
-                            } else {
-                                Swal.fire({
-                                    title: 'Caution!',
-                                    html: `<div class="text-sm font-medium text-slate-500 mt-2">Application focus lost. Violation recorded <span class="text-rose-500 font-bold">(${this.tabSwitchCount}/3)</span>. Please maintain window active to avoid session termination.</div>`,
-                                    icon: 'warning',
-                                    confirmButtonText: 'I Understand',
-                                    background: this.theme === 'dark' ? '#020617' : '#fff',
-                                    color: this.theme === 'dark' ? '#fff' : '#1e293b',
-                                    customClass: {
-                                        popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
-                                        confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-500/20'
-                                    }
-                                });
-                            }
-                        }
-                    });
+                    document.addEventListener('visibilitychange', () => { if (document.hidden) this.logViolationOnServer(); });
                 },
 
                 startTimer() {
                     const timer = setInterval(() => {
                         if (this.timeLeft > 0) this.timeLeft--;
-                        else { 
-                            clearInterval(timer); 
-                            Swal.fire({
-                                title: 'Time Expired!',
-                                text: 'Your session has ended. Submitting automatically...',
-                                icon: 'info',
-                                showConfirmButton: false,
-                                timer: 2000,
-                                background: this.theme === 'dark' ? '#020617' : '#fff'
-                            }).then(() => this.forceSubmit());
-                        }
+                        else { clearInterval(timer); this.forceSubmit(); }
                     }, 1000);
                 },
 
@@ -451,8 +294,7 @@
                 },
 
                 saveProgress() {
-                    const progress = { answers: this.answers, modulId: {{ $modul->id }}, userId: {{ Auth::id() }} };
-                    localStorage.setItem(`exam_progress_${progress.userId}_${progress.modulId}`, JSON.stringify(progress));
+                    localStorage.setItem(`exam_progress_{{ Auth::id() }}_{{ $modul->id }}`, JSON.stringify({ answers: this.answers }));
                 },
 
                 loadSavedProgress() {
@@ -470,51 +312,16 @@
                 isAnswered(idx) { return this.answeredList[idx]; },
                 next() { if (this.currentIndex < {{ $soals->count() - 1 }}) this.currentIndex++; },
                 prev() { if (this.currentIndex > 0) this.currentIndex--; },
-
-                preventTampering() {
-                    window.history.pushState(null, null, window.location.href);
-                    window.onpopstate = () => window.history.go(1);
-                },
-
-                forceSubmit() {
-                    localStorage.removeItem(`exam_progress_{{ Auth::id() }}_{{ $modul->id }}`);
-                    document.getElementById('ujian-form').submit();
-                },
+                preventTampering() { window.history.pushState(null, null, window.location.href); window.onpopstate = () => window.history.go(1); },
+                forceSubmit() { localStorage.removeItem(`exam_progress_{{ Auth::id() }}_{{ $modul->id }}`); document.getElementById('ujian-form').submit(); },
 
                 confirmFinish() {
-                    const unansweredCount = {{ $soals->count() }} - this.answeredCount;
-                    
-                    if (unansweredCount > 0) {
-                        Swal.fire({
-                            title: 'Submission Blocked!',
-                            html: `<div class="text-sm font-medium text-slate-500 mt-2">You have <span class="text-rose-500 font-bold">${unansweredCount}</span> unanswered questions. Please complete all items before finalizing.</div>`,
-                            icon: 'warning',
-                            confirmButtonText: 'Return to Exam',
-                            background: this.theme === 'dark' ? '#020617' : '#fff',
-                            color: this.theme === 'dark' ? '#fff' : '#1e293b',
-                            customClass: {
-                                popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
-                                confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px]'
-                            }
-                        });
+                    const unanswered = {{ $soals->count() }} - this.answeredCount;
+                    if (unanswered > 0) {
+                        Swal.fire({ title: 'Submission Blocked!', text: `You have ${unanswered} unanswered questions.`, icon: 'warning', confirmButtonText: 'Return', background: this.theme === 'dark' ? '#020617' : '#fff' });
                         return;
                     }
-
-                    Swal.fire({
-                        title: 'Finalize Assessment?',
-                        html: '<div class="text-sm font-medium text-slate-500 mt-2">All answers will be locked and graded. This action is irreversible.</div>',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Confirm Submission',
-                        cancelButtonText: 'Review Answers',
-                        background: this.theme === 'dark' ? '#020617' : '#fff',
-                        color: this.theme === 'dark' ? '#fff' : '#1e293b',
-                        customClass: {
-                            popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
-                            confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-500/20',
-                            cancelButton: 'bg-slate-100 dark:bg-white/5 text-slate-400 px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] ml-2'
-                        }
-                    }).then(r => { if (r.isConfirmed) this.forceSubmit(); });
+                    Swal.fire({ title: 'Finalize Assessment?', icon: 'question', showCancelButton: true, confirmButtonText: 'Confirm Submission', background: this.theme === 'dark' ? '#020617' : '#fff' }).then(r => { if (r.isConfirmed) this.forceSubmit(); });
                 }
             }
         }

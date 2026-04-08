@@ -168,7 +168,7 @@ class SiswaController extends Controller
             session()->put("violation_" . Auth::id() . "_" . $modul_id, 0);
         }
 
-        $durationMinutes = $modul->waktu;
+        $durationMinutes = (int) $modul->waktu;
         $endTime = Carbon::parse($startTime)->addMinutes($durationMinutes);
         $remainingSeconds = max(0, now()->diffInSeconds($endTime, false));
 

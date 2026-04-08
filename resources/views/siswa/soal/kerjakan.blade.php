@@ -1,6 +1,6 @@
 <x-siswa-layout :hideNav="true">
     <div class="fixed inset-0 overflow-hidden font-sans bg-white dark:bg-[#020617] text-slate-900 dark:text-slate-100 transition-colors duration-500" 
-         x-data="examEngine()">
+         x-data="examEngine()" x-init="init()">
         
         {{-- High-End Ambient Background --}}
         <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-40 dark:opacity-100">
@@ -165,21 +165,41 @@
             </div>
         </div>
 
-        {{-- Navigator --}}
-        <div x-show="showNav" x-cloak class="fixed inset-0 z-[200] flex items-end justify-center">
+        {{-- Professional Bottom-Sheet Navigator --}}
+        <div x-show="showNav" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-full"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 translate-y-full"
+             class="fixed inset-0 z-[200] flex items-end justify-center" x-cloak>
+            
             <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-md" @click="showNav = false"></div>
-            <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-t-[2.5rem] p-6 md:p-10 border-t border-slate-200 dark:border-white/10">
+            
+            <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-t-[2.5rem] shadow-2xl border-t border-slate-200 dark:border-white/10 p-6 md:p-10 overflow-hidden">
+                {{-- Handle --}}
+                <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto mb-6"></div>
+
                 <div class="flex items-center justify-between mb-8">
-                    <h3 class="font-black text-xl dark:text-white">Question Grid</h3>
-                    <button @click="showNav = false" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400">
+                    <div>
+                        <h3 class="font-black text-xl dark:text-white tracking-tight">Question Grid</h3>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Jump to specific item</p>
+                    </div>
+                    <button @click="showNav = false" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-rose-500 transition-all">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
-                <div class="grid grid-cols-5 gap-3">
+
+                <div class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-[50vh] overflow-y-auto custom-scrollbar pb-10">
                     @foreach($soals as $index => $soal)
                         <button type="button" @click="currentIndex = {{ $index }}; showNav = false"
-                                class="aspect-square rounded-xl border flex items-center justify-center text-xs font-black transition-all"
-                                :class="currentIndex === {{ $index }} ? 'bg-indigo-600 text-white' : (isAnswered({{ $index }}) ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-50 text-slate-400')">
+                                class="aspect-square rounded-xl md:rounded-2xl border flex items-center justify-center text-xs md:text-sm font-black transition-all transform active:scale-90"
+                                :class="currentIndex === {{ $index }} 
+                                    ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20 scale-105' 
+                                    : (isAnswered({{ $index }}) 
+                                        ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400' 
+                                        : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-600')">
                             {{ $index + 1 }}
                         </button>
                     @endforeach
@@ -204,7 +224,7 @@
         function examEngine() {
             return {
                 currentIndex: 0,
-                timeLeft: {{ $duration }},
+                timeLeft: parseInt("{{ $duration }}") || 0,
                 answeredList: new Array({{ $soals->count() }}).fill(false),
                 answeredCount: 0,
                 answers: {},
@@ -221,8 +241,11 @@
                 },
 
                 applyTheme() {
-                    if (this.theme === 'dark') document.documentElement.classList.add('dark');
-                    else document.documentElement.classList.remove('dark');
+                    const el = document.documentElement;
+                    if (el) {
+                        if (this.theme === 'dark') el.classList.add('dark');
+                        else el.classList.remove('dark');
+                    }
                 },
 
                 toggleTheme() {
@@ -241,7 +264,7 @@
                         const data = await response.json();
                         this.tabSwitchCount = data.count;
                         this.handleViolationLevel();
-                    } catch (e) { console.error(e); }
+                    } catch (e) { console.error("Logging failed", e); }
                 },
 
                 handleViolationLevel() {
@@ -280,8 +303,9 @@
                 },
 
                 formatTime(s) {
-                    const m = Math.floor(s / 60);
-                    const sec = s % 60;
+                    const totalSeconds = Math.floor(Math.max(0, s));
+                    const m = Math.floor(totalSeconds / 60);
+                    const sec = totalSeconds % 60;
                     return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
                 },
 

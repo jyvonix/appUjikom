@@ -170,7 +170,7 @@ class SiswaController extends Controller
 
         $durationMinutes = (int) $modul->waktu;
         $endTime = Carbon::parse($startTime)->addMinutes($durationMinutes);
-        $remainingSeconds = max(0, now()->diffInSeconds($endTime, false));
+        $remainingSeconds = (int) max(0, now()->diffInSeconds($endTime, false));
 
         if ($remainingSeconds <= 0) {
             session()->forget($cacheKey);

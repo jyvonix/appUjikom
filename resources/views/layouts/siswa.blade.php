@@ -158,9 +158,32 @@
                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Authorized User</span>
                 </div>
                 
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" id="logout-form-siswa">
                     @csrf
-                    <button type="submit" class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-rose-500 transition-all border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <button type="button" 
+                        onclick="event.preventDefault(); 
+                            Swal.fire({
+                                title: 'Akhiri Sesi?',
+                                text: 'Anda akan keluar dari aplikasi secara aman.',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Ya, Keluar',
+                                cancelButtonText: 'Batal',
+                                reverseButtons: true,
+                                background: document.documentElement.classList.contains('dark') ? '#020617' : '#fff',
+                                color: document.documentElement.classList.contains('dark') ? '#fff' : '#1e293b',
+                                customClass: {
+                                    popup: 'rounded-[2rem] border border-white/10 shadow-2xl',
+                                    confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-500/20 ml-3',
+                                    cancelButton: 'bg-slate-100 dark:bg-white/5 text-slate-400 px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px]'
+                                },
+                                buttonsStyling: false
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    document.getElementById('logout-form-siswa').submit();
+                                }
+                            });"
+                        class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-rose-500 transition-all border border-slate-200 dark:border-slate-700 shadow-sm">
                         <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     </button>
                 </form>

@@ -84,12 +84,31 @@
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" id="logout-form-mobile">
                     @csrf
-
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
+                            onclick="event.preventDefault(); 
+                                    Swal.fire({
+                                        title: 'Log out?',
+                                        text: 'You will need to re-authenticate to access your student dashboard.',
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Log Out',
+                                        cancelButtonText: 'Cancel',
+                                        reverseButtons: true,
+                                        background: document.documentElement.classList.contains('dark') ? '#0f172a' : '#fff',
+                                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#1e293b',
+                                        customClass: {
+                                            popup: 'rounded-[1.5rem] border-0 shadow-2xl',
+                                            confirmButton: 'bg-rose-600 hover:bg-rose-700 text-white px-6 py-2.5 rounded-xl font-bold uppercase tracking-widest text-[10px]',
+                                            cancelButton: 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 px-6 py-2.5 rounded-xl font-bold uppercase tracking-widest text-[10px] mr-2'
+                                        },
+                                        buttonsStyling: false
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            document.getElementById('logout-form-mobile').submit();
+                                        }
+                                    });">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>

@@ -145,6 +145,7 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/soal', [StudentSiswaController::class, 'indexSoal'])->name('siswa.soal.index');
     Route::get('/siswa/ujian', [StudentSiswaController::class, 'kerjakanUjian'])->name('siswa.soal.kerjakan');
     Route::post('/siswa/ujian', [StudentSiswaController::class, 'simpanUjian'])->name('siswa.soal.simpan');
+    Route::post('/siswa/ujian/log-violation', [StudentSiswaController::class, 'logViolation'])->name('siswa.soal.violation');
     Route::get('/siswa/nilai', [StudentSiswaController::class, 'indexNilai'])->name('siswa.nilai.index');
     Route::get('/siswa/nilai/{id}/preview', [StudentSiswaController::class, 'previewNilai'])->name('siswa.nilai.preview');
 });

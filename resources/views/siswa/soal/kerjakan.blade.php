@@ -46,8 +46,15 @@
             </div>
 
             {{-- Main Question Workspace --}}
-            <main class="flex-1 overflow-y-auto custom-scrollbar relative px-4 py-8 md:py-16" @contextmenu.prevent @copy.prevent @paste.prevent>
-                <form id="ujian-form" action="{{ route('siswa.soal.simpan') }}" method="POST" class="max-w-2xl mx-auto pb-40">
+            <main class="flex-1 overflow-y-auto custom-scrollbar relative px-4 py-8 md:py-16 prevent-select" 
+                  @contextmenu.prevent @copy.prevent @paste.prevent @mousedown.prevent>
+                
+                {{-- Anti-Screenshot/OCR Overlay --}}
+                <div class="fixed inset-0 pointer-events-none z-[50] opacity-[0.03] select-none">
+                    <div class="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                </div>
+
+                <form id="ujian-form" action="{{ route('siswa.soal.simpan') }}" method="POST" class="max-w-2xl mx-auto pb-40 relative z-[60]">
                     @csrf
                     <input type="hidden" name="modul_id" value="{{ $modul->id }}">
 
@@ -63,25 +70,33 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <div class="px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-                                            <span class="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">Category: Logic</span>
+                                            <span class="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">Secure Session</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {{-- Question & Media --}}
-                                <div class="space-y-8">
-                                    <h2 class="text-lg md:text-2xl font-bold leading-relaxed tracking-tight text-slate-800 dark:text-slate-100">
-                                        {{ $soal->pertanyaan }}
+                                <div class="space-y-8 relative">
+                                    {{-- Invisible OCR Blocker Layer --}}
+                                    <div class="absolute inset-0 bg-transparent z-[70] cursor-default" title="Secure Content"></div>
+                                    
+                                    <h2 class="text-lg md:text-2xl font-bold leading-relaxed tracking-tight text-slate-800 dark:text-slate-100 relative">
+                                        {{-- Scrambled detection prevention --}}
+                                        <span class="relative">
+                                            {{ $soal->pertanyaan }}
+                                            <span class="absolute inset-0 blur-[100px] bg-white dark:bg-slate-950 opacity-10 pointer-events-none"></span>
+                                        </span>
                                     </h2>
 
                                     @if($soal->gambar)
-                                        <div class="rounded-2xl overflow-hidden border border-slate-100 dark:border-white/10 shadow-sm transition-transform hover:scale-[1.01] max-w-lg mx-auto md:mx-0">
-                                            <img src="{{ asset('storage/' . $soal->gambar) }}" class="w-full h-auto" alt="Question Resource">
+                                        <div class="rounded-2xl overflow-hidden border border-slate-100 dark:border-white/10 shadow-sm transition-transform max-w-lg mx-auto md:mx-0 relative">
+                                            <div class="absolute inset-0 bg-gradient-to-tr from-indigo-500/5 to-transparent pointer-events-none"></div>
+                                            <img src="{{ asset('storage/' . $soal->gambar) }}" class="w-full h-auto pointer-events-none" alt="Resource">
                                         </div>
                                     @endif
 
                                     {{-- Elegant Options Grid --}}
-                                    <div class="grid grid-cols-1 gap-3 md:gap-4">
+                                    <div class="grid grid-cols-1 gap-3 md:gap-4 relative z-[80]">
                                         @foreach(['a', 'b', 'c', 'd', 'e'] as $opt)
                                             @if($soal->{'opsi_'.$opt})
                                                 <label class="group relative flex items-center p-4 md:p-6 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden bg-white dark:bg-slate-900/40 border-slate-200 dark:border-white/5 hover:border-indigo-300 dark:hover:border-indigo-500/30 active:scale-[0.98]"
@@ -93,20 +108,16 @@
                                                            @change="markAnswered({{ $index }}, '{{ $soal->id }}')">
                                                     
                                                     <div class="relative z-10 flex items-center gap-4 md:gap-6 w-full">
-                                                        {{-- Choice Letter --}}
                                                         <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center font-black text-xs md:text-lg border transition-all duration-300"
                                                              :class="answers['{{ $soal->id }}'] === '{{ strtoupper($opt) }}' 
                                                                 ? 'bg-indigo-600 text-white border-indigo-500 scale-110 shadow-lg shadow-indigo-500/40' 
                                                                 : 'bg-slate-50 dark:bg-white/5 border-slate-100 dark:border-white/10 text-slate-400 dark:text-slate-500'">
                                                             {{ strtoupper($opt) }}
                                                         </div>
-                                                        {{-- Choice Text --}}
                                                         <span class="text-sm md:text-lg font-semibold transition-colors tracking-tight flex-1"
                                                               :class="answers['{{ $soal->id }}'] === '{{ strtoupper($opt) }}' ? 'text-indigo-900 dark:text-white' : 'text-slate-600 dark:text-slate-300'">
                                                             {{ $soal->{'opsi_'.$opt} }}
                                                         </span>
-                                                        
-                                                        {{-- Feedback Icon --}}
                                                         <div class="shrink-0 opacity-0 transition-all transform scale-50"
                                                              :class="answers['{{ $soal->id }}'] === '{{ strtoupper($opt) }}' ? 'opacity-100 scale-100' : ''">
                                                             <div class="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-md">
@@ -124,6 +135,133 @@
                     </div>
                 </form>
             </main>
+
+... (rest of the action dock code)
+
+    <style>
+        .prevent-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+        .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.1); border-radius: 10px; }
+        [x-cloak] { display: none !important; }
+        
+        /* Violation Screen Flash */
+        .violation-flash { animation: flashRed 0.5s linear 2; }
+        @keyframes flashRed { 0% { background: transparent; } 50% { background: rgba(225, 29, 72, 0.2); } 100% { background: transparent; } }
+    </style>
+
+    @push('scripts')
+    <script>
+        function examEngine() {
+            return {
+                currentIndex: 0,
+                timeLeft: {{ $duration }}, // Already in seconds from server
+                answeredList: new Array({{ $soals->count() }}).fill(false),
+                answeredCount: 0,
+                answers: {},
+                theme: localStorage.getItem('color-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+                tabSwitchCount: {{ $violationCount }}, // From server
+                showNav: false,
+
+                init() {
+                    this.applyTheme();
+                    this.startTimer();
+                    this.preventTampering();
+                    this.loadSavedProgress();
+                    this.initAntiCheating();
+                },
+
+                async logViolationOnServer() {
+                    try {
+                        const response = await fetch("{{ route('siswa.soal.violation') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({ modul_id: {{ $modul->id }} })
+                        });
+                        const data = await response.json();
+                        this.tabSwitchCount = data.count;
+                        this.handleViolationLevel();
+                    } catch (e) { console.error("Violation logging failed", e); }
+                },
+
+                handleViolationLevel() {
+                    document.body.classList.add('violation-flash');
+                    setTimeout(() => document.body.classList.remove('violation-flash'), 1000);
+
+                    if (this.tabSwitchCount >= 3) {
+                        Swal.fire({
+                            title: '<span class="text-rose-600">Security Interruption!</span>',
+                            html: '<div class="text-sm font-medium text-slate-500 mt-2">Violation limit reached. Closing session.</div>',
+                            icon: 'error',
+                            confirmButtonText: 'Submit Assessment',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            background: this.theme === 'dark' ? '#020617' : '#fff',
+                            color: this.theme === 'dark' ? '#fff' : '#1e293b',
+                            customClass: {
+                                popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
+                                confirmButton: 'bg-rose-600 hover:bg-rose-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-rose-500/20'
+                            }
+                        }).then(() => this.forceSubmit());
+                    } else {
+                        Swal.fire({
+                            title: 'Security Alert!',
+                            html: `<div class="text-sm font-medium text-slate-500 mt-2">Suspicious activity detected. Violation <span class="text-rose-500 font-bold">(${this.tabSwitchCount}/3)</span> recorded on server. Your session will be terminated on the next attempt.</div>`,
+                            icon: 'warning',
+                            confirmButtonText: 'Acknowledge',
+                            background: this.theme === 'dark' ? '#020617' : '#fff',
+                            color: this.theme === 'dark' ? '#fff' : '#1e293b',
+                            customClass: {
+                                popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
+                                confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-500/20'
+                            }
+                        });
+                    }
+                },
+
+                initAntiCheating() {
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.hidden) {
+                            this.logViolationOnServer();
+                        }
+                    });
+
+                    // Extra layer for mobile AI prevention
+                    window.onblur = () => {
+                        // Some mobile browsers trigger blur instead of visibilitychange
+                        // but we check document.hidden to be sure it's not a temporary lag
+                        if (document.hidden) this.logViolationOnServer();
+                    };
+                },
+
+                startTimer() {
+                    const timer = setInterval(() => {
+                        if (this.timeLeft > 0) this.timeLeft--;
+                        else { 
+                            clearInterval(timer); 
+                            this.forceSubmit();
+                        }
+                    }, 1000);
+                },
+
+                formatTime(s) {
+                    const m = Math.floor(s / 60);
+                    const sec = s % 60;
+                    return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+                },
+
+... (rest of the methods)
 
             {{-- Smart Action Dock (Optimized for Thumb Reach) --}}
             <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4">

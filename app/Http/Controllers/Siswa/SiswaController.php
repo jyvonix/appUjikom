@@ -158,6 +158,27 @@ class SiswaController extends Controller
             return redirect()->route('siswa.dashboard')->with('error', 'Anda telah mencapai batas maksimal pengerjaan (' . $max_retakes . 'x) untuk modul ' . $modul->nama);
         }
         
+        // Timer Persistence Logic
+        $cacheKey = "exam_start_" . Auth::id() . "_" . $modul_id;
+        $startTime = session()->get($cacheKey);
+        
+        if (!$startTime) {
+            $startTime = now();
+            session()->put($cacheKey, $startTime);
+            session()->put("violation_" . Auth::id() . "_" . $modul_id, 0);
+        }
+
+        $durationMinutes = $modul->waktu;
+        $endTime = Carbon::parse($startTime)->addMinutes($durationMinutes);
+        $remainingSeconds = max(0, now()->diffInSeconds($endTime, false));
+
+        if ($remainingSeconds <= 0) {
+            session()->forget($cacheKey);
+            return redirect()->route('siswa.dashboard')->with('error', 'Waktu ujian telah habis.');
+        }
+
+        $violationCount = session()->get("violation_" . Auth::id() . "_" . $modul_id, 0);
+        
         $query = $modul->soals();
         if ($modul->is_random) {
             $query->inRandomOrder();
@@ -168,15 +189,34 @@ class SiswaController extends Controller
             return redirect()->route('siswa.dashboard')->with('error', 'Modul ini belum memiliki soal.');
         }
 
-        $duration = $modul->waktu;
+        return view('siswa.soal.kerjakan', [
+            'soals' => $soals,
+            'modul' => $modul,
+            'duration' => $remainingSeconds, // Now in seconds
+            'violationCount' => $violationCount
+        ]);
+    }
 
-        return view('siswa.soal.kerjakan', compact('soals', 'modul', 'duration'));
+    public function logViolation(Request $request)
+    {
+        $modul_id = $request->input('modul_id');
+        $key = "violation_" . Auth::id() . "_" . $modul_id;
+        $count = session()->get($key, 0) + 1;
+        session()->put($key, $count);
+
+        return response()->json(['count' => $count]);
     }
 
     public function simpanUjian(Request $request)
     {
         $modul_id = $request->input('modul_id');
+        
+        // Clean up session
+        session()->forget("exam_start_" . Auth::id() . "_" . $modul_id);
+        session()->forget("violation_" . Auth::id() . "_" . $modul_id);
+
         $modul = Modul::findOrFail($modul_id);
+... (rest of the method remains same)
         $soals = $modul->soals;
         
         $jumlah_benar = 0;

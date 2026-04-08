@@ -250,16 +250,32 @@
                             this.tabSwitchCount++;
                             if (this.tabSwitchCount >= 3) {
                                 Swal.fire({
-                                    title: 'Security Interruption!',
-                                    text: 'Violation limit reached. Closing session.',
+                                    title: '<span class="text-rose-600">Security Interruption!</span>',
+                                    html: '<div class="text-sm font-medium text-slate-500 mt-2">Violation limit reached. Closing session.</div>',
                                     icon: 'error',
-                                    confirmButtonText: 'Submit Now',
-                                    background: this.theme === 'dark' ? '#0f172a' : '#fff',
+                                    confirmButtonText: 'Submit Assessment',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    background: this.theme === 'dark' ? '#020617' : '#fff',
                                     color: this.theme === 'dark' ? '#fff' : '#1e293b',
-                                    customClass: { popup: 'rounded-[2rem] border-0' }
+                                    customClass: {
+                                        popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
+                                        confirmButton: 'bg-rose-600 hover:bg-rose-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-rose-500/20'
+                                    }
                                 }).then(() => this.forceSubmit());
                             } else {
-                                Toast.fire({ icon: 'warning', title: 'Focus Required!', text: `Alert ${this.tabSwitchCount}/3 recorded.` });
+                                Swal.fire({
+                                    title: 'Caution!',
+                                    html: `<div class="text-sm font-medium text-slate-500 mt-2">Application focus lost. Violation recorded <span class="text-rose-500 font-bold">(${this.tabSwitchCount}/3)</span>. Please maintain window active to avoid session termination.</div>`,
+                                    icon: 'warning',
+                                    confirmButtonText: 'I Understand',
+                                    background: this.theme === 'dark' ? '#020617' : '#fff',
+                                    color: this.theme === 'dark' ? '#fff' : '#1e293b',
+                                    customClass: {
+                                        popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
+                                        confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-500/20'
+                                    }
+                                });
                             }
                         }
                     });
@@ -268,7 +284,17 @@
                 startTimer() {
                     const timer = setInterval(() => {
                         if (this.timeLeft > 0) this.timeLeft--;
-                        else { clearInterval(timer); this.forceSubmit(); }
+                        else { 
+                            clearInterval(timer); 
+                            Swal.fire({
+                                title: 'Time Expired!',
+                                text: 'Your session has ended. Submitting automatically...',
+                                icon: 'info',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                background: this.theme === 'dark' ? '#020617' : '#fff'
+                            }).then(() => this.forceSubmit());
+                        }
                     }, 1000);
                 },
 
@@ -318,15 +344,38 @@
                 },
 
                 confirmFinish() {
+                    const unansweredCount = {{ $soals->count() }} - this.answeredCount;
+                    
+                    if (unansweredCount > 0) {
+                        Swal.fire({
+                            title: 'Submission Blocked!',
+                            html: `<div class="text-sm font-medium text-slate-500 mt-2">You have <span class="text-rose-500 font-bold">${unansweredCount}</span> unanswered questions. Please complete all items before finalizing.</div>`,
+                            icon: 'warning',
+                            confirmButtonText: 'Return to Exam',
+                            background: this.theme === 'dark' ? '#020617' : '#fff',
+                            color: this.theme === 'dark' ? '#fff' : '#1e293b',
+                            customClass: {
+                                popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
+                                confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px]'
+                            }
+                        });
+                        return;
+                    }
+
                     Swal.fire({
                         title: 'Finalize Assessment?',
-                        text: "All answers will be locked.",
+                        html: '<div class="text-sm font-medium text-slate-500 mt-2">All answers will be locked and graded. This action is irreversible.</div>',
                         icon: 'question',
                         showCancelButton: true,
-                        confirmButtonText: 'Submit Final',
-                        background: this.theme === 'dark' ? '#0f172a' : '#fff',
+                        confirmButtonText: 'Confirm Submission',
+                        cancelButtonText: 'Review Answers',
+                        background: this.theme === 'dark' ? '#020617' : '#fff',
                         color: this.theme === 'dark' ? '#fff' : '#1e293b',
-                        customClass: { popup: 'rounded-[2.5rem] border-0' }
+                        customClass: {
+                            popup: 'rounded-[2.5rem] border border-white/10 shadow-2xl',
+                            confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-500/20',
+                            cancelButton: 'bg-slate-100 dark:bg-white/5 text-slate-400 px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] ml-2'
+                        }
                     }).then(r => { if (r.isConfirmed) this.forceSubmit(); });
                 }
             }

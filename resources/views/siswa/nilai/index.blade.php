@@ -101,9 +101,15 @@
                                     @php
                                         $canPreview = false;
                                         if ($modul) {
-                                            $modulMaxRetakes = $modul->getSetting('max_retakes');
-                                            $totalPercobaan = \App\Models\Nilai::where('user_id', Auth::id())->where('modul_id', $nilai->modul_id)->count();
-                                            $canPreview = ($totalPercobaan >= $modulMaxRetakes) || ($modul->show_result);
+                                            $modulMaxRetakes = (int)$modul->getSetting('max_retakes');
+                                            $totalPercobaan = \App\Models\Nilai::where('user_id', Auth::id())
+                                                ->where('modul_id', $nilai->modul_id)
+                                                ->count();
+                                            
+                                            // Siswa bisa preview jika:
+                                            // 1. Sudah LULUS (skor >= KKM)
+                                            // 2. ATAU sudah menghabiskan semua kesempatan (percobaan >= max_retakes)
+                                            $canPreview = ($isLulus) || ($totalPercobaan >= $modulMaxRetakes);
                                         }
                                     @endphp
                                     
@@ -112,8 +118,14 @@
                                             <svg class="w-5 h-5 md:w-6 md:h-6 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
                                         </a>
                                     @else
-                                        <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl md:rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600 border border-slate-200 dark:border-white/5 cursor-not-allowed">
+                                        <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl md:rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600 border border-slate-200 dark:border-white/5 cursor-not-allowed group/locked relative">
                                             <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                            
+                                            {{-- Tooltip info --}}
+                                            <div class="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 px-3 py-2 bg-slate-900 text-[9px] font-bold text-white uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl">
+                                                Locked: Complete Remedial First
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
+                                            </div>
                                         </div>
                                     @endif
                                 </div>

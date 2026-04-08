@@ -216,7 +216,6 @@ class SiswaController extends Controller
         session()->forget("violation_" . Auth::id() . "_" . $modul_id);
 
         $modul = Modul::findOrFail($modul_id);
-... (rest of the method remains same)
         $soals = $modul->soals;
         
         $jumlah_benar = 0;

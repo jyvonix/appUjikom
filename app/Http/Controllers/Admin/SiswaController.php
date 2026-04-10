@@ -102,4 +102,10 @@ class SiswaController extends Controller
 
         return redirect()->route('admin.siswa.index')->with('success', 'Data Siswa berhasil dihapus.');
     }
+
+    public function destroyAll()
+    {
+        User::where('role', 'siswa')->delete();
+        return redirect()->route('admin.siswa.index')->with('success', 'Semua data siswa telah berhasil dibersihkan.');
+    }
 }

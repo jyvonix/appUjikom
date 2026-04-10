@@ -35,10 +35,22 @@
                     </div>
 
                     {{-- Add Button Refined --}}
-                    <a href="{{ route('admin.siswa.create') }}" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-[0.1em] hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 active:scale-95 transform">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Siswa
-                    </a>
+                    <div class="flex items-center gap-2">
+                        @if($siswas->total() > 0)
+                        <form action="{{ route('admin.siswa.destroyAll') }}" method="POST" onsubmit="return confirm('PERINGATAN: Ini akan menghapus SELURUH data siswa! Lanjutkan?');">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="inline-flex items-center justify-center gap-3 px-6 py-4 bg-rose-100 text-rose-600 rounded-2xl font-bold text-xs uppercase tracking-[0.1em] hover:bg-rose-600 hover:text-white transition-all shadow-sm active:scale-95 transform">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                Bersihkan Data
+                            </button>
+                        </form>
+                        @endif
+
+                        <a href="{{ route('admin.siswa.create') }}" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-[0.1em] hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 active:scale-95 transform">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                            Tambah Siswa
+                        </a>
+                    </div>
                 </div>
             </div>
 

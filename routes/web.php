@@ -66,6 +66,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'destroy' => 'admin.guru.destroy',
     ]);
 
+    Route::delete('/admin/siswa/destroy-all', [SiswaController::class, 'destroyAll'])->name('admin.siswa.destroyAll');
     Route::resource('/admin/siswa', SiswaController::class)->names([
         'index' => 'admin.siswa.index',
         'create' => 'admin.siswa.create',

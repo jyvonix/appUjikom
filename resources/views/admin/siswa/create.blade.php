@@ -39,7 +39,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-slate-300 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                                     </div>
-                                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Contoh: Ahmad Fauzi" required
+                                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Nama Lengkap Siswa" required
                                         class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 pl-12 pr-4 text-slate-700 placeholder:text-slate-300 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm">
                                 </div>
                                 @error('name') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
@@ -48,7 +48,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div class="space-y-2">
                                     <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Username</label>
-                                    <input type="text" name="username" value="{{ old('username') }}" placeholder="username_siswa" required
+                                    <input type="text" name="username" value="{{ old('username') }}" placeholder="Username" required
                                         class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm">
                                     @error('username') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
                                 </div>
@@ -66,7 +66,7 @@
 
                             <div class="space-y-2">
                                 <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email (Opsional)</label>
-                                <input type="email" name="email" value="{{ old('email') }}" placeholder="siswa@sekolah.id"
+                                <input type="email" name="email" value="{{ old('email') }}" placeholder="Email"
                                     class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm">
                             </div>
 

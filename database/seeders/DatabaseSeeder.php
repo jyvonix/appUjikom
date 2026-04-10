@@ -28,16 +28,5 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
             'role' => 'guru',
         ]);
-
-        User::factory(5)->create([
-            'role' => 'siswa',
-        ]);
-        
-        User::factory()->create([
-            'name' => 'Siswa Test',
-            'email' => 'siswa@sekolah.id',
-            'password' => bcrypt('password'),
-            'role' => 'siswa',
-        ]);
     }
 }

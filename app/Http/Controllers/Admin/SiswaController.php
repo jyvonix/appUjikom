@@ -12,7 +12,7 @@ class SiswaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::where('role', 'siswa')->with('asesor');
+        $query = User::onlySiswa()->with('asesor');
 
         if ($request->has('search')) {
             $search = $request->get('search');
@@ -111,7 +111,7 @@ class SiswaController extends Controller
 
     public function destroyAll()
     {
-        User::where('role', 'siswa')->delete();
+        User::onlySiswa()->delete();
         return redirect()->route('admin.siswa.index')->with('success', 'Semua data siswa telah berhasil dibersihkan.');
     }
 }

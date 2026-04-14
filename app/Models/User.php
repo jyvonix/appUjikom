@@ -67,11 +67,19 @@ class User extends Authenticatable
     }
 
     /**
+     * Query scope untuk memfilter user dengan role admin.
+     */
+    public function scopeOnlyAdmin($query)
+    {
+        return $query->where('users.role', 'admin');
+    }
+
+    /**
      * Query scope untuk memfilter user dengan role siswa.
      */
     public function scopeOnlySiswa($query)
     {
-        return $query->where('role', 'siswa');
+        return $query->where('users.role', 'siswa');
     }
 
     /**
@@ -79,7 +87,7 @@ class User extends Authenticatable
      */
     public function scopeOnlyGuru($query)
     {
-        return $query->where('role', 'guru');
+        return $query->where('users.role', 'guru');
     }
 
     /**
@@ -87,6 +95,6 @@ class User extends Authenticatable
      */
     public function scopeByAsesor($query, $asesorId)
     {
-        return $query->where('asesor_id', $asesorId);
+        return $query->where('users.asesor_id', $asesorId);
     }
 }

@@ -27,7 +27,7 @@ class NilaiController extends Controller
         // Ambil nilai jika: Guru adalah asesor siswa OR Modul dibuat oleh guru OR Modul sesuai jurusan guru
         $query = Nilai::where(function($q) use ($guru_id, $guru_jurusan) {
             $q->whereHas('user', function($u) use ($guru_id) {
-                $u->where('asesor_id', $guru_id);
+                $u->byAsesor($guru_id);
             })
             ->orWhereHas('modul', function($m) use ($guru_id, $guru_jurusan) {
                 $m->where('user_id', $guru_id)
@@ -55,7 +55,7 @@ class NilaiController extends Controller
         // Ambil nilai jika: Guru adalah asesor siswa OR Modul dibuat oleh guru OR Modul sesuai jurusan guru
         $query = Nilai::where(function($q) use ($guru_id, $guru_jurusan) {
             $q->whereHas('user', function($u) use ($guru_id) {
-                $u->where('asesor_id', $guru_id);
+                $u->byAsesor($guru_id);
             })
             ->orWhereHas('modul', function($m) use ($guru_id, $guru_jurusan) {
                 $m->where('user_id', $guru_id)

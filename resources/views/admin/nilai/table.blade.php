@@ -1,8 +1,12 @@
+<div id="total-count-bridge" data-total="{{ $nilais->total() }}" class="hidden"></div>
 <div class="overflow-x-auto">
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
                 <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Siswa</th>
+                @if(!request('modul_id'))
+                <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Modul</th>
+                @endif
                 <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Waktu Pengerjaan</th>
                 <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">Detail</th>
                 <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">Skor Akhir</th>
@@ -24,6 +28,13 @@
                             </div>
                         </div>
                     </td>
+                    @if(!request('modul_id'))
+                    <td class="px-8 py-6">
+                        <span class="px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-black text-slate-600 uppercase tracking-widest border border-slate-200">
+                            {{ $nilai->modul->nama ?? 'N/A' }}
+                        </span>
+                    </td>
+                    @endif
                     <td class="px-8 py-6">
                         <div class="flex flex-col">
                             <span class="text-sm font-black text-slate-700">{{ $nilai->created_at->translatedFormat('d F Y') }}</span>

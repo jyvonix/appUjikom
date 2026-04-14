@@ -29,9 +29,9 @@ use App\Http\Controllers\Admin\ModulController as AdminModulController;
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
         $stats = [
-            'admin' => \App\Models\User::where('role', 'admin')->count(),
-            'guru' => \App\Models\User::where('role', 'guru')->count(),
-            'siswa' => \App\Models\User::where('role', 'siswa')->count(),
+            'admin' => \App\Models\User::onlyAdmin()->count(),
+            'guru' => \App\Models\User::onlyGuru()->count(),
+            'siswa' => \App\Models\User::onlySiswa()->count(),
             'modul' => \App\Models\Modul::count(),
         ];
         return view('admin.dashboard', compact('stats'));
@@ -89,6 +89,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/nilai', [NilaiController::class, 'index'])->name('admin.nilai.index');
     Route::get('/admin/nilai/export', [NilaiController::class, 'export'])->name('admin.nilai.export');
+    Route::get('/admin/nilai/pdf', [NilaiController::class, 'exportPdf'])->name('admin.nilai.pdf');
     Route::delete('/admin/nilai/{nilai}', [NilaiController::class, 'destroy'])->name('admin.nilai.destroy');
 
     Route::get('/admin/setting', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('admin.setting.index');
@@ -106,9 +107,9 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         $stats = [
             'soal' => \App\Models\Soal::where('user_id', $guru_id)->count(),
             'total_nilai' => \App\Models\Nilai::whereHas('user', function($q) use ($guru_id) {
-                $q->where('asesor_id', $guru_id);
+                $q->byAsesor($guru_id);
             })->count(),
-            'siswa' => \App\Models\User::where('role', 'siswa')->where('asesor_id', $guru_id)->count(),
+            'siswa' => \App\Models\User::onlySiswa()->byAsesor($guru_id)->count(),
         ];
         return view('guru.dashboard', compact('stats'));
     })->name('guru.dashboard');

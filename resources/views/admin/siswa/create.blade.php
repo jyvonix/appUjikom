@@ -53,6 +53,14 @@
                                     @error('username') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
                                 </div>
                                 <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email (Opsional)</label>
+                                    <input type="email" name="email" value="{{ old('email') }}" placeholder="Email"
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-2">
                                     <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Jurusan</label>
                                     <select name="jurusan" required
                                         class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm cursor-pointer">
@@ -62,12 +70,19 @@
                                     </select>
                                     @error('jurusan') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
                                 </div>
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email (Opsional)</label>
-                                <input type="email" name="email" value="{{ old('email') }}" placeholder="Email"
-                                    class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm">
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Pilih Asesor</label>
+                                    <select name="asesor_id"
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-5 text-slate-700 focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm cursor-pointer">
+                                        <option value="" selected>Belum Ada Asesor</option>
+                                        @foreach($gurus as $guru)
+                                            <option value="{{ $guru->id }}" {{ old('asesor_id') == $guru->id ? 'selected' : '' }}>
+                                                {{ $guru->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('asesor_id') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">

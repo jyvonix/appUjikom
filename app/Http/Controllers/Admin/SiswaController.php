@@ -12,7 +12,7 @@ class SiswaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::where('role', 'siswa');
+        $query = User::where('role', 'siswa')->with('asesor');
 
         if ($request->has('search')) {
             $search = $request->get('search');
@@ -30,7 +30,8 @@ class SiswaController extends Controller
 
     public function create()
     {
-        return view('admin.siswa.create');
+        $gurus = User::where('role', 'guru')->orderBy('name')->get();
+        return view('admin.siswa.create', compact('gurus'));
     }
 
     public function store(Request $request)
@@ -41,6 +42,7 @@ class SiswaController extends Controller
             'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'jurusan' => ['required', 'string', 'in:RPL,MPLB'],
+            'asesor_id' => ['nullable', 'exists:users,id'],
         ]);
 
         User::create([
@@ -50,6 +52,7 @@ class SiswaController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'siswa',
             'jurusan' => $request->jurusan,
+            'asesor_id' => $request->asesor_id,
         ]);
 
         return redirect()->route('admin.siswa.index')->with('success', 'Data Siswa berhasil ditambahkan.');
@@ -60,7 +63,8 @@ class SiswaController extends Controller
         if ($siswa->role !== 'siswa') {
             abort(404);
         }
-        return view('admin.siswa.edit', compact('siswa'));
+        $gurus = User::where('role', 'guru')->orderBy('name')->get();
+        return view('admin.siswa.edit', compact('siswa', 'gurus'));
     }
 
     public function update(Request $request, User $siswa)
@@ -75,12 +79,14 @@ class SiswaController extends Controller
             'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$siswa->id],
             'password' => ['nullable', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
             'jurusan' => ['required', 'string', 'in:RPL,MPLB'],
+            'asesor_id' => ['nullable', 'exists:users,id'],
         ]);
 
         $siswa->name = $request->name;
         $siswa->username = $request->username;
         $siswa->email = $request->email;
         $siswa->jurusan = $request->jurusan;
+        $siswa->asesor_id = $request->asesor_id;
         
         // Update password HANYA jika diisi
         if ($request->filled('password')) {

@@ -95,13 +95,15 @@
                     <div class="mt-auto space-y-5">
                         <div class="flex items-center justify-center gap-4 py-3 bg-slate-50/50 rounded-2xl border border-slate-100/50">
                             <div class="text-center">
-                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Role</p>
-                                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-tight">Siswa</p>
+                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Jurusan</p>
+                                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-tight">{{ $siswa->jurusan ?? '-' }}</p>
                             </div>
                             <div class="w-px h-6 bg-slate-200"></div>
-                            <div class="text-center">
-                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Status</p>
-                                <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-tight">Aktif</p>
+                            <div class="text-center flex-1">
+                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Asesor</p>
+                                <p class="text-[10px] font-bold {{ $siswa->asesor ? 'text-blue-600' : 'text-slate-400' }} uppercase tracking-tight truncate px-1">
+                                    {{ $siswa->asesor->name ?? 'Belum Ada' }}
+                                </p>
                             </div>
                         </div>
 

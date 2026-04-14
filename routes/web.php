@@ -102,10 +102,13 @@ use App\Http\Controllers\Guru\ModulController as GuruModulController;
 
 Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/guru/dashboard', function () {
+        $guru_id = auth()->id();
         $stats = [
-            'soal' => \App\Models\Soal::where('user_id', auth()->id())->count(),
-            'total_nilai' => \App\Models\Nilai::count(),
-            'siswa' => \App\Models\User::where('role', 'siswa')->count(),
+            'soal' => \App\Models\Soal::where('user_id', $guru_id)->count(),
+            'total_nilai' => \App\Models\Nilai::whereHas('user', function($q) use ($guru_id) {
+                $q->where('asesor_id', $guru_id);
+            })->count(),
+            'siswa' => \App\Models\User::where('role', 'siswa')->where('asesor_id', $guru_id)->count(),
         ];
         return view('guru.dashboard', compact('stats'));
     })->name('guru.dashboard');

@@ -76,6 +76,29 @@
                     @error('jurusan') <p class="text-[10px] font-bold text-rose-500 mt-1 ml-1">{{ $message }}</p> @enderror
                 </div>
 
+                {{-- Pilih Asesor --}}
+                <div class="space-y-2">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Pilih Asesor Penguji</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-300 group-focus-within:text-blue-600 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                        </div>
+                        <select id="asesor_id" name="asesor_id"
+                            class="block w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-semibold text-slate-700 placeholder:text-slate-300 input-focus transition-all appearance-none cursor-pointer">
+                            <option value="" selected>Pilih Asesor (Opsional)</option>
+                            @foreach($gurus as $guru)
+                                <option value="{{ $guru->id }}" {{ old('asesor_id') == $guru->id ? 'selected' : '' }}>
+                                    {{ $guru->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                    </div>
+                    @error('asesor_id') <p class="text-[10px] font-bold text-rose-500 mt-1 ml-1">{{ $message }}</p> @enderror
+                </div>
+
                 {{-- Passwords --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div class="space-y-2">

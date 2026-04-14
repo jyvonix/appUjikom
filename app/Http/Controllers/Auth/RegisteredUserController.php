@@ -19,7 +19,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $gurus = User::where('role', 'guru')->orderBy('name')->get();
+        return view('auth.register', compact('gurus'));
     }
 
     /**
@@ -32,16 +33,20 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+            'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'jurusan' => ['required', 'string', 'in:RPL,MPLB'],
+            'asesor_id' => ['nullable', 'exists:users,id'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'siswa',
             'jurusan' => strtoupper($request->jurusan),
+            'asesor_id' => $request->asesor_id,
         ]);
 
         event(new Registered($user));

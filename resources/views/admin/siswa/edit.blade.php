@@ -65,14 +65,29 @@
                                 </div>
                             </div>
 
-                            <div class="space-y-2">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Jurusan</label>
-                                <select name="jurusan" required
-                                    class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm cursor-pointer">
-                                    <option value="RPL" {{ old('jurusan', $siswa->jurusan) == 'RPL' ? 'selected' : '' }}>Rekayasa Perangkat Lunak (RPL)</option>
-                                    <option value="MPLB" {{ old('jurusan', $siswa->jurusan) == 'MPLB' ? 'selected' : '' }}>Manajemen Perkantoran & Layanan Bisnis (MPLB)</option>
-                                </select>
-                                @error('jurusan') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Jurusan</label>
+                                    <select name="jurusan" required
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm cursor-pointer">
+                                        <option value="RPL" {{ old('jurusan', $siswa->jurusan) == 'RPL' ? 'selected' : '' }}>Rekayasa Perangkat Lunak (RPL)</option>
+                                        <option value="MPLB" {{ old('jurusan', $siswa->jurusan) == 'MPLB' ? 'selected' : '' }}>Manajemen Perkantoran & Layanan Bisnis (MPLB)</option>
+                                    </select>
+                                    @error('jurusan') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Pilih Asesor</label>
+                                    <select name="asesor_id"
+                                        class="block w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-4.5 px-6 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 transition-all font-semibold text-sm cursor-pointer">
+                                        <option value="">Belum Ada Asesor</option>
+                                        @foreach($gurus as $guru)
+                                            <option value="{{ $guru->id }}" {{ old('asesor_id', $siswa->asesor_id) == $guru->id ? 'selected' : '' }}>
+                                                {{ $guru->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('asesor_id') <p class="text-[10px] font-bold text-rose-500 mt-2 ml-1">{{ $message }}</p> @enderror
+                                </div>
                             </div>
 
                             <div class="relative py-4 text-center">

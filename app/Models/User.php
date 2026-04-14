@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'role',
         'jurusan',
+        'asesor_id',
     ];
 
     /**
@@ -47,5 +48,45 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relasi ke Guru yang menjadi asesor dari siswa ini.
+     */
+    public function asesor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'asesor_id');
+    }
+
+    /**
+     * Relasi ke semua Siswa yang diasesori oleh guru ini.
+     */
+    public function siswa(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(User::class, 'asesor_id');
+    }
+
+    /**
+     * Query scope untuk memfilter user dengan role siswa.
+     */
+    public function scopeOnlySiswa($query)
+    {
+        return $query->where('role', 'siswa');
+    }
+
+    /**
+     * Query scope untuk memfilter user dengan role guru.
+     */
+    public function scopeOnlyGuru($query)
+    {
+        return $query->where('role', 'guru');
+    }
+
+    /**
+     * Query scope untuk memfilter siswa berdasarkan asesornya.
+     */
+    public function scopeByAsesor($query, $asesorId)
+    {
+        return $query->where('asesor_id', $asesorId);
     }
 }

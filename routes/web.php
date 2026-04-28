@@ -101,6 +101,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/nilai', [NilaiController::class, 'index'])->name('admin.nilai.index');
     Route::get('/admin/nilai/export', [NilaiController::class, 'export'])->name('admin.nilai.export');
     Route::get('/admin/nilai/pdf', [NilaiController::class, 'exportPdf'])->name('admin.nilai.pdf');
+    Route::get('/admin/nilai/{nilai}', [NilaiController::class, 'show'])->name('admin.nilai.show');
     Route::delete('/admin/nilai/{nilai}', [NilaiController::class, 'destroy'])->name('admin.nilai.destroy');
 
     Route::get('/admin/setting', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('admin.setting.index');
@@ -152,6 +153,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/guru/nilai', [GuruNilaiController::class, 'index'])->name('guru.nilai.index');
     Route::get('/guru/nilai/export', [GuruNilaiController::class, 'export'])->name('guru.nilai.export');
     Route::get('/guru/nilai/pdf', [GuruNilaiController::class, 'exportPdf'])->name('guru.nilai.pdf');
+    Route::get('/guru/nilai/{nilai}', [GuruNilaiController::class, 'show'])->name('guru.nilai.show');
 });
 
 use App\Http\Controllers\Siswa\SiswaController as StudentSiswaController;

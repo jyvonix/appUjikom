@@ -7,6 +7,7 @@ use App\Models\Jurusan;
 use App\Models\Kelas;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
 
 class UserTestSeeder extends Seeder
 {
@@ -15,71 +16,77 @@ class UserTestSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create Jurusans
-        $rpl = Jurusan::create(['nama' => 'Rekayasa Perangkat Lunak', 'kode' => 'RPL']);
-        $mplb = Jurusan::create(['nama' => 'Manajemen Perkantoran dan Layanan Bisnis', 'kode' => 'MPLB']);
+        $faker = Faker::create('id_ID');
+        $password = Hash::make('password');
 
-        // 2. Create Kelas
-        $rpl12 = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $rpl->id]);
-        $mplb12 = Kelas::create(['nama' => 'XII MPLB 1', 'jurusan_id' => $mplb->id]);
-
-        // 3. Create Admin
+        // 1. Create Admins
         User::create([
             'name' => 'Administrator Utama',
             'username' => 'admin',
             'email' => 'admin@smarexam.com',
-            'password' => Hash::make('password'),
+            'password' => $password,
+            'role' => 'admin',
+        ]);
+        
+        User::create([
+            'name' => 'Administrator Kedua',
+            'username' => 'admin2',
+            'email' => 'admin2@smarexam.com',
+            'password' => $password,
             'role' => 'admin',
         ]);
 
-        // 4. Create Gurus
-        $guruRpl = User::create([
-            'name' => 'Budi Santoso, S.Kom.',
-            'username' => 'budi',
-            'email' => 'budi@guru.id',
-            'password' => Hash::make('password'),
-            'role' => 'guru',
-            'jurusan_id' => $rpl->id,
-        ]);
+        // Daftar Jurusan yang akan dibuat
+        $jurusansData = [
+            ['nama' => 'Rekayasa Perangkat Lunak', 'kode' => 'RPL'],
+            ['nama' => 'Teknik Komputer dan Jaringan', 'kode' => 'TKJ'],
+            ['nama' => 'Desain Komunikasi Visual', 'kode' => 'DKV'],
+            ['nama' => 'Manajemen Perkantoran dan Layanan Bisnis', 'kode' => 'MPLB'],
+            ['nama' => 'Akuntansi dan Keuangan Lembaga', 'kode' => 'AKL'],
+        ];
 
-        $guruMplb = User::create([
-            'name' => 'Siti Aminah, M.Pd.',
-            'username' => 'siti',
-            'email' => 'siti@guru.id',
-            'password' => Hash::make('password'),
-            'role' => 'guru',
-            'jurusan_id' => $mplb->id,
-        ]);
+        foreach ($jurusansData as $jurusanData) {
+            $jurusan = Jurusan::create($jurusanData);
 
-        // 5. Create Siswas
-        // RPL Students
-        for ($i = 1; $i <= 5; $i++) {
-            User::create([
-                'name' => "Siswa RPL $i",
-                'username' => "siswa_rpl$i",
-                'email' => "siswa_rpl$i@siswa.id",
-                'password' => Hash::make('password'),
-                'role' => 'siswa',
-                'jurusan_id' => $rpl->id,
-                'kelas_id' => $rpl12->id,
-                'asesor_id' => $guruRpl->id,
-            ]);
+            // 2. Create 2 Guru for each Jurusan
+            $gurus = [];
+            for ($g = 1; $g <= 2; $g++) {
+                $guru = User::create([
+                    'name' => $faker->name . ($g == 1 ? ', S.Kom.' : ', M.Pd.'),
+                    'username' => strtolower($jurusan->kode) . '_guru' . $g,
+                    'email' => strtolower($jurusan->kode) . "_guru$g@guru.id",
+                    'password' => $password,
+                    'role' => 'guru',
+                    'jurusan_id' => $jurusan->id,
+                ]);
+                $gurus[] = $guru;
+            }
+
+            // 3. Create 2 Kelas for each Jurusan
+            for ($k = 1; $k <= 2; $k++) {
+                $kelas = Kelas::create([
+                    'nama' => 'XII ' . $jurusan->kode . ' ' . $k,
+                    'jurusan_id' => $jurusan->id
+                ]);
+
+                // 4. Create 10 Siswa for each Kelas
+                for ($s = 1; $s <= 10; $s++) {
+                    $asesor = $gurus[array_rand($gurus)]; // Randomly assign one of the 2 gurus as asesor
+                    
+                    User::create([
+                        'name' => $faker->name,
+                        'username' => strtolower($jurusan->kode) . strtolower($k) . '_siswa' . $s,
+                        'email' => strtolower($jurusan->kode) . strtolower($k) . "_siswa$s@siswa.id",
+                        'password' => $password,
+                        'role' => 'siswa',
+                        'jurusan_id' => $jurusan->id,
+                        'kelas_id' => $kelas->id,
+                        'asesor_id' => $asesor->id,
+                    ]);
+                }
+            }
         }
 
-        // MPLB Students
-        for ($i = 1; $i <= 5; $i++) {
-            User::create([
-                'name' => "Siswa MPLB $i",
-                'username' => "siswa_mplb$i",
-                'email' => "siswa_mplb$i@siswa.id",
-                'password' => Hash::make('password'),
-                'role' => 'siswa',
-                'jurusan_id' => $mplb->id,
-                'kelas_id' => $mplb12->id,
-                'asesor_id' => $guruMplb->id,
-            ]);
-        }
-
-        $this->command->info('Professional dummy data created!');
+        $this->command->info('Data dummy untuk Admin, Jurusan, Kelas, Guru, dan Siswa berhasil dibuat!');
     }
 }

@@ -4,8 +4,10 @@
             <tr class="bg-slate-50/50 border-b border-slate-100">
                 <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Identitas Siswa</th>
                 <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Waktu Selesai</th>
+                <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">Status Ujian</th>
                 <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">Analisis Jawaban</th>
                 <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">Hasil Akhir</th>
+                <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">Aksi</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-50">
@@ -32,6 +34,17 @@
                         </div>
                     </td>
                     <td class="px-8 py-6 text-center">
+                        @if($nilai->percobaan_ke == 1)
+                            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-indigo-100">
+                                Utama
+                            </span>
+                        @else
+                            <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-amber-100">
+                                Remedial {{ $nilai->percobaan_ke - 1 }}
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-8 py-6 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <div class="px-4 py-2 bg-emerald-50 rounded-xl text-emerald-600 flex items-center gap-2 border border-emerald-100">
                                 <span class="text-sm font-black">{{ $nilai->jumlah_benar }}</span>
@@ -50,6 +63,11 @@
                                 {{ $isLulus ? 'LULUS' : 'REMEDIAL' }}
                             </span>
                         </div>
+                    </td>
+                    <td class="px-8 py-6 text-center">
+                        <a href="{{ route('guru.nilai.show', $nilai->id) }}" class="p-3 bg-white border border-slate-100 text-indigo-500 rounded-xl hover:bg-indigo-50 hover:border-indigo-100 transition-all shadow-sm inline-block" title="Lihat Detail Jawaban">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        </a>
                     </td>
                 </tr>
             @empty

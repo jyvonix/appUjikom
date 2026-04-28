@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Kelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -23,9 +24,14 @@ class SiswaController extends Controller
             });
         }
 
-        $siswas = $query->latest()->paginate(10)->withQueryString();
+        if ($request->filled('kelas_id')) {
+            $query->where('kelas_id', $request->get('kelas_id'));
+        }
 
-        return view('admin.siswa.index', compact('siswas'));
+        $siswas = $query->latest()->paginate(10)->withQueryString();
+        $kelasses = Kelas::orderBy('nama')->get();
+
+        return view('admin.siswa.index', compact('siswas', 'kelasses'));
     }
 
     public function create()
@@ -106,12 +112,12 @@ class SiswaController extends Controller
         
         $siswa->delete();
 
-        return redirect()->route('admin.siswa.index')->with('success', 'Data Siswa berhasil dihapus.');
+        return back()->with('success', 'Data Siswa berhasil dihapus.');
     }
 
     public function destroyAll()
     {
         User::onlySiswa()->delete();
-        return redirect()->route('admin.siswa.index')->with('success', 'Semua data siswa telah berhasil dibersihkan.');
+        return back()->with('success', 'Semua data siswa telah berhasil dibersihkan.');
     }
 }

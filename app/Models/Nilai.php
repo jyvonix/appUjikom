@@ -28,4 +28,13 @@ class Nilai extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getPercobaanKeAttribute()
+    {
+        return self::where('user_id', $this->user_id)
+            ->where('modul_id', $this->modul_id)
+            ->where('id', '<=', $this->id)
+            ->orderBy('id', 'asc')
+            ->count();
+    }
 }

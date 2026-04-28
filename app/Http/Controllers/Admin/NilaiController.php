@@ -73,6 +73,13 @@ class NilaiController extends Controller
     public function destroy(Nilai $nilai)
     {
         $nilai->delete();
-        return redirect()->route('admin.nilai.index')->with('success', 'Data nilai berhasil dihapus.');
+        return back()->with('success', 'Data nilai berhasil dihapus.');
+    }
+
+    public function show($id)
+    {
+        $nilai = Nilai::with(['user', 'modul.soals'])->findOrFail($id);
+        $soals = \App\Models\Soal::where('modul_id', $nilai->modul_id)->get();
+        return view('admin.nilai.show', compact('nilai', 'soals'));
     }
 }

@@ -54,68 +54,93 @@
                 </div>
             </div>
 
-            {{-- Refined Search Bar --}}
-            <div class="max-w-2xl">
-                <form action="{{ route('admin.siswa.index') }}" method="GET" class="relative group">
-                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            {{-- Refined Search Bar & Filters --}}
+            <div class="max-w-4xl">
+                <form action="{{ route('admin.siswa.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4">
+                    <div class="relative group flex-1">
+                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </div>
+                        <input type="text" name="search" value="{{ request('search') }}" 
+                            placeholder="Cari nama, username atau email siswa..." 
+                            class="block w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-[1.5rem] text-sm font-semibold text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-sm">
                     </div>
-                    <input type="text" name="search" value="{{ request('search') }}" 
-                        placeholder="Cari nama, username atau email siswa..." 
-                        class="block w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-[1.5rem] text-sm font-semibold text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-sm">
+                    
+                    <div class="relative min-w-[200px]">
+                        <select name="kelas_id" onchange="this.form.submit()" class="block w-full pl-6 pr-10 py-4 appearance-none bg-white border border-slate-200 rounded-[1.5rem] text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-sm cursor-pointer">
+                            <option value="">Semua Kelas</option>
+                            @foreach($kelasses as $kelas)
+                                <option value="{{ $kelas->id }}" {{ request('kelas_id') == $kelas->id ? 'selected' : '' }}>
+                                    {{ $kelas->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
                 </form>
             </div>
 
             {{-- Personnel Matrix Grid --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 @forelse($siswas as $siswa)
-                <div class="group relative bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-200/50 transition-all duration-500 flex flex-col">
-                    {{-- Decorative Corner Element --}}
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-blue-50/50 rounded-bl-[3rem] -mr-5 -mt-5 transition-transform group-hover:scale-110"></div>
-
+                <div class="group relative bg-white/80 backdrop-blur-sm rounded-[2rem] p-6 border border-slate-100 shadow-lg shadow-slate-200/40 hover:shadow-2xl hover:shadow-blue-300/30 hover:-translate-y-1 transition-all duration-300 flex flex-col">
                     {{-- Highly Visible User Icon --}}
-                    <div class="relative mb-8 self-center">
-                        <div class="absolute -inset-4 bg-blue-600/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div class="relative w-24 h-24 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-[2rem] flex items-center justify-center text-white text-3xl font-extrabold shadow-2xl shadow-blue-200 transform group-hover:rotate-3 transition-all duration-500 border-4 border-white">
+                    <div class="relative mb-6 self-center">
+                        <div class="absolute -inset-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full blur-xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
+                        <div class="relative w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white text-3xl font-extrabold shadow-xl shadow-blue-200/50 transform group-hover:scale-105 group-hover:rotate-3 transition-all duration-300 border-[3px] border-white">
                             {{ substr($siswa->name, 0, 1) }}
                             {{-- Status Ring --}}
-                            <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
-                                <div class="w-5 h-5 bg-emerald-500 rounded-full border-2 border-white shadow-inner"></div>
+                            <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
+                                <div class="w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-inner"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="text-center space-y-1 mb-8">
-                        <h3 class="text-lg font-bold text-slate-900 tracking-tight leading-tight group-hover:text-blue-600 transition-colors truncate px-2">{{ $siswa->name }}</h3>
-                        <p class="text-[11px] font-bold text-blue-600 uppercase tracking-widest">{{ $siswa->username }}</p>
-                        <p class="text-xs font-medium text-slate-400 italic truncate px-2">{{ $siswa->email ?? 'no-email@smarexam.com' }}</p>
+                    <div class="text-center space-y-1.5 mb-6">
+                        <h3 class="text-base font-bold text-slate-800 leading-tight group-hover:text-blue-600 transition-colors line-clamp-1 px-2" title="{{ $siswa->name }}">{{ $siswa->name }}</h3>
+                        <p class="text-[11px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 py-1 px-3 rounded-full inline-block">{{ $siswa->username }}</p>
+                        <p class="text-xs font-medium text-slate-500 italic truncate px-2 pt-1" title="{{ $siswa->email ?? 'no-email@smarexam.com' }}">{{ $siswa->email ?? 'no-email@smarexam.com' }}</p>
                     </div>
 
                     {{-- Meta & Action Footer --}}
-                    <div class="mt-auto space-y-5">
-                        <div class="flex items-center justify-center gap-4 py-3 bg-slate-50/50 rounded-2xl border border-slate-100/50">
-                            <div class="text-center">
-                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Jurusan</p>
-                                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-tight">{{ $siswa->jurusan ?? '-' }}</p>
+                    <div class="mt-auto space-y-4">
+                        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 space-y-3">
+                            <div class="flex flex-col gap-1.5">
+                                <div class="flex justify-between items-center">
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Jurusan & Kelas</p>
+                                    @if($siswa->kelas)
+                                    <span class="text-[9px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md shadow-sm border border-blue-200">{{ $siswa->kelas->nama }}</span>
+                                    @endif
+                                </div>
+                                <p class="text-[11px] font-bold text-slate-700 leading-tight line-clamp-2" title="{{ $siswa->jurusan->nama ?? '-' }}">{{ $siswa->jurusan->nama ?? '-' }}</p>
                             </div>
-                            <div class="w-px h-6 bg-slate-200"></div>
-                            <div class="text-center flex-1">
-                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Asesor</p>
-                                <p class="text-[10px] font-bold {{ $siswa->asesor ? 'text-blue-600' : 'text-slate-400' }} uppercase tracking-tight truncate px-1">
-                                    {{ $siswa->asesor->name ?? 'Belum Ada' }}
-                                </p>
+                            
+                            <div class="w-full h-px bg-slate-200"></div>
+                            
+                            <div class="flex flex-col gap-1.5">
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Asesor</p>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-[10px] font-bold border border-indigo-200">
+                                        {{ substr($siswa->asesor->name ?? '?', 0, 1) }}
+                                    </div>
+                                    <p class="text-xs font-bold {{ $siswa->asesor ? 'text-indigo-700' : 'text-slate-400' }} truncate flex-1" title="{{ $siswa->asesor->name ?? 'Belum Ada' }}">
+                                        {{ $siswa->asesor->name ?? 'Belum Ada' }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-3">
-                            <a href="{{ route('admin.siswa.edit', $siswa->id) }}" class="flex-1 inline-flex items-center justify-center gap-2 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            <a href="{{ route('admin.siswa.edit', $siswa->id) }}" class="flex-1 inline-flex items-center justify-center gap-2 py-2.5 bg-white border border-blue-200 text-blue-600 rounded-lg font-bold text-xs hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 Edit
                             </a>
                             <form action="{{ route('admin.siswa.destroy', $siswa->id) }}" method="POST" onsubmit="return confirm('Hapus data siswa ini?');" class="flex-1">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 py-3 bg-white border border-slate-200 text-slate-400 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all shadow-sm">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 py-2.5 bg-white border border-rose-200 text-rose-500 rounded-lg font-bold text-xs hover:bg-rose-500 hover:text-white transition-all shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     Hapus
                                 </button>
                             </form>

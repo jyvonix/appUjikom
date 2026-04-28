@@ -22,16 +22,16 @@ class NilaiController extends Controller
         $modul_id = $request->query('modul_id');
         $user = \Illuminate\Support\Facades\Auth::user();
         $guru_id = $user->id;
-        $guru_jurusan = $user->jurusan;
+        $guru_jurusan_id = $user->jurusan_id;
         
         // Ambil nilai jika: Guru adalah asesor siswa OR Modul dibuat oleh guru OR Modul sesuai jurusan guru
-        $query = Nilai::where(function($q) use ($guru_id, $guru_jurusan) {
+        $query = Nilai::where(function($q) use ($guru_id, $guru_jurusan_id) {
             $q->whereHas('user', function($u) use ($guru_id) {
                 $u->byAsesor($guru_id);
             })
-            ->orWhereHas('modul', function($m) use ($guru_id, $guru_jurusan) {
+            ->orWhereHas('modul', function($m) use ($guru_id, $guru_jurusan_id) {
                 $m->where('user_id', $guru_id)
-                  ->orWhere('jurusan', $guru_jurusan);
+                  ->orWhere('jurusan_id', $guru_jurusan_id);
             });
         })->with(['user', 'modul']);
         
@@ -50,16 +50,16 @@ class NilaiController extends Controller
     {
         $user = \Illuminate\Support\Facades\Auth::user();
         $guru_id = $user->id;
-        $guru_jurusan = $user->jurusan;
+        $guru_jurusan_id = $user->jurusan_id;
         
         // Ambil nilai jika: Guru adalah asesor siswa OR Modul dibuat oleh guru OR Modul sesuai jurusan guru
-        $query = Nilai::where(function($q) use ($guru_id, $guru_jurusan) {
+        $query = Nilai::where(function($q) use ($guru_id, $guru_jurusan_id) {
             $q->whereHas('user', function($u) use ($guru_id) {
                 $u->byAsesor($guru_id);
             })
-            ->orWhereHas('modul', function($m) use ($guru_id, $guru_jurusan) {
+            ->orWhereHas('modul', function($m) use ($guru_id, $guru_jurusan_id) {
                 $m->where('user_id', $guru_id)
-                  ->orWhere('jurusan', $guru_jurusan);
+                  ->orWhere('jurusan_id', $guru_jurusan_id);
             });
         })->with(['user', 'modul']);
 
@@ -80,5 +80,26 @@ class NilaiController extends Controller
         }
 
         return view('guru.nilai.index', compact('nilais', 'kkm'));
+    }
+
+    public function show($id)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $guru_id = $user->id;
+        $guru_jurusan_id = $user->jurusan_id;
+
+        // Pastikan guru berhak melihat nilai ini
+        $nilai = Nilai::where('id', $id)->where(function($q) use ($guru_id, $guru_jurusan_id) {
+            $q->whereHas('user', function($u) use ($guru_id) {
+                $u->byAsesor($guru_id);
+            })
+            ->orWhereHas('modul', function($m) use ($guru_id, $guru_jurusan_id) {
+                $m->where('user_id', $guru_id)
+                  ->orWhere('jurusan_id', $guru_jurusan_id);
+            });
+        })->with(['user', 'modul.soals'])->firstOrFail();
+
+        $soals = \App\Models\Soal::where('modul_id', $nilai->modul_id)->get();
+        return view('guru.nilai.show', compact('nilai', 'soals'));
     }
 }

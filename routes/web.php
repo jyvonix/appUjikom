@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\JurusanController;
 use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\AdministratorController;
@@ -47,6 +48,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'destroy' => 'admin.modul.destroy',
     ]);
 
+
+    Route::resource('/admin/jurusan', JurusanController::class)->names([
+        'index' => 'admin.jurusan.index',
+        'store' => 'admin.jurusan.store',
+        'show' => 'admin.jurusan.show',
+        'update' => 'admin.jurusan.update',
+        'destroy' => 'admin.jurusan.destroy',
+    ]);
+    Route::post('/admin/jurusan/{jurusan}/kelas', [JurusanController::class, 'storeKelas'])->name('admin.jurusan.kelas.store');
+    Route::delete('/admin/kelas/{kelas}', [JurusanController::class, 'destroyKelas'])->name('admin.jurusan.kelas.destroy');
 
     Route::resource('/admin/admin', AdministratorController::class)->names([
         'index' => 'admin.admin.index',

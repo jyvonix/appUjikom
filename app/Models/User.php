@@ -23,9 +23,20 @@ class User extends Authenticatable
         'username',
         'password',
         'role',
-        'jurusan',
+        'jurusan_id',
+        'kelas_id',
         'asesor_id',
     ];
+
+    public function jurusan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Jurusan::class);
+    }
+
+    public function kelas(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Kelas::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

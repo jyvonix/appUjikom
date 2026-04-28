@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('moduls', function (Blueprint $table) {
-            $table->string('jurusan')->nullable()->after('user_id')->comment('RPL, MPLB, etc');
+        Schema::create('kelas', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama')->unique(); // XII RPL 1
+            $table->foreignId('jurusan_id')->constrained('jurusans')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('moduls', function (Blueprint $table) {
-            $table->dropColumn('jurusan');
-        });
+        Schema::dropIfExists('kelas');
     }
 };

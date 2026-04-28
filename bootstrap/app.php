@@ -14,6 +14,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'login',
+            'register',
+            'logout',
+            'password',
+            'password/*',
+            'forgot-password',
+            'reset-password',
+            'reset-password/*',
+            'confirm-password',
+            'profile',
+            'profile/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

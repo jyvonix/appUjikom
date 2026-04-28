@@ -18,14 +18,18 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
+        $jurusan = \App\Models\Jurusan::create(['nama' => 'Rekayasa Perangkat Lunak', 'kode' => 'RPL']);
+
         $response = $this->post('/register', [
             'name' => 'Test User',
+            'username' => 'testuser',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'jurusan_id' => $jurusan->id,
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('siswa.dashboard'));
     }
 }

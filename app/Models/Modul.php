@@ -11,8 +11,12 @@ class Modul extends Model
 
     protected $fillable = [
         'nama',
+        'tipe',
+        'token',
         'deskripsi',
         'waktu',
+        'start_time',
+        'end_time',
         'is_active',
         'user_id',
         'kkm',
@@ -21,8 +25,21 @@ class Modul extends Model
         'score_divisor',
         'is_random',
         'show_result',
-        'jurusan',
+        'jurusan_id',
     ];
+
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+        'is_active' => 'boolean',
+        'is_random' => 'boolean',
+        'show_result' => 'boolean',
+    ];
+
+    public function jurusan()
+    {
+        return $this->belongsTo(Jurusan::class);
+    }
 
     /**
      * Get effective setting (fallback to global setting if null)

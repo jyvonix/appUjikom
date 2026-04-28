@@ -19,8 +19,14 @@ class Soal extends Model
         'jawaban_benar',
         'kategori',
         'kesulitan',
-        'user_id'
+        'user_id',
+        'jurusan_id'
     ];
+
+    public function jurusan(): BelongsTo
+    {
+        return $this->belongsTo(Jurusan::class);
+    }
 
     public function modul()
     {

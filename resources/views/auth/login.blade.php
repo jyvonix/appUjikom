@@ -65,3 +65,6 @@
         <p class="mt-10 text-center text-slate-400 text-[9px] font-bold uppercase tracking-[0.4em] opacity-60">SmartExam Intelligence &bull; Secure Protocol v2.0</p>
     </div>
 </x-guest-layout>
+
+
+

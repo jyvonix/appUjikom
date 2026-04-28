@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
             'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'jurusan' => ['required', 'string', 'in:RPL,MPLB'],
+            'jurusan_id' => ['required', 'exists:jurusans,id'],
             'asesor_id' => ['nullable', 'exists:users,id'],
         ]);
 
@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'siswa',
-            'jurusan' => strtoupper($request->jurusan),
+            'jurusan_id' => $request->jurusan_id,
             'asesor_id' => $request->asesor_id,
         ]);
 

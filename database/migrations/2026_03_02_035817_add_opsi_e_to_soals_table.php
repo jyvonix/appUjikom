@@ -17,7 +17,9 @@ return new class extends Migration
         });
 
         // Update enum for MySQL/MariaDB
-        DB::statement("ALTER TABLE soals MODIFY COLUMN jawaban_benar ENUM('A', 'B', 'C', 'D', 'E') NOT NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE soals MODIFY COLUMN jawaban_benar ENUM('A', 'B', 'C', 'D', 'E') NOT NULL");
+        }
     }
 
     /**
@@ -29,6 +31,8 @@ return new class extends Migration
             $table->dropColumn('opsi_e');
         });
 
-        DB::statement("ALTER TABLE soals MODIFY COLUMN jawaban_benar ENUM('A', 'B', 'C', 'D') NOT NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE soals MODIFY COLUMN jawaban_benar ENUM('A', 'B', 'C', 'D') NOT NULL");
+        }
     }
 };

@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('asesor_id')->nullable()->after('role')->constrained('users')->onDelete('set null');
+        Schema::create('jurusans', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama')->unique(); // Rekayasa Perangkat Lunak
+            $table->string('kode')->unique(); // RPL
+            $table->timestamps();
         });
     }
 
@@ -21,9 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['asesor_id']);
-            $table->dropColumn('asesor_id');
-        });
+        Schema::dropIfExists('jurusans');
     }
 };
